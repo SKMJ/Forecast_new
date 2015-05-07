@@ -131,7 +131,7 @@
             // 
             // buttonSupplyView
             // 
-            this.buttonSupplyView.Location = new System.Drawing.Point(496, 39);
+            this.buttonSupplyView.Location = new System.Drawing.Point(469, 39);
             this.buttonSupplyView.Name = "buttonSupplyView";
             this.buttonSupplyView.Size = new System.Drawing.Size(200, 34);
             this.buttonSupplyView.TabIndex = 2;
@@ -142,7 +142,7 @@
             // comboBoxAssortment
             // 
             this.comboBoxAssortment.FormattingEnabled = true;
-            this.comboBoxAssortment.Location = new System.Drawing.Point(326, 121);
+            this.comboBoxAssortment.Location = new System.Drawing.Point(328, 121);
             this.comboBoxAssortment.Name = "comboBoxAssortment";
             this.comboBoxAssortment.Size = new System.Drawing.Size(190, 24);
             this.comboBoxAssortment.TabIndex = 3;
@@ -159,7 +159,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(326, 151);
+            this.button1.Location = new System.Drawing.Point(328, 146);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(102, 27);
             this.button1.TabIndex = 5;

@@ -40,6 +40,9 @@
             this.ColumnWeek5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Week6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.buttonSalesView = new System.Windows.Forms.Button();
+            this.buttonGetProductsBySupplier = new System.Windows.Forms.Button();
+            this.labelSupplier = new System.Windows.Forms.Label();
+            this.comboBoxSupplier = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             this.SuspendLayout();
@@ -127,13 +130,40 @@
             // 
             // buttonSalesView
             // 
-            this.buttonSalesView.Location = new System.Drawing.Point(539, 52);
+            this.buttonSalesView.Location = new System.Drawing.Point(469, 39);
             this.buttonSalesView.Name = "buttonSalesView";
-            this.buttonSalesView.Size = new System.Drawing.Size(179, 34);
+            this.buttonSalesView.Size = new System.Drawing.Size(200, 34);
             this.buttonSalesView.TabIndex = 4;
             this.buttonSalesView.Text = "Change to Sales View";
             this.buttonSalesView.UseVisualStyleBackColor = true;
             this.buttonSalesView.Click += new System.EventHandler(this.buttonSalesView_Click);
+            // 
+            // buttonGetProductsBySupplier
+            // 
+            this.buttonGetProductsBySupplier.Location = new System.Drawing.Point(328, 146);
+            this.buttonGetProductsBySupplier.Name = "buttonGetProductsBySupplier";
+            this.buttonGetProductsBySupplier.Size = new System.Drawing.Size(102, 27);
+            this.buttonGetProductsBySupplier.TabIndex = 9;
+            this.buttonGetProductsBySupplier.Text = "Get Products";
+            this.buttonGetProductsBySupplier.UseVisualStyleBackColor = true;
+            this.buttonGetProductsBySupplier.Click += new System.EventHandler(this.buttonGetProductsBySupplier_Click);
+            // 
+            // labelSupplier
+            // 
+            this.labelSupplier.AutoSize = true;
+            this.labelSupplier.Location = new System.Drawing.Point(328, 97);
+            this.labelSupplier.Name = "labelSupplier";
+            this.labelSupplier.Size = new System.Drawing.Size(60, 17);
+            this.labelSupplier.TabIndex = 8;
+            this.labelSupplier.Text = "Supplier";
+            // 
+            // comboBoxSupplier
+            // 
+            this.comboBoxSupplier.FormattingEnabled = true;
+            this.comboBoxSupplier.Location = new System.Drawing.Point(328, 121);
+            this.comboBoxSupplier.Name = "comboBoxSupplier";
+            this.comboBoxSupplier.Size = new System.Drawing.Size(190, 24);
+            this.comboBoxSupplier.TabIndex = 7;
             // 
             // FormSupply
             // 
@@ -141,6 +171,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Fuchsia;
             this.ClientSize = new System.Drawing.Size(1082, 855);
+            this.Controls.Add(this.buttonGetProductsBySupplier);
+            this.Controls.Add(this.labelSupplier);
+            this.Controls.Add(this.comboBoxSupplier);
             this.Controls.Add(this.buttonSalesView);
             this.Controls.Add(this.dataGridForecastInfo);
             this.Controls.Add(this.pictureBox1);
@@ -149,6 +182,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -166,5 +200,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnWeek5;
         private System.Windows.Forms.DataGridViewTextBoxColumn Week6;
         private System.Windows.Forms.Button buttonSalesView;
+        private System.Windows.Forms.Button buttonGetProductsBySupplier;
+        private System.Windows.Forms.Label labelSupplier;
+        private System.Windows.Forms.ComboBox comboBoxSupplier;
     }
 }

@@ -20,6 +20,3 @@ H:\Visual Studio 2013\Projects\WindowsFormsForecastLactalis\WindowsFormsForecast
 H:\Visual Studio 2013\Projects\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Debug\WindowsFormsForecastLactalis.exe
 H:\Visual Studio 2013\Projects\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Debug\WindowsFormsForecastLactalis.pdb
 H:\Visual Studio 2013\Projects\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Debug\WindowsFormsForecastLactalis.csprojResolveAssemblyReference.cache
-C:\Users\chhe1226\Desktop\LActalis backup forecast\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\bin\Debug\WindowsFormsForecastLactalis.exe.config
-C:\Users\chhe1226\Desktop\LActalis backup forecast\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Debug\WindowsFormsForecastLactalis.exe
-C:\Users\chhe1226\Desktop\LActalis backup forecast\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Debug\WindowsFormsForecastLactalis.pdb

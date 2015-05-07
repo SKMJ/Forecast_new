@@ -21,7 +21,7 @@ namespace WindowsFormsForecastLactalis
         {
             InitializeComponent();
             Assortments.Add("COOP");
-            Assortments.Add("HITTEPÅ");
+            Assortments.Add("TEST CUSTOMER");
             comboBoxAssortment.DataSource = Assortments;
 
         }
