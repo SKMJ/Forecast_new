@@ -15,6 +15,7 @@ namespace WindowsFormsForecastLactalis
     {
         Form1 Form1Instance = new Form1();
         private List<string> Supplier = new List<string>();
+        GetFromM3 m3_info = new GetFromM3();
 
         public FormSupply()
         {
@@ -150,6 +151,18 @@ namespace WindowsFormsForecastLactalis
         private void buttonGetProductsBySupplier_Click(object sender, EventArgs e)
         {
             FillInfo();
+        }
+
+        private void buttonTestSupplItems_Click(object sender, EventArgs e)
+        {
+            List<string> tempList = m3_info.GetListOfProductsBySupplier("3141");
+
+            foreach(string item in tempList)
+            {
+                string tempName = m3_info.GetNameByItemNumber(item);
+                Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
+            }
+
         }
     }
 }

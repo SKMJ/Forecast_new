@@ -11,14 +11,86 @@ namespace WindowsFormsForecastLactalis
 {
     class GetFromM3
     {
-        string ipNummer = "172.31.157.25";
-        int portNumber = 16205;
+        string ipNummer = "172.31.157.25";//M3 Test //dev
+        //string ipNummer = "172.31.157.14";//M3 produktion
+
+        int portNumber = 16205; //M3 Test
+        //int portNumber = 16105; //M3 Prod
+        //int portNumber = 16305; //M3 Dev
         String userName = "mi310";
         String userPsw = "MIPGM99";
-        //String M3Interface = "CRS105MI";
 
         //Dictionary<int, string> productName = new Dictionary<int, string>();
+        public bool TestM3Connection()
+        {
+            //List<int> productList = new List<int>();
 
+            SERVER_ID sid = new SERVER_ID();
+
+            uint rc = 0;
+            var watch = Stopwatch.StartNew();
+            // the code that you want to measure comes here
+
+
+            
+            try
+            {
+                rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS105MI", null);
+                //Console.WriteLine("After Connect to M3 Interface: " + M3Interface);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("fail M3 communication Connect! 2: MI: " + "CRS105MI");
+                return false;
+            }
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Fail M3 communication Connect!");
+                return false;
+            }
+
+            
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Console.WriteLine("time connect: " + elapsedMs);
+            if (rc != 0)
+            {
+                Console.WriteLine("M3 communication: FAIL!!");
+                return false;
+            }
+
+            //Set the field without need to know position Start from this customer 00752
+            MvxSock.SetField(ref sid, "ASCD", "COOP");
+            MvxSock.SetField(ref sid, "CONO", "001");
+            rc = MvxSock.Access(ref sid, "LstAssmItem");
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "M3 Communication Fail! " + "\n");
+                MvxSock.Close(ref sid);
+                Console.WriteLine("M3 communication: FAIL!!");
+                return false;
+            }
+
+            bool once = true;
+            while (MvxSock.More(ref sid) && once)
+            {
+                string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
+                Console.Write("Item nr: " + tempItemNbr);
+                Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
+                //Mooves to next row
+                MvxSock.Access(ref sid, null);
+                once = false;
+
+                //productList.Add(Convert.ToInt32(tempItemNbr));
+
+            }
+
+            MvxSock.Close(ref sid);
+
+            Console.WriteLine("M3 communication: SUCCESS!!");
+            return true;
+
+        }
 
         public List<int> GetListOfProductsNbrByAssortment(string assortment)
         {
@@ -71,7 +143,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        public string GetNameByItemNumber(int itemNbr)
+        public string GetNameByItemNumber(string itemNbr)
         {
             string returnString = "";
             //List<int> productList = new List<int>();
@@ -84,7 +156,7 @@ namespace WindowsFormsForecastLactalis
                     return returnString;
                 }
                 //Set the field without need to know position Start from this customer 00752
-                MvxSock.SetField(ref sid, "ITNO", itemNbr.ToString());
+                MvxSock.SetField(ref sid, "ITNO", itemNbr);
                 MvxSock.SetField(ref sid, "CONO", "001");
                 rc = MvxSock.Access(ref sid, "GetItmBasic");
                 if (rc != 0)
@@ -101,7 +173,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        internal List<int> GetListOfSuppliers()
+        public List<int> GetListOfSuppliers()
         {
             List<int> supplierList = new List<int>();
 
@@ -146,6 +218,56 @@ namespace WindowsFormsForecastLactalis
 
                 MvxSock.Close(ref sid);
                 return supplierList;
+            }
+        }
+
+        public List<string> GetListOfProductsBySupplier(string supplNbr)
+        {
+            List<string> itemList = new List<string>();
+            //Dictionary<string, string> itemDict = new Dictionary<string, string>();
+            {
+
+                SERVER_ID sid = new SERVER_ID();
+
+                uint rc;
+                rc = ConnectToM3Interface(ref sid, "MDBREADMI");
+                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                    return null;
+                }
+
+                SetMaxList(sid, 99);
+
+                //Set the field without need to know position Start from this customer 00752
+                //MvxSock.SetField(ref sid, "ASCD", Assortment);
+                MvxSock.SetField(ref sid, "SUNO", supplNbr);
+                rc = MvxSock.Access(ref sid, "LstMITVEN10");
+                if (rc != 0)
+                {
+                    MvxSock.ShowLastError(ref sid, "Error in get suppliers items " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return null;
+                }
+
+                while (MvxSock.More(ref sid))
+                {
+                    string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
+                    //string tempitemName = MvxSock.GetField(ref sid, "SITT") + "\t\t";
+                    if (tempItemNbr.Length > 1)
+                    {
+                        //Console.Write("Supplier nr: " + tempSupplierNBR);
+                        //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
+                        Console.WriteLine("Supplyer item Nbr: " + tempItemNbr);// + " Name: " + tempitemName);
+                        itemList.Add(tempItemNbr);
+                    }
+                    //Mooves to next row
+                    MvxSock.Access(ref sid, null);
+                }
+
+                MvxSock.Close(ref sid);
+                return itemList;
             }
         }
 

@@ -43,6 +43,7 @@
             this.buttonGetProductsBySupplier = new System.Windows.Forms.Button();
             this.labelSupplier = new System.Windows.Forms.Label();
             this.comboBoxSupplier = new System.Windows.Forms.ComboBox();
+            this.buttonTestSupplItems = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             this.SuspendLayout();
@@ -74,7 +75,7 @@
             this.dataGridForecastInfo.Location = new System.Drawing.Point(13, 179);
             this.dataGridForecastInfo.Name = "dataGridForecastInfo";
             this.dataGridForecastInfo.RowTemplate.Height = 24;
-            this.dataGridForecastInfo.Size = new System.Drawing.Size(1051, 661);
+            this.dataGridForecastInfo.Size = new System.Drawing.Size(1468, 661);
             this.dataGridForecastInfo.TabIndex = 3;
             this.dataGridForecastInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellContentClick);
             // 
@@ -165,12 +166,24 @@
             this.comboBoxSupplier.Size = new System.Drawing.Size(190, 24);
             this.comboBoxSupplier.TabIndex = 7;
             // 
+            // buttonTestSupplItems
+            // 
+            this.buttonTestSupplItems.Location = new System.Drawing.Point(882, 49);
+            this.buttonTestSupplItems.Name = "buttonTestSupplItems";
+            this.buttonTestSupplItems.Size = new System.Drawing.Size(112, 23);
+            this.buttonTestSupplItems.TabIndex = 10;
+            this.buttonTestSupplItems.Text = "buttonTestSupplItems";
+            this.buttonTestSupplItems.UseVisualStyleBackColor = true;
+            this.buttonTestSupplItems.Visible = false;
+            this.buttonTestSupplItems.Click += new System.EventHandler(this.buttonTestSupplItems_Click);
+            // 
             // FormSupply
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Fuchsia;
-            this.ClientSize = new System.Drawing.Size(1082, 855);
+            this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.buttonTestSupplItems);
             this.Controls.Add(this.buttonGetProductsBySupplier);
             this.Controls.Add(this.labelSupplier);
             this.Controls.Add(this.comboBoxSupplier);
@@ -203,5 +216,6 @@
         private System.Windows.Forms.Button buttonGetProductsBySupplier;
         private System.Windows.Forms.Label labelSupplier;
         private System.Windows.Forms.ComboBox comboBoxSupplier;
+        private System.Windows.Forms.Button buttonTestSupplItems;
     }
 }

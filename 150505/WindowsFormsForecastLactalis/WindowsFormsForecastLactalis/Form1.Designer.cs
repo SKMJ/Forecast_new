@@ -63,7 +63,7 @@
             this.dataGridForecastInfo.Location = new System.Drawing.Point(13, 179);
             this.dataGridForecastInfo.Name = "dataGridForecastInfo";
             this.dataGridForecastInfo.RowTemplate.Height = 24;
-            this.dataGridForecastInfo.Size = new System.Drawing.Size(1051, 661);
+            this.dataGridForecastInfo.Size = new System.Drawing.Size(1468, 661);
             this.dataGridForecastInfo.TabIndex = 0;
             this.dataGridForecastInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellContentClick);
             // 
@@ -172,7 +172,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.ClientSize = new System.Drawing.Size(1082, 855);
+            this.ClientSize = new System.Drawing.Size(1482, 855);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.labelAssortment);
             this.Controls.Add(this.comboBoxAssortment);

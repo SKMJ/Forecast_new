@@ -14,8 +14,12 @@ namespace WindowsFormsForecastLactalis
     {
         public static List<PrognosInfo> Products = new List<PrognosInfo>();
         public FormSupply SupplyViewInstance;
-        private List<string> Assortments =new List<string>();
+        private List<string> Assortments = new List<string>();
         GetFromM3 m3_info = new GetFromM3();
+        TextBoxForm infobox = new TextBoxForm();
+        private string latestProductNumber;
+        private int latestWeek;
+
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
         public Form1()
         {
@@ -23,6 +27,7 @@ namespace WindowsFormsForecastLactalis
             Assortments.Add("COOP");
             Assortments.Add("TEST CUSTOMER");
             comboBoxAssortment.DataSource = Assortments;
+            m3_info.TestM3Connection();
 
         }
 
@@ -35,18 +40,46 @@ namespace WindowsFormsForecastLactalis
             int rowIndex = e.RowIndex;
 
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
+
+            if (rowIndex % 6 == 5)
+            {
+                string temp = dataGridForecastInfo.Rows[rowIndex].Cells[columnIndex].Value.ToString();
+                string temp2 = dataGridForecastInfo.Rows[rowIndex - 5].Cells[0].Value.ToString();
+
+
+                latestWeek = columnIndex - 2;
+                latestProductNumber = temp2;
+                infobox.SetInfoText(this, temp, "Product: " + temp2 + " Week: " + latestWeek);
+                infobox.TopMost = true;
+                infobox.Show();
+
+                //MessageBox.Show(temp);
+            }
+            else if (rowIndex % 6 == 3)
+            {
+                MessageBox.Show("Kampagnen innefattar kund 1 och kund 2.");
+            }
         }
-        private void FillInfo()
+
+
+        public void FillInfo()
         {
+            this.dataGridForecastInfo.DataSource = null;
+
+            this.dataGridForecastInfo.Rows.Clear();
             foreach (PrognosInfo item in Products)
             {
+                //dataGridForecastInfo.Rows.Add( item.RealiseretKampagn_LastYear.Values.ToArray());
+                //dataGridForecastInfo.Rows.Add( item.RealiseretSalgsbudget_LastYear.Values.ToArray());
 
-                dataGridForecastInfo.Rows.Add(item.ProductNumber, item.ProductName, "RealiseretKampagn_LastYear", item.RealiseretKampagn_LastYear[1], item.RealiseretKampagn_LastYear[2], item.RealiseretKampagn_LastYear[3], item.RealiseretKampagn_LastYear[4], item.RealiseretKampagn_LastYear[5], item.RealiseretKampagn_LastYear[6], 0);
+                dataGridForecastInfo.Rows.Add(item.ProductNumber, item.ProductName, "RealiseretKampagn_LastYear", item.RealiseretKampagn_LastYear[1], item.RealiseretKampagn_LastYear[2], item.RealiseretKampagn_LastYear[3], item.RealiseretKampagn_LastYear[4], item.RealiseretKampagn_LastYear[5], item.RealiseretKampagn_LastYear[6]);
                 dataGridForecastInfo.Rows.Add("", "", "RealiseretSalgsbudget_LastYear", item.RealiseretSalgsbudget_LastYear[1], item.RealiseretSalgsbudget_LastYear[2], item.RealiseretSalgsbudget_LastYear[3], item.RealiseretSalgsbudget_LastYear[4], item.RealiseretSalgsbudget_LastYear[5], item.RealiseretSalgsbudget_LastYear[6]);
 
                 dataGridForecastInfo.Rows.Add("", "", "Realiserat_ThisYear", item.Realiserat_ThisYear[1], item.Realiserat_ThisYear[2], item.Realiserat_ThisYear[3], item.Realiserat_ThisYear[4], item.Realiserat_ThisYear[5], item.Realiserat_ThisYear[6]);
                 dataGridForecastInfo.Rows.Add("", "", "Kampagn_ThisYear", item.Kampagn_ThisYear[1], item.Kampagn_ThisYear[2], item.Kampagn_ThisYear[3], item.Kampagn_ThisYear[4], item.Kampagn_ThisYear[5], item.Kampagn_ThisYear[6]);
                 dataGridForecastInfo.Rows.Add("", "", "Salgsbudget_ThisYear", item.Salgsbudget_ThisYear[1], item.Salgsbudget_ThisYear[2], item.Salgsbudget_ThisYear[3], item.Salgsbudget_ThisYear[4], item.Salgsbudget_ThisYear[5], item.Salgsbudget_ThisYear[6]);
+                dataGridForecastInfo.Rows.Add("", "", "Comments ", item.Salgsbudget_Comment[1], item.Salgsbudget_Comment[2], item.Salgsbudget_Comment[3], item.Salgsbudget_Comment[4], item.Salgsbudget_Comment[5], item.Salgsbudget_Comment[6]);
+
             }
             //Thread.Sleep(2000);
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
@@ -143,9 +176,9 @@ namespace WindowsFormsForecastLactalis
             SupplyViewInstance.Show();
             SupplyViewInstance.Location = tempLocation;
 
-            
 
-            
+
+
         }
 
         private void comboBoxAssortment_SelectedIndexChanged(object sender, EventArgs e)
@@ -155,12 +188,6 @@ namespace WindowsFormsForecastLactalis
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.dataGridForecastInfo.DataSource = null;
-
-            this.dataGridForecastInfo.Rows.Clear();
-
-            
-
             if (comboBoxAssortment.SelectedItem.ToString() != "COOP")
             {
                 Console.WriteLine("Hittepåkund vald");
@@ -173,27 +200,31 @@ namespace WindowsFormsForecastLactalis
             {
                 Console.WriteLine("COOP vald");
                 Products = new List<PrognosInfo>();
-                
                 List<int> productList = m3_info.GetListOfProductsNbrByAssortment("COOP");
-
                 foreach (int item in productList)
                 {
-                    string temp = m3_info.GetNameByItemNumber(item);
+                    string temp = m3_info.GetNameByItemNumber(item.ToString());
                     PrognosInfo product1 = new PrognosInfo(temp, item);
                     product1.FillNumbers();
                     Products.Add(product1);
-
-                    
-
                 }
                 FillInfo();
-
-                
-
-
             }
         }
 
-       
+        public void SetProductComment(string comment)
+        {
+            foreach (PrognosInfo item in Products)
+            {
+                if (item.ProductNumber.ToString() == latestProductNumber)
+                {
+
+                    item.Salgsbudget_Comment[latestWeek] = comment;
+                }
+            }
+            FillInfo();
+        }
+
+
     }
 }
