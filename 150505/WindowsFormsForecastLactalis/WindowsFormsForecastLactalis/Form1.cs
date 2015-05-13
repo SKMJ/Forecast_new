@@ -19,6 +19,7 @@ namespace WindowsFormsForecastLactalis
         TextBoxForm infobox = new TextBoxForm();
         private string latestProductNumber;
         private int latestWeek;
+        Point latestMouseClick;
 
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
         public Form1()
@@ -28,6 +29,7 @@ namespace WindowsFormsForecastLactalis
             Assortments.Add("TEST CUSTOMER");
             comboBoxAssortment.DataSource = Assortments;
             m3_info.TestM3Connection();
+            SetupColumns();
 
         }
 
@@ -39,6 +41,7 @@ namespace WindowsFormsForecastLactalis
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
 
+            latestMouseClick = System.Windows.Forms.Cursor.Position;
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
 
             if (rowIndex % 6 == 5)
@@ -51,6 +54,7 @@ namespace WindowsFormsForecastLactalis
                 latestProductNumber = temp2;
                 infobox.SetInfoText(this, temp, "Product: " + temp2 + " Week: " + latestWeek);
                 infobox.TopMost = true;
+                infobox.Location = latestMouseClick;
                 infobox.Show();
 
                 //MessageBox.Show(temp);
@@ -62,6 +66,27 @@ namespace WindowsFormsForecastLactalis
         }
 
 
+        private void AddRowFromList(List<object> stringList)
+        {
+            object[] array = stringList.ToArray();
+            dataGridForecastInfo.Rows.Add(array);
+
+        }
+
+        public void SetupColumns()
+        {
+            dataGridForecastInfo.ColumnCount = 55;
+            dataGridForecastInfo.Columns[0].Name = "VareNr";
+            dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
+            dataGridForecastInfo.Columns[2].Name = "Type";
+
+            for (int i = 1; i < 53; i++)
+            {
+                string temp = i + ".2015";
+                dataGridForecastInfo.Columns[i + 2].Name = temp;
+            }
+        }
+
         public void FillInfo()
         {
             this.dataGridForecastInfo.DataSource = null;
@@ -71,14 +96,74 @@ namespace WindowsFormsForecastLactalis
             {
                 //dataGridForecastInfo.Rows.Add( item.RealiseretKampagn_LastYear.Values.ToArray());
                 //dataGridForecastInfo.Rows.Add( item.RealiseretSalgsbudget_LastYear.Values.ToArray());
+                List<object> tempList = new List<object>();
+                tempList.Add(item.ProductNumber.ToString());
+                tempList.Add(item.ProductName);
+                tempList.Add("RealiseretKampagn_LastYear");
+                for (int i = 1; i < 53; i++)
+                {
+                    tempList.Add(item.RealiseretKampagn_LastYear[i]);
+                }
+                AddRowFromList(tempList);
 
-                dataGridForecastInfo.Rows.Add(item.ProductNumber, item.ProductName, "RealiseretKampagn_LastYear", item.RealiseretKampagn_LastYear[1], item.RealiseretKampagn_LastYear[2], item.RealiseretKampagn_LastYear[3], item.RealiseretKampagn_LastYear[4], item.RealiseretKampagn_LastYear[5], item.RealiseretKampagn_LastYear[6]);
-                dataGridForecastInfo.Rows.Add("", "", "RealiseretSalgsbudget_LastYear", item.RealiseretSalgsbudget_LastYear[1], item.RealiseretSalgsbudget_LastYear[2], item.RealiseretSalgsbudget_LastYear[3], item.RealiseretSalgsbudget_LastYear[4], item.RealiseretSalgsbudget_LastYear[5], item.RealiseretSalgsbudget_LastYear[6]);
+                tempList = new List<object>();
+                tempList.Add("");
+                tempList.Add("");
+                tempList.Add("RealiseretSalgsbudget_LastYear");
+                for (int i = 1; i < 53; i++)
+                {
+                    tempList.Add(item.RealiseretSalgsbudget_LastYear[i]);
+                }
+                AddRowFromList(tempList);
 
-                dataGridForecastInfo.Rows.Add("", "", "Realiserat_ThisYear", item.Realiserat_ThisYear[1], item.Realiserat_ThisYear[2], item.Realiserat_ThisYear[3], item.Realiserat_ThisYear[4], item.Realiserat_ThisYear[5], item.Realiserat_ThisYear[6]);
-                dataGridForecastInfo.Rows.Add("", "", "Kampagn_ThisYear", item.Kampagn_ThisYear[1], item.Kampagn_ThisYear[2], item.Kampagn_ThisYear[3], item.Kampagn_ThisYear[4], item.Kampagn_ThisYear[5], item.Kampagn_ThisYear[6]);
-                dataGridForecastInfo.Rows.Add("", "", "Salgsbudget_ThisYear", item.Salgsbudget_ThisYear[1], item.Salgsbudget_ThisYear[2], item.Salgsbudget_ThisYear[3], item.Salgsbudget_ThisYear[4], item.Salgsbudget_ThisYear[5], item.Salgsbudget_ThisYear[6]);
-                dataGridForecastInfo.Rows.Add("", "", "Comments ", item.Salgsbudget_Comment[1], item.Salgsbudget_Comment[2], item.Salgsbudget_Comment[3], item.Salgsbudget_Comment[4], item.Salgsbudget_Comment[5], item.Salgsbudget_Comment[6]);
+                tempList = new List<object>();
+                tempList.Add("");
+                tempList.Add("");
+                tempList.Add("Realiserat_ThisYear");
+                for (int i = 1; i < 53; i++)
+                {
+                    tempList.Add(item.Realiserat_ThisYear[i]);
+                }
+                AddRowFromList(tempList);
+
+                tempList = new List<object>();
+                tempList.Add("");
+                tempList.Add("");
+                tempList.Add("Kampagn_ThisYear");
+                for (int i = 1; i < 53; i++)
+                {
+                    tempList.Add(item.Kampagn_ThisYear[i]);
+                }
+                AddRowFromList(tempList);
+
+                tempList = new List<object>();
+                tempList.Add("");
+                tempList.Add("");
+                tempList.Add("Salgsbudget_ThisYear");
+                for (int i = 1; i < 53; i++)
+                {
+                    tempList.Add(item.Salgsbudget_ThisYear[i]);
+                }
+                AddRowFromList(tempList);
+
+                tempList = new List<object>();
+                tempList.Add("");
+                tempList.Add("");
+                tempList.Add("Salgsbudget_Comment");
+                for (int i = 1; i < 53; i++)
+                {
+                    tempList.Add(item.Salgsbudget_Comment[i]);
+                }
+                AddRowFromList(tempList);
+
+
+                //dataGridForecastInfo.Rows.Add(item.ProductNumber, item.ProductName, "RealiseretKampagn_LastYear", item.RealiseretKampagn_LastYear[1], item.RealiseretKampagn_LastYear[2], item.RealiseretKampagn_LastYear[3], item.RealiseretKampagn_LastYear[4], item.RealiseretKampagn_LastYear[5], item.RealiseretKampagn_LastYear[6]);
+                //dataGridForecastInfo.Rows.Add("", "", "RealiseretSalgsbudget_LastYear", item.RealiseretSalgsbudget_LastYear[1], item.RealiseretSalgsbudget_LastYear[2], item.RealiseretSalgsbudget_LastYear[3], item.RealiseretSalgsbudget_LastYear[4], item.RealiseretSalgsbudget_LastYear[5], item.RealiseretSalgsbudget_LastYear[6]);
+
+                //dataGridForecastInfo.Rows.Add("", "", "Realiserat_ThisYear", item.Realiserat_ThisYear[1], item.Realiserat_ThisYear[2], item.Realiserat_ThisYear[3], item.Realiserat_ThisYear[4], item.Realiserat_ThisYear[5], item.Realiserat_ThisYear[6]);
+                //dataGridForecastInfo.Rows.Add("", "", "Kampagn_ThisYear", item.Kampagn_ThisYear[1], item.Kampagn_ThisYear[2], item.Kampagn_ThisYear[3], item.Kampagn_ThisYear[4], item.Kampagn_ThisYear[5], item.Kampagn_ThisYear[6]);
+                //dataGridForecastInfo.Rows.Add("", "", "Salgsbudget_ThisYear", item.Salgsbudget_ThisYear[1], item.Salgsbudget_ThisYear[2], item.Salgsbudget_ThisYear[3], item.Salgsbudget_ThisYear[4], item.Salgsbudget_ThisYear[5], item.Salgsbudget_ThisYear[6]);
+                //dataGridForecastInfo.Rows.Add("", "", "Comments ", item.Salgsbudget_Comment[1], item.Salgsbudget_Comment[2], item.Salgsbudget_Comment[3], item.Salgsbudget_Comment[4], item.Salgsbudget_Comment[5], item.Salgsbudget_Comment[6]);
 
             }
             //Thread.Sleep(2000);
@@ -223,6 +308,25 @@ namespace WindowsFormsForecastLactalis
                 }
             }
             FillInfo();
+        }
+
+        private void buttonSupplyView_MouseClick(object sender, MouseEventArgs e)
+        {
+            
+        }
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+        }
+
+        private void dataGridForecastInfo_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+        }
+
+        private void dataGridForecastInfo_MouseClick(object sender, MouseEventArgs e)
+        {
+            latestMouseClick = System.Windows.Forms.Cursor.Position;
+
         }
 
 

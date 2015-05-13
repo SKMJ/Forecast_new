@@ -66,6 +66,8 @@
             this.dataGridForecastInfo.Size = new System.Drawing.Size(1468, 661);
             this.dataGridForecastInfo.TabIndex = 0;
             this.dataGridForecastInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellContentClick);
+            this.dataGridForecastInfo.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridForecastInfo_CellMouseClick);
+            this.dataGridForecastInfo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridForecastInfo_MouseClick);
             // 
             // ColumnVareNR
             // 
@@ -138,6 +140,7 @@
             this.buttonSupplyView.Text = "Change to Supply View";
             this.buttonSupplyView.UseVisualStyleBackColor = true;
             this.buttonSupplyView.Click += new System.EventHandler(this.buttonSupplyView_Click);
+            this.buttonSupplyView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.buttonSupplyView_MouseClick);
             // 
             // comboBoxAssortment
             // 
@@ -181,6 +184,7 @@
             this.Controls.Add(this.dataGridForecastInfo);
             this.Name = "Form1";
             this.Text = "Forecast Sales";
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

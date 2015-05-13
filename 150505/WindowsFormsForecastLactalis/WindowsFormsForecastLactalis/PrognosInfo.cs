@@ -32,7 +32,7 @@ namespace WindowsFormsForecastLactalis
 
         internal void FillNumbers()
         {
-            for (int i = 0; i < 52; i++)
+            for (int i = 0; i < 53; i++)
             {
                 RealiseretKampagn_LastYear[i] = i * 10;
                 RealiseretSalgsbudget_LastYear[i] = i * 20;
