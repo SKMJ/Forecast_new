@@ -8,15 +8,17 @@ namespace WindowsFormsForecastLactalis
 {
     public class PrognosInfo
     {
-        public PrognosInfo(string name, int number)
+        public PrognosInfo(string name, int number, int customerNbr)
         {
             ProductName = name;
             ProductNumber = number;
+            CustomerNumber = customerNbr;
         }
 
 
         public string ProductName = "";
         public int ProductNumber = 0;
+        public int CustomerNumber = 0;
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> RealiseretSalgsbudget_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();

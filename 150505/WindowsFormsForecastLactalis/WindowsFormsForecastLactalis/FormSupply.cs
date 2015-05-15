@@ -16,6 +16,8 @@ namespace WindowsFormsForecastLactalis
         Form1 Form1Instance = new Form1();
         private List<string> Supplier = new List<string>();
         GetFromM3 m3_info = new GetFromM3();
+        int desiredStartLocationX;
+        int desiredStartLocationY;
 
         public FormSupply()
         {
@@ -28,6 +30,23 @@ namespace WindowsFormsForecastLactalis
             FillInfo();
         }
 
+        public FormSupply(Point pos)
+            : this()
+        {
+            // here store the value for x & y into instance variables
+            this.desiredStartLocationX = pos.X;
+            this.desiredStartLocationY = pos.Y;
+
+            Load += new EventHandler(Form2_Load);
+        }
+
+        private void Form2_Load(object sender, System.EventArgs e)
+        {
+            this.SetDesktopLocation(desiredStartLocationX, desiredStartLocationY);
+        }
+
+
+        //take an object list and fill the ui grid with a row with this info
         private void AddRowFromList(List<object> stringList)
         {
             object[] array = stringList.ToArray();
@@ -35,6 +54,8 @@ namespace WindowsFormsForecastLactalis
 
         }
 
+
+        //NAme the columns in the info
         public void SetupColumns()
         {
             dataGridForecastInfo.ColumnCount = 55;
@@ -49,12 +70,16 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
+        //Fill the UI info
         private void FillInfo()
         {
             this.dataGridForecastInfo.DataSource = null;
 
             this.dataGridForecastInfo.Rows.Clear();
+            this.dataGridForecastInfo.AllowUserToAddRows = false;
+            this.dataGridForecastInfo.AllowUserToDeleteRows = false;
+            this.dataGridForecastInfo.AllowUserToOrderColumns = false;
+
             bool even = true;
             if (comboBoxSupplier.SelectedItem.ToString().Contains("1"))
             {
@@ -151,17 +176,6 @@ namespace WindowsFormsForecastLactalis
                         tempList.Add(item.Kopsorder_ThisYear[i]);
                     }
                     AddRowFromList(tempList);
-
-
-                //    dataGridForecastInfo.Rows.Add(item.ProductNumber, item.ProductName, "RealiseretKampagn_LastYear", item.RealiseretKampagn_LastYear[1], item.RealiseretKampagn_LastYear[2], item.RealiseretKampagn_LastYear[3], item.RealiseretKampagn_LastYear[4], item.RealiseretKampagn_LastYear[5], item.RealiseretKampagn_LastYear[6], 0);
-                //    dataGridForecastInfo.Rows.Add("", "", "RealiseretSalgsbudget_LastYear", item.RealiseretSalgsbudget_LastYear[1], item.RealiseretSalgsbudget_LastYear[2], item.RealiseretSalgsbudget_LastYear[3], item.RealiseretSalgsbudget_LastYear[4], item.RealiseretSalgsbudget_LastYear[5], item.RealiseretSalgsbudget_LastYear[6]);
-
-                //    dataGridForecastInfo.Rows.Add("", "", "Realiserat_ThisYear", item.Realiserat_ThisYear[1], item.Realiserat_ThisYear[2], item.Realiserat_ThisYear[3], item.Realiserat_ThisYear[4], item.Realiserat_ThisYear[5], item.Realiserat_ThisYear[6]);
-                //    dataGridForecastInfo.Rows.Add("", "", "Kampagn_ThisYear", item.Kampagn_ThisYear[1], item.Kampagn_ThisYear[2], item.Kampagn_ThisYear[3], item.Kampagn_ThisYear[4], item.Kampagn_ThisYear[5], item.Kampagn_ThisYear[6]);
-                //    dataGridForecastInfo.Rows.Add("", "", "Salgsbudget_ThisYear", item.Salgsbudget_ThisYear[1], item.Salgsbudget_ThisYear[2], item.Salgsbudget_ThisYear[3], item.Salgsbudget_ThisYear[4], item.Salgsbudget_ThisYear[5], item.Salgsbudget_ThisYear[6]);
-                //    dataGridForecastInfo.Rows.Add("", "", "SalgsbudgetReguleret_ThisYear", item.SalgsbudgetReguleret_ThisYear[1], item.SalgsbudgetReguleret_ThisYear[2], item.SalgsbudgetReguleret_ThisYear[3], item.SalgsbudgetReguleret_ThisYear[4], item.SalgsbudgetReguleret_ThisYear[5], item.SalgsbudgetReguleret_ThisYear[6]);
-                //    dataGridForecastInfo.Rows.Add("", "", "Köpsbudget_ThisYear", item.Kopsbudget_ThisYear[1], item.Kopsbudget_ThisYear[2], item.Kopsbudget_ThisYear[3], item.Kopsbudget_ThisYear[4], item.Kopsbudget_ThisYear[5], item.Kopsbudget_ThisYear[6]);
-                //    dataGridForecastInfo.Rows.Add("", "", "Köpsorder_ThisYear", item.Kopsorder_ThisYear[1], item.Kopsorder_ThisYear[2], item.Kopsorder_ThisYear[3], item.Kopsorder_ThisYear[4], item.Kopsorder_ThisYear[5], item.Kopsorder_ThisYear[6]);
                 }
             }
             //Thread.Sleep(2000);
@@ -171,21 +185,25 @@ namespace WindowsFormsForecastLactalis
                 if (Convert.ToString(row.Cells[2].Value) == "RealiseretKampagn_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
+                    row.ReadOnly = true;
 
 
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "RealiseretSalgsbudget_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
+                    row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Kampagn_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Red;
+                    row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Red;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
+                    row.ReadOnly = true;
 
 
                 }
@@ -193,6 +211,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.DefaultCellStyle.ForeColor = Color.Black;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Regular);
+                    row.ReadOnly = true;
 
 
                 }
@@ -200,6 +219,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.DefaultCellStyle.ForeColor = Color.Black;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
+                    row.ReadOnly = true;
 
 
                 }
@@ -207,6 +227,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.DefaultCellStyle.ForeColor = Color.Green;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
+                    row.ReadOnly = false;
 
 
                 }
@@ -226,15 +247,29 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
+        //What to do when a field is clicked
         private void dataGridForecastInfo_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
 
+
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
+
+            //for the Sales info forecast show extra info
             if (rowIndex % 8 == 4)
             {
-                string temp = "Sales Person1: 8\nSales Person2: 10\nSales Person3: 10 \n";
+
+                string temp2 = dataGridForecastInfo.Rows[rowIndex - 4].Cells[0].Value.ToString();
+                int latestProductNumber = Convert.ToInt32(temp2);
+
+
+                int latestWeek = columnIndex - 2;
+                PrognosInfo tempInfo = Form1Instance.GetProductInfoByNumber(latestProductNumber);
+                Console.WriteLine(" Product: " + temp2 + " Week: " + latestWeek);
+
+                string temp = "Sales Person1: 8 \nSales Person2: 10\nSales Person3: 10 \n" + "Comment: " + tempInfo.Salgsbudget_Comment[latestWeek];
                 MessageBox.Show(temp);
             }
         }
@@ -244,6 +279,7 @@ namespace WindowsFormsForecastLactalis
             Form1Instance = form1;
         }
 
+        //Go back to sales view
         private void buttonSalesView_Click(object sender, EventArgs e)
         {
             Console.WriteLine("User press Sales View");
@@ -262,9 +298,9 @@ namespace WindowsFormsForecastLactalis
         {
             List<string> tempList = m3_info.GetListOfProductsBySupplier("3141");
 
-            foreach(string item in tempList)
+            foreach (string item in tempList)
             {
-                string tempName = m3_info.GetNameByItemNumber(item);
+                string tempName = m3_info.GetItemNameByItemNumber(item);
                 Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
             }
 

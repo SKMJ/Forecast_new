@@ -20,7 +20,10 @@ namespace WindowsFormsForecastLactalis
         String userName = "mi310";
         String userPsw = "MIPGM99";
 
-        //Dictionary<int, string> productName = new Dictionary<int, string>();
+        /// <summary>
+        /// This function is just to test M3 Connection
+        /// </summary>
+        /// <returns></returns>
         public bool TestM3Connection()
         {
             //List<int> productList = new List<int>();
@@ -40,12 +43,12 @@ namespace WindowsFormsForecastLactalis
             }
             catch (Exception ex)
             {
-                MessageBox.Show("fail M3 communication Connect! 2: MI: " + "CRS105MI");
+                MessageBox.Show("fail M3 communication Connect!");
                 return false;
             }
             if (rc != 0)
             {
-                MvxSock.ShowLastError(ref sid, "Fail M3 communication Connect!");
+                MessageBox.Show("fail M3 communication Connect!");
                 return false;
             }
 
@@ -65,7 +68,8 @@ namespace WindowsFormsForecastLactalis
             rc = MvxSock.Access(ref sid, "LstAssmItem");
             if (rc != 0)
             {
-                MvxSock.ShowLastError(ref sid, "M3 Communication Fail! " + "\n");
+                MessageBox.Show("M3 Communication Fail! ");
+                //MvxSock.ShowLastError(ref sid, "M3 Communication Fail! " + "\n");
                 MvxSock.Close(ref sid);
                 Console.WriteLine("M3 communication: FAIL!!");
                 return false;
@@ -143,10 +147,9 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        public string GetNameByItemNumber(string itemNbr)
+        public string GetItemNameByItemNumber(string itemNbr)
         {
             string returnString = "";
-            //List<int> productList = new List<int>();
             {
                 SERVER_ID sid = new SERVER_ID();
                 uint rc;
@@ -165,7 +168,6 @@ namespace WindowsFormsForecastLactalis
                     MvxSock.Close(ref sid);
                     return returnString;
                 }
-                //string tempItemNBR = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
                 returnString = MvxSock.GetField(ref sid, "ITDS");
                 Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
                 MvxSock.Close(ref sid);

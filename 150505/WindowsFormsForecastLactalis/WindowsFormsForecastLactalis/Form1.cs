@@ -25,6 +25,7 @@ namespace WindowsFormsForecastLactalis
         public Form1()
         {
             InitializeComponent();
+            //test with Coop and test customer
             Assortments.Add("COOP");
             Assortments.Add("TEST CUSTOMER");
             comboBoxAssortment.DataSource = Assortments;
@@ -54,7 +55,15 @@ namespace WindowsFormsForecastLactalis
                 latestProductNumber = temp2;
                 infobox.SetInfoText(this, temp, "Product: " + temp2 + " Week: " + latestWeek);
                 infobox.TopMost = true;
-                infobox.Location = latestMouseClick;
+                
+                if (infobox.desiredStartLocationX == 0 && infobox.desiredStartLocationY == 0)
+                {
+                    infobox.SetNextLocation(latestMouseClick);
+                }
+                else
+                {
+                    infobox.Location = latestMouseClick;
+                }
                 infobox.Show();
 
                 //MessageBox.Show(temp);
@@ -92,6 +101,11 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.DataSource = null;
 
             this.dataGridForecastInfo.Rows.Clear();
+
+            this.dataGridForecastInfo.AllowUserToAddRows = false;
+            this.dataGridForecastInfo.AllowUserToDeleteRows = false;
+            this.dataGridForecastInfo.AllowUserToOrderColumns = false;
+
             foreach (PrognosInfo item in Products)
             {
                 //dataGridForecastInfo.Rows.Add( item.RealiseretKampagn_LastYear.Values.ToArray());
@@ -173,22 +187,35 @@ namespace WindowsFormsForecastLactalis
                 if (Convert.ToString(row.Cells[2].Value) == "RealiseretKampagn_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
+                    row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "RealiseretSalgsbudget_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
+                    row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Kampagn_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Red;
+                    row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Red;
+                    row.ReadOnly = false;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
 
 
                 }
+                else if (Convert.ToString(row.Cells[2].Value) == "Comments ")
+                {
+                    row.ReadOnly = false;
+                }
+                else if (Convert.ToString(row.Cells[2].Value) == "Realiserat_ThisYear")
+                {
+                    row.ReadOnly = true;
+                }
+               
             }
             int colNBR = 0;
             foreach (DataGridViewColumn col in dataGridForecastInfo.Columns)
@@ -211,11 +238,11 @@ namespace WindowsFormsForecastLactalis
             //List<int> productList = m3_info.GetListOfProductsNbrByAssortment("COOP");
 
 
-            PrognosInfo product1 = new PrognosInfo("Brie 400gr", 1);
-            PrognosInfo product2 = new PrognosInfo("Mozarellabollar", 2);
-            PrognosInfo product3 = new PrognosInfo("Prästost", 3);
-            PrognosInfo product4 = new PrognosInfo("MögelFranskost", 4);
-            PrognosInfo product5 = new PrognosInfo("Limhamns Specialost", 5);
+            PrognosInfo product1 = new PrognosInfo("Brie 400gr", 1 ,1);
+            PrognosInfo product2 = new PrognosInfo("Mozarellabollar", 2, 1);
+            PrognosInfo product3 = new PrognosInfo("Prästost", 3, 1);
+            PrognosInfo product4 = new PrognosInfo("MögelFranskost", 4, 1);
+            PrognosInfo product5 = new PrognosInfo("Limhamns Specialost", 5, 1);
             product1.FillNumbers();
             product2.FillNumbers();
             product3.FillNumbers();
@@ -226,11 +253,6 @@ namespace WindowsFormsForecastLactalis
             Products.Add(product3);
             Products.Add(product4);
             Products.Add(product5);
-            //Products[0] = product1;
-            //Products[1] = product2;
-            //Products[2] = product3;
-            //Products[3] = product4;
-            //Products[4] = product5;
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -248,18 +270,22 @@ namespace WindowsFormsForecastLactalis
         private void buttonSupplyView_Click(object sender, EventArgs e)
         {
             Console.WriteLine("User press Supply View");
-            SupplyViewInstance = new FormSupply();
+            //SupplyViewInstance = new FormSupply();
             Point tempLocation = this.Location;
+            SupplyViewInstance = new FormSupply(tempLocation);
             SupplyViewInstance.Location = this.Location;
 
             this.Visible = false;
 
 
             SupplyViewInstance.SetForm1Instanse(this);
+            
             SupplyViewInstance.BringToFront();
 
             SupplyViewInstance.Show();
-            SupplyViewInstance.Location = tempLocation;
+
+            //SupplyViewInstance.Location = tempLocation;
+            
 
 
 
@@ -286,14 +312,21 @@ namespace WindowsFormsForecastLactalis
                 Console.WriteLine("COOP vald");
                 Products = new List<PrognosInfo>();
                 List<int> productList = m3_info.GetListOfProductsNbrByAssortment("COOP");
-                foreach (int item in productList)
+                if(productList != null)
                 {
-                    string temp = m3_info.GetNameByItemNumber(item.ToString());
-                    PrognosInfo product1 = new PrognosInfo(temp, item);
-                    product1.FillNumbers();
-                    Products.Add(product1);
+                    foreach (int item in productList)
+                    {
+                        string temp = m3_info.GetItemNameByItemNumber(item.ToString());
+                        PrognosInfo product1 = new PrognosInfo(temp, item, 2);
+                        product1.FillNumbers();
+                        Products.Add(product1);
+                    }
+                    FillInfo();
                 }
-                FillInfo();
+                else
+                {
+                    MessageBox.Show("M3 communication fail");
+                }
             }
         }
 
@@ -327,6 +360,18 @@ namespace WindowsFormsForecastLactalis
         {
             latestMouseClick = System.Windows.Forms.Cursor.Position;
 
+        }
+
+        public PrognosInfo GetProductInfoByNumber(int productNbr)
+        {
+            foreach(PrognosInfo item in Products)
+            {
+                if (item.ProductNumber == productNbr)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
 
