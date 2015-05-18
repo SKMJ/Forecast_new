@@ -44,33 +44,45 @@ namespace WindowsFormsForecastLactalis
 
             latestMouseClick = System.Windows.Forms.Cursor.Position;
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
-
-            if (rowIndex % 6 == 5)
+            if (columnIndex > 2)
             {
-                string temp = dataGridForecastInfo.Rows[rowIndex].Cells[columnIndex].Value.ToString();
-                string temp2 = dataGridForecastInfo.Rows[rowIndex - 5].Cells[0].Value.ToString();
-
-
-                latestWeek = columnIndex - 2;
-                latestProductNumber = temp2;
-                infobox.SetInfoText(this, temp, "Product: " + temp2 + " Week: " + latestWeek);
-                infobox.TopMost = true;
-                
-                if (infobox.desiredStartLocationX == 0 && infobox.desiredStartLocationY == 0)
+                if (rowIndex % 6 == 5 && columnIndex > 2)
                 {
-                    infobox.SetNextLocation(latestMouseClick);
-                }
-                else
-                {
-                    infobox.Location = latestMouseClick;
-                }
-                infobox.Show();
+                    if (!infobox.Visible)
+                    {
+                        string temp = dataGridForecastInfo.Rows[rowIndex].Cells[columnIndex].Value.ToString();
+                        string temp2 = dataGridForecastInfo.Rows[rowIndex - 5].Cells[0].Value.ToString();
 
-                //MessageBox.Show(temp);
-            }
-            else if (rowIndex % 6 == 3)
-            {
-                MessageBox.Show("Kampagnen innefattar kund 1 och kund 2.");
+
+                        latestWeek = columnIndex - 2;
+                        latestProductNumber = temp2;
+                        infobox.SetInfoText(this, temp, "Product: " + temp2 + " Week: " + latestWeek);
+                        infobox.TopMost = true;
+
+                        if (infobox.desiredStartLocationX == 0 && infobox.desiredStartLocationY == 0)
+                        {
+                            infobox.SetNextLocation(latestMouseClick);
+                        }
+                        else
+                        {
+                            infobox.Location = latestMouseClick;
+                        }
+
+                        infobox.Show();
+                        infobox.FocusTextBox();
+                    }
+                    else
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before open a new one!");
+
+
+                    }
+                    //MessageBox.Show(temp);
+                }
+                else if (rowIndex % 6 == 3)
+                {
+                    MessageBox.Show("Kampagnen innefattar kund 1 och kund 2.");
+                }
             }
         }
 
@@ -207,15 +219,15 @@ namespace WindowsFormsForecastLactalis
 
 
                 }
-                else if (Convert.ToString(row.Cells[2].Value) == "Comments ")
+                else if (Convert.ToString(row.Cells[2].Value).Contains("Commen"))
                 {
-                    row.ReadOnly = false;
+                    row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Realiserat_ThisYear")
                 {
                     row.ReadOnly = true;
                 }
-               
+
             }
             int colNBR = 0;
             foreach (DataGridViewColumn col in dataGridForecastInfo.Columns)
@@ -228,6 +240,11 @@ namespace WindowsFormsForecastLactalis
                     col.DefaultCellStyle.ForeColor = Color.Black;
 
                 }
+
+                if (colNBR < 3)
+                {
+                    col.ReadOnly = true;
+                }
                 colNBR++;
             }
         }
@@ -238,7 +255,7 @@ namespace WindowsFormsForecastLactalis
             //List<int> productList = m3_info.GetListOfProductsNbrByAssortment("COOP");
 
 
-            PrognosInfo product1 = new PrognosInfo("Brie 400gr", 1 ,1);
+            PrognosInfo product1 = new PrognosInfo("Brie 400gr", 1, 1);
             PrognosInfo product2 = new PrognosInfo("Mozarellabollar", 2, 1);
             PrognosInfo product3 = new PrognosInfo("Prästost", 3, 1);
             PrognosInfo product4 = new PrognosInfo("MögelFranskost", 4, 1);
@@ -279,13 +296,13 @@ namespace WindowsFormsForecastLactalis
 
 
             SupplyViewInstance.SetForm1Instanse(this);
-            
+
             SupplyViewInstance.BringToFront();
 
             SupplyViewInstance.Show();
 
             //SupplyViewInstance.Location = tempLocation;
-            
+
 
 
 
@@ -312,7 +329,7 @@ namespace WindowsFormsForecastLactalis
                 Console.WriteLine("COOP vald");
                 Products = new List<PrognosInfo>();
                 List<int> productList = m3_info.GetListOfProductsNbrByAssortment("COOP");
-                if(productList != null)
+                if (productList != null)
                 {
                     foreach (int item in productList)
                     {
@@ -345,7 +362,7 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonSupplyView_MouseClick(object sender, MouseEventArgs e)
         {
-            
+
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
@@ -364,7 +381,7 @@ namespace WindowsFormsForecastLactalis
 
         public PrognosInfo GetProductInfoByNumber(int productNbr)
         {
-            foreach(PrognosInfo item in Products)
+            foreach (PrognosInfo item in Products)
             {
                 if (item.ProductNumber == productNbr)
                 {

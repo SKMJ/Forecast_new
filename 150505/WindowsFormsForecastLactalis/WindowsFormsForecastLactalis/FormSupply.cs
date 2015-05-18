@@ -231,6 +231,14 @@ namespace WindowsFormsForecastLactalis
 
 
                 }
+                else if (Convert.ToString(row.Cells[2].Value) == "Realiserat_ThisYear")
+                {
+                    row.DefaultCellStyle.ForeColor = Color.Black;
+                    row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Regular);
+                    row.ReadOnly = true;
+
+
+                }
             }
             int colNBR = 0;
             foreach (DataGridViewColumn col in dataGridForecastInfo.Columns)
@@ -242,6 +250,10 @@ namespace WindowsFormsForecastLactalis
                     col.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
                     col.DefaultCellStyle.ForeColor = Color.Black;
 
+                }
+                if (colNBR < 3)
+                {
+                    col.ReadOnly = false;
                 }
                 colNBR++;
             }
@@ -258,7 +270,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
 
             //for the Sales info forecast show extra info
-            if (rowIndex % 8 == 4)
+            if (rowIndex % 8 == 4 && columnIndex > 2)
             {
 
                 string temp2 = dataGridForecastInfo.Rows[rowIndex - 4].Cells[0].Value.ToString();
