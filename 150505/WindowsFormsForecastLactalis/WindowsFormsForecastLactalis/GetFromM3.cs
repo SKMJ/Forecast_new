@@ -31,11 +31,7 @@ namespace WindowsFormsForecastLactalis
             SERVER_ID sid = new SERVER_ID();
 
             uint rc = 0;
-            var watch = Stopwatch.StartNew();
-            // the code that you want to measure comes here
-
-
-            
+            var watch = Stopwatch.StartNew();       
             try
             {
                 rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS105MI", null);
@@ -44,15 +40,14 @@ namespace WindowsFormsForecastLactalis
             catch (Exception ex)
             {
                 MessageBox.Show("fail M3 communication Connect!");
+                Console.WriteLine("Eception in M3: " + ex.Message);
                 return false;
             }
             if (rc != 0)
             {
                 MessageBox.Show("fail M3 communication Connect!");
                 return false;
-            }
-
-            
+            }            
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             Console.WriteLine("time connect: " + elapsedMs);
@@ -84,17 +79,12 @@ namespace WindowsFormsForecastLactalis
                 //Mooves to next row
                 MvxSock.Access(ref sid, null);
                 once = false;
-
-                //productList.Add(Convert.ToInt32(tempItemNbr));
-
             }
-
             MvxSock.Close(ref sid);
-
             Console.WriteLine("M3 communication: SUCCESS!!");
             return true;
-
         }
+
 
         public List<int> GetListOfProductsNbrByAssortment(string assortment)
         {
@@ -103,14 +93,7 @@ namespace WindowsFormsForecastLactalis
                 SERVER_ID sid = new SERVER_ID();
 
                 uint rc = 0;
-                var watch = Stopwatch.StartNew();
-                // the code that you want to measure comes here
-                
-
                 rc = ConnectToM3Interface(ref sid, "CRS105MI");
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Console.WriteLine("time connect: " + elapsedMs);
                 if (rc != 0)
                 {
                     return null;
@@ -175,14 +158,12 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
         public List<int> GetListOfSuppliers()
         {
             List<int> supplierList = new List<int>();
-
             {
-
                 SERVER_ID sid = new SERVER_ID();
-
                 uint rc;
                 rc = ConnectToM3Interface(ref sid, "CRS111MI");
                 //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
@@ -191,9 +172,7 @@ namespace WindowsFormsForecastLactalis
                     //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
                     return null;
                 }
-
                 SetMaxList(sid, 99);
-
                 //Set the field without need to know position Start from this customer 00752
                 //MvxSock.SetField(ref sid, "ASCD", Assortment);
                 MvxSock.SetField(ref sid, "CONO", "001");
@@ -223,6 +202,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
         public List<string> GetListOfProductsBySupplier(string supplNbr)
         {
             List<string> itemList = new List<string>();
@@ -233,7 +213,6 @@ namespace WindowsFormsForecastLactalis
 
                 uint rc;
                 rc = ConnectToM3Interface(ref sid, "MDBREADMI");
-                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
                 if (rc != 0)
                 {
                     //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
@@ -243,7 +222,6 @@ namespace WindowsFormsForecastLactalis
                 SetMaxList(sid, 99);
 
                 //Set the field without need to know position Start from this customer 00752
-                //MvxSock.SetField(ref sid, "ASCD", Assortment);
                 MvxSock.SetField(ref sid, "SUNO", supplNbr);
                 rc = MvxSock.Access(ref sid, "LstMITVEN10");
                 if (rc != 0)
@@ -256,12 +234,11 @@ namespace WindowsFormsForecastLactalis
                 while (MvxSock.More(ref sid))
                 {
                     string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
-                    //string tempitemName = MvxSock.GetField(ref sid, "SITT") + "\t\t";
                     if (tempItemNbr.Length > 1)
                     {
                         //Console.Write("Supplier nr: " + tempSupplierNBR);
                         //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-                        Console.WriteLine("Supplyer item Nbr: " + tempItemNbr);// + " Name: " + tempitemName);
+                        Console.WriteLine("Supplyer item Nbr: " + tempItemNbr);
                         itemList.Add(tempItemNbr);
                     }
                     //Mooves to next row
@@ -273,11 +250,11 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
         public string GetSupplierNameByNumber(int supplierNbr)
         {
             string returnString = "";
             {
-
                 SERVER_ID sid = new SERVER_ID();
 
                 uint rc;
@@ -322,6 +299,7 @@ namespace WindowsFormsForecastLactalis
             catch (Exception ex)
             {
                 MessageBox.Show("fail M3 communication Connect! 2: MI: " + m3Interface);
+                Console.WriteLine("Exception in M3 connection: " + ex.Message);
                 return rc;
             }
             if (rc != 0)

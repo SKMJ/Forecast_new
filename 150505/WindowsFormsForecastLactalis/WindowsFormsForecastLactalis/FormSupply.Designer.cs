@@ -77,7 +77,9 @@
             this.dataGridForecastInfo.RowTemplate.Height = 24;
             this.dataGridForecastInfo.Size = new System.Drawing.Size(1468, 661);
             this.dataGridForecastInfo.TabIndex = 3;
+            this.dataGridForecastInfo.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellClick);
             this.dataGridForecastInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellContentClick);
+            this.dataGridForecastInfo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridForecastInfo_CellValidating_1);
             // 
             // ColumnVareNR
             // 
@@ -192,6 +194,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Name = "FormSupply";
             this.Text = "Forecast Supply ";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormSupply_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
             this.ResumeLayout(false);

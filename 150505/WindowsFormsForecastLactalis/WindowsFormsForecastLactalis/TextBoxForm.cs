@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace WindowsFormsForecastLactalis
 {
+    //This form is used to show and edit comments
     public partial class TextBoxForm : Form
     {
         Form1 Form1Instance;
@@ -127,7 +128,6 @@ namespace WindowsFormsForecastLactalis
                     //do something else
                 }
             }
-
         }
     }
 }

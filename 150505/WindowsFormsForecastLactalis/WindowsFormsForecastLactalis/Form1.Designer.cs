@@ -65,8 +65,11 @@
             this.dataGridForecastInfo.RowTemplate.Height = 24;
             this.dataGridForecastInfo.Size = new System.Drawing.Size(1468, 661);
             this.dataGridForecastInfo.TabIndex = 0;
+            this.dataGridForecastInfo.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellClick);
             this.dataGridForecastInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellContentClick);
             this.dataGridForecastInfo.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridForecastInfo_CellMouseClick);
+            this.dataGridForecastInfo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridForecastInfo_CellValidating);
+            this.dataGridForecastInfo.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellValueChanged);
             this.dataGridForecastInfo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridForecastInfo_MouseClick);
             // 
             // ColumnVareNR
