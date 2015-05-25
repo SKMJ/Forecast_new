@@ -13,10 +13,14 @@ namespace WindowsFormsForecastLactalis
     //This form is used to show and edit comments
     public partial class TextBoxForm : Form
     {
+        Object Instance;
         Form1 Form1Instance;
+        FormSupply FormSupplyInstance;
         public int desiredStartLocationX;
         public int desiredStartLocationY;
         private string unchangedText;
+        private bool isSupplyComment;
+
         public TextBoxForm()
         {
             desiredStartLocationX = 0;
@@ -37,10 +41,20 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-        public void SetInfoText(Form1 formInstance, string comment, string header)
+        public void SetInfoText(Object formInstance, string comment, string header)
         {
+
             richTextBoxInfo.Text = comment;
-            Form1Instance = formInstance;
+            if(formInstance.GetType().ToString().Contains("Form1"))
+            {
+                isSupplyComment = false;
+                Form1Instance = (Form1)formInstance;
+            }
+            else
+            {
+                isSupplyComment = true;
+                FormSupplyInstance = (FormSupply)formInstance;
+            }
             this.Text = "Info " + header;
             unchangedText = comment;
         }
@@ -59,7 +73,15 @@ namespace WindowsFormsForecastLactalis
         {
             if (unchangedText != richTextBoxInfo.Text)
             {
-                Form1Instance.SetProductComment(richTextBoxInfo.Text);
+                if (isSupplyComment)
+                {
+                    FormSupplyInstance.SetProductRegComment(richTextBoxInfo.Text);                    
+                }
+                else
+                {
+                    Form1Instance.SetProductComment(richTextBoxInfo.Text);
+                }
+
             }
             this.Hide();
         }

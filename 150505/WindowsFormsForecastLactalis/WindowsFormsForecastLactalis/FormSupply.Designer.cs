@@ -44,8 +44,12 @@
             this.labelSupplier = new System.Windows.Forms.Label();
             this.comboBoxSupplier = new System.Windows.Forms.ComboBox();
             this.buttonTestSupplItems = new System.Windows.Forms.Button();
+            this.numericSupplyNBR = new System.Windows.Forms.NumericUpDown();
+            this.buttonGetSupplierFromNBR = new System.Windows.Forms.Button();
+            this.labelSupplierFreeText = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -179,12 +183,46 @@
             this.buttonTestSupplItems.Visible = false;
             this.buttonTestSupplItems.Click += new System.EventHandler(this.buttonTestSupplItems_Click);
             // 
+            // numericSupplyNBR
+            // 
+            this.numericSupplyNBR.Location = new System.Drawing.Point(605, 123);
+            this.numericSupplyNBR.Maximum = new decimal(new int[] {
+            1316134912,
+            2328,
+            0,
+            0});
+            this.numericSupplyNBR.Name = "numericSupplyNBR";
+            this.numericSupplyNBR.Size = new System.Drawing.Size(156, 22);
+            this.numericSupplyNBR.TabIndex = 11;
+            // 
+            // buttonGetSupplierFromNBR
+            // 
+            this.buttonGetSupplierFromNBR.Location = new System.Drawing.Point(605, 146);
+            this.buttonGetSupplierFromNBR.Name = "buttonGetSupplierFromNBR";
+            this.buttonGetSupplierFromNBR.Size = new System.Drawing.Size(102, 27);
+            this.buttonGetSupplierFromNBR.TabIndex = 12;
+            this.buttonGetSupplierFromNBR.Text = "Get Products";
+            this.buttonGetSupplierFromNBR.UseVisualStyleBackColor = true;
+            this.buttonGetSupplierFromNBR.Click += new System.EventHandler(this.buttonGetSupplierFromNBR_Click);
+            // 
+            // labelSupplierFreeText
+            // 
+            this.labelSupplierFreeText.AutoSize = true;
+            this.labelSupplierFreeText.Location = new System.Drawing.Point(602, 99);
+            this.labelSupplierFreeText.Name = "labelSupplierFreeText";
+            this.labelSupplierFreeText.Size = new System.Drawing.Size(114, 17);
+            this.labelSupplierFreeText.TabIndex = 13;
+            this.labelSupplierFreeText.Text = "Supplier Number";
+            // 
             // FormSupply
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Fuchsia;
+            this.BackColor = System.Drawing.Color.SeaGreen;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.labelSupplierFreeText);
+            this.Controls.Add(this.buttonGetSupplierFromNBR);
+            this.Controls.Add(this.numericSupplyNBR);
             this.Controls.Add(this.buttonTestSupplItems);
             this.Controls.Add(this.buttonGetProductsBySupplier);
             this.Controls.Add(this.labelSupplier);
@@ -197,6 +235,7 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormSupply_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -220,5 +259,8 @@
         private System.Windows.Forms.Label labelSupplier;
         private System.Windows.Forms.ComboBox comboBoxSupplier;
         private System.Windows.Forms.Button buttonTestSupplItems;
+        private System.Windows.Forms.NumericUpDown numericSupplyNBR;
+        private System.Windows.Forms.Button buttonGetSupplierFromNBR;
+        private System.Windows.Forms.Label labelSupplierFreeText;
     }
 }

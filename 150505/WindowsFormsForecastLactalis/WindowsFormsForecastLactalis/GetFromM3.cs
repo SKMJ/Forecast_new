@@ -45,6 +45,7 @@ namespace WindowsFormsForecastLactalis
             }
             if (rc != 0)
             {
+                MvxSock.ShowLastError(ref sid, "Error in M3 communication: " + rc + "\n");
                 MessageBox.Show("fail M3 communication Connect!");
                 return false;
             }            
@@ -147,7 +148,7 @@ namespace WindowsFormsForecastLactalis
                 rc = MvxSock.Access(ref sid, "GetItmBasic");
                 if (rc != 0)
                 {
-                    MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
+                    //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
                     MvxSock.Close(ref sid);
                     return returnString;
                 }
@@ -233,12 +234,14 @@ namespace WindowsFormsForecastLactalis
 
                 while (MvxSock.More(ref sid))
                 {
-                    string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
-                    if (tempItemNbr.Length > 1)
+                    string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") ;
+                    string tempSuno = MvxSock.GetField(ref sid, "SUNO") ;
+                    //Console.WriteLine("XX Supplyer item Nbr: " + tempItemNbr + " YY Supplyer item Nbr: " + tempSuno + "Suppl NBR: " + supplNbr);
+                    if (tempItemNbr.Length > 1 && tempSuno.Equals(supplNbr))
                     {
                         //Console.Write("Supplier nr: " + tempSupplierNBR);
                         //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-                        Console.WriteLine("Supplyer item Nbr: " + tempItemNbr);
+                        Console.WriteLine("Listed Supplyer item Nbr: " + tempItemNbr + " Suppl NBR: " + supplNbr);
                         itemList.Add(tempItemNbr);
                     }
                     //Mooves to next row

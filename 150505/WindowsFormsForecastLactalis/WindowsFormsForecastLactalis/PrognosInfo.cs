@@ -15,6 +15,30 @@ namespace WindowsFormsForecastLactalis
             CustomerNumber = customerNbr;
         }
 
+        public PrognosInfo(PrognosInfo item)
+        {
+            // TODO: Complete member initialization
+            this.ProductName = item.ProductName;
+            this.ProductNumber = item.ProductNumber;
+            this.CustomerNumber = item.CustomerNumber;
+
+
+            this.RealiseretKampagn_LastYear = item.RealiseretKampagn_LastYear;
+            this.RealiseretSalgsbudget_LastYear = item.RealiseretSalgsbudget_LastYear;
+            this.Kampagn_ThisYear = item.Kampagn_ThisYear;
+            this.Salgsbudget_ThisYear = item.Salgsbudget_ThisYear;
+            this.Salgsbudget_LastYear = item.Salgsbudget_LastYear;
+            this.Salgsbudget_Comment = item.Salgsbudget_Comment;
+            this.Realiserat_ThisYear = item.Realiserat_ThisYear;
+            this.SalgsbudgetReguleret_ThisYear = item.SalgsbudgetReguleret_ThisYear;
+            this.SalgsbudgetReguleret_Comment = item.SalgsbudgetReguleret_Comment;
+            this.Kopsbudget_ThisYear = item.Kopsbudget_ThisYear;
+            this.Kopsorder_ThisYear = item.Kopsorder_ThisYear;
+            //this.item = item.item;
+
+
+        }
+
 
         public string ProductName = "";
         public int ProductNumber = 0;
@@ -27,8 +51,10 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
         public Dictionary<int, int> Realiserat_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> SalgsbudgetReguleret_ThisYear = new Dictionary<int, int>();
+        public Dictionary<int, string> SalgsbudgetReguleret_Comment = new Dictionary<int, string>();
         public Dictionary<int, int> Kopsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kopsorder_ThisYear = new Dictionary<int, int>();
+        //private PrognosInfo item;
 
 
 
@@ -47,6 +73,7 @@ namespace WindowsFormsForecastLactalis
                 Kopsbudget_ThisYear[i] = 0;
                 Kopsorder_ThisYear[i] = 0;
                 Salgsbudget_Comment[i] = "Comment";
+                SalgsbudgetReguleret_Comment[i] = "Comment";
             }
         }
     }
