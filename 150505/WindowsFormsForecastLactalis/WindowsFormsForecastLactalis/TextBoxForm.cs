@@ -151,5 +151,10 @@ namespace WindowsFormsForecastLactalis
                 }
             }
         }
+
+        internal void SaveButtonVisible(bool visible)
+        {
+            buttonSaveInfo.Visible = visible;
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -151,6 +152,16 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add(item.Salgsbudget_Comment[i]);
                 }
                 AddRowFromList(tempList);
+
+                tempList = new List<object>();
+                tempList.Add("");
+                tempList.Add("");
+                tempList.Add("Salgsbudget_ChangeHistory");
+                for (int i = 1; i < 53; i++)
+                {
+                    tempList.Add(item.Salgsbudget_ChangeHistory[i]);
+                }
+                AddRowFromList(tempList);
             }
             //Thread.Sleep(2000);
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
@@ -174,13 +185,13 @@ namespace WindowsFormsForecastLactalis
                 else if (Convert.ToString(row.Cells[2].Value) == "Kampagn_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.DarkRed
-                        
-                        
-                        
-                        
-                        
-                        
-                        
+
+
+
+
+
+
+
                         ;
                     row.ReadOnly = true;
                 }
@@ -264,7 +275,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("User press Supply View");
             if (!infoboxSales.Visible)
             {
-                if(Products.Count < 1)
+                if (Products.Count < 1)
                 {
                     comboBoxAssortment.SelectedItem = "TEST CUSTOMER";
                     Console.WriteLine("Fill with Fake customer before switch to supply");
@@ -389,7 +400,34 @@ namespace WindowsFormsForecastLactalis
 
         private void dataGridForecastInfo_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            int columnIndex = e.ColumnIndex;
+            int rowIndex = e.RowIndex;
 
+
+            if (GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
+            {
+                int i;
+                string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
+                int week = columnIndex - 2;
+                if (int.TryParse(GetValueFromGridAsString(rowIndex, columnIndex), out i))
+                {
+                    foreach (PrognosInfo item in Products)
+                    {
+                        if (item.ProductNumber.ToString() == productNumber)
+                        {
+                            //item.Salgsbudget_ThisYear[week] = Convert.ToInt32(GetValueFromGridAsString(rowIndex, columnIndex));
+                            if (GetValueFromGridAsString(rowIndex, columnIndex) != getLastNumber(item.Salgsbudget_ChangeHistory[week]))
+                            {
+                                string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                                item.Salgsbudget_ChangeHistory[week] = item.Salgsbudget_ChangeHistory[week] + "  Changed by " + userName + " Date: " + DateTime.Now.ToShortDateString() + " To Value: " + GetValueFromGridAsString(rowIndex, columnIndex);
+                            }
+                            //TODO: Write to database
+                        }
+                    }
+                }
+
+                FillInfo();
+            }
         }
 
 
@@ -418,12 +456,16 @@ namespace WindowsFormsForecastLactalis
                         MessageBox.Show(new Form() { TopMost = true }, "Please enter a positive possible value. Product: " + productNumber + " Week: " + week);
                     }
                     else
-                    {                       
+                    {
                         foreach (PrognosInfo item in Products)
                         {
                             if (item.ProductNumber.ToString() == productNumber)
                             {
                                 item.Salgsbudget_ThisYear[week] = Convert.ToInt32(e.FormattedValue);
+                                //if (e.FormattedValue.ToString() != getLastNumber(item.Salgsbudget_ChangeHistory[week]))
+                                //{
+                                //    item.Salgsbudget_ChangeHistory[week] = item.Salgsbudget_ChangeHistory[week] + "  " + "Changed " + DateTime.Now.ToShortDateString() + " To: " + e.FormattedValue;
+                                //}
                                 //TODO: Write to database
                             }
                         }
@@ -434,12 +476,29 @@ namespace WindowsFormsForecastLactalis
 
         }
 
+        private string getLastNumber(string testString)
+        {
+            var matches = Regex.Matches(testString, @"\d+");
+            if(matches.Count < 1)
+            {
+                return "No Number";
+            }
+            else
+            {
+                var lastMatch = matches[matches.Count - 1];
+                var number = Int32.Parse(lastMatch.Value);
+                //return testString.Remove(lastMatch.Index, lastMatch.Length).Insert(lastMatch.Index, number.ToString());
+                return number.ToString();
+            }
+        }
+
+
         private string GetProductNumberFromRow(int rowIndex)
         {
             string returnString = "";
 
             int row = rowIndex;
-            while((GetValueFromGridAsString(row, 0).Length < 1) && row >=0)
+            while ((GetValueFromGridAsString(row, 0).Length < 1) && row >= 0)
             {
                 row--;
             }
@@ -481,6 +540,7 @@ namespace WindowsFormsForecastLactalis
                             infoboxSales.Location = latestMouseClick;
                         }
                         infoboxSales.Show();
+                        infoboxSales.SaveButtonVisible(true);
                         infoboxSales.FocusTextBox();
                     }
                     else
@@ -493,6 +553,36 @@ namespace WindowsFormsForecastLactalis
                     if (!infoboxSales.Visible)
                     {
                         MessageBox.Show(GetProductNumberFromRow(rowIndex) + "\n\nKampagnen innefattar kund 1 och kund 2.");
+                    }
+                }
+                else if (GetValueFromGridAsString(rowIndex, 2).Contains("History"))
+                {
+                    if (!infoboxSales.Visible)
+                    {
+                        string temp = GetValueFromGridAsString(rowIndex, columnIndex).Replace("Changed" , "\nChanged");
+                        //string temp2 = GetValueFromGridAsString(rowIndex - 6, 0);
+
+
+                        latestWeek = columnIndex - 2;
+                        latestProductNumber = GetProductNumberFromRow(rowIndex);
+                        infoboxSales.SetInfoText(this, temp, "History Product: " + latestProductNumber + " Week: " + latestWeek);
+                        infoboxSales.TopMost = true;
+
+                        if (infoboxSales.desiredStartLocationX == 0 && infoboxSales.desiredStartLocationY == 0)
+                        {
+                            infoboxSales.SetNextLocation(latestMouseClick);
+                        }
+                        else
+                        {
+                            infoboxSales.Location = latestMouseClick;
+                        }
+                        infoboxSales.Show();
+                        infoboxSales.SaveButtonVisible(false);
+                        infoboxSales.FocusTextBox();
+                    }
+                    else
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before open a new one!");
                     }
                 }
             }
@@ -530,6 +620,6 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-      
+
     }
 }

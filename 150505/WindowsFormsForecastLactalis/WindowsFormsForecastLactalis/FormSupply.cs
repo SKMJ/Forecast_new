@@ -590,7 +590,7 @@ namespace WindowsFormsForecastLactalis
 
                         int sBudget = Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value);
                         int regSbudget = Convert.ToInt32(e.FormattedValue);
-                        dataGridForecastInfo.Rows[rowIndex + 1].Cells[columnIndex].Value = sBudget + regSbudget;
+                        dataGridForecastInfo.Rows[rowIndex + 2].Cells[columnIndex].Value = sBudget + regSbudget;
 
                         //TODO: Write to database
 

@@ -34,6 +34,7 @@ namespace WindowsFormsForecastLactalis
             this.SalgsbudgetReguleret_Comment = item.SalgsbudgetReguleret_Comment;
             this.Kopsbudget_ThisYear = item.Kopsbudget_ThisYear;
             this.Kopsorder_ThisYear = item.Kopsorder_ThisYear;
+            this.Salgsbudget_ChangeHistory = item.Salgsbudget_ChangeHistory;
             //this.item = item.item;
 
 
@@ -49,6 +50,7 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, int> Salgsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_LastYear = new Dictionary<int, int>();
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
+        public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
         public Dictionary<int, int> Realiserat_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> SalgsbudgetReguleret_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, string> SalgsbudgetReguleret_Comment = new Dictionary<int, string>();
@@ -74,6 +76,7 @@ namespace WindowsFormsForecastLactalis
                 Kopsorder_ThisYear[i] = 0;
                 Salgsbudget_Comment[i] = "Comment";
                 SalgsbudgetReguleret_Comment[i] = "Comment";
+                Salgsbudget_ChangeHistory[i] = "";
             }
         }
     }
