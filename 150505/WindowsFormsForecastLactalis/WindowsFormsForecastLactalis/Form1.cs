@@ -34,6 +34,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
+        //Populate the drop downlist wit customers
         private void FixCustomerChoices()
         {
             assortments.Add("COOP");
@@ -48,7 +49,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-
+        //This takes a list of strings and add a row column by column
         private void AddRowFromList(List<object> stringList)
         {
             object[] array = stringList.ToArray();
@@ -56,7 +57,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-
+        //Name the columns in the grid
         public void SetupColumns()
         {
             dataGridForecastInfo.ColumnCount = 55;
@@ -71,6 +72,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+        //Fill the grid with info from the Products
         public void FillInfo()
         {
             this.dataGridForecastInfo.DataSource = null;
@@ -164,6 +166,8 @@ namespace WindowsFormsForecastLactalis
                 AddRowFromList(tempList);
             }
             //Thread.Sleep(2000);
+
+            //After all is filled set colors and reaqdonly properties
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
             {
                 row.Height = 35;
@@ -184,15 +188,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Kampagn_ThisYear")
                 {
-                    row.DefaultCellStyle.ForeColor = Color.DarkRed
-
-
-
-
-
-
-
-                        ;
+                    row.DefaultCellStyle.ForeColor = Color.DarkRed;
                     row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
@@ -231,23 +227,21 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
+        //Add testinfo Products
         private void CreateProducts()
         {
-            //GetFromM3 m3_info = new GetFromM3();
-            //List<int> productList = m3_info.GetListOfProductsNbrByAssortment("COOP");
-
-
             PrognosInfo product1 = new PrognosInfo("Brie 400gr", 1, 1);
             PrognosInfo product2 = new PrognosInfo("Mozarellabollar", 2, 1);
             PrognosInfo product3 = new PrognosInfo("Prästost", 3, 1);
             PrognosInfo product4 = new PrognosInfo("MögelFranskost", 4, 1);
             PrognosInfo product5 = new PrognosInfo("Limhamns Specialost", 5, 1);
+
             product1.FillNumbers();
             product2.FillNumbers();
             product3.FillNumbers();
             product4.FillNumbers();
             product5.FillNumbers();
+
             Products.Add(product1);
             Products.Add(product2);
             Products.Add(product3);
@@ -258,9 +252,9 @@ namespace WindowsFormsForecastLactalis
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            sender.ToString();
+            //sender.ToString();
 
-            e.ToString();
+            //e.ToString();
         }
 
 
@@ -269,7 +263,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-
+        //Change to supply view
         private void buttonSupplyView_Click(object sender, EventArgs e)
         {
             Console.WriteLine("User press Supply View");
@@ -306,7 +300,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-
+        //Load products by customer
         private void button1_Click(object sender, EventArgs e)
         {
             if (!infoboxSales.Visible)
@@ -347,7 +341,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
+        //Set comment from outside this form (textbox)
         public void SetProductComment(string comment)
         {
             foreach (PrognosInfo item in Products)
@@ -403,7 +397,7 @@ namespace WindowsFormsForecastLactalis
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
 
-
+            //Take care of History value and fill value when value changed
             if (GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
             {
                 int i;
@@ -415,8 +409,8 @@ namespace WindowsFormsForecastLactalis
                     {
                         if (item.ProductNumber.ToString() == productNumber)
                         {
-                            //item.Salgsbudget_ThisYear[week] = Convert.ToInt32(GetValueFromGridAsString(rowIndex, columnIndex));
-                            if (GetValueFromGridAsString(rowIndex, columnIndex) != getLastNumber(item.Salgsbudget_ChangeHistory[week]))
+                            //Check so value really is changed to new value
+                            if (GetValueFromGridAsString(rowIndex, columnIndex) != GetLastNumber(item.Salgsbudget_ChangeHistory[week]))
                             {
                                 string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
                                 item.Salgsbudget_ChangeHistory[week] = item.Salgsbudget_ChangeHistory[week] + "  Changed by " + userName + " Date: " + DateTime.Now.ToShortDateString() + " To Value: " + GetValueFromGridAsString(rowIndex, columnIndex);
@@ -425,12 +419,11 @@ namespace WindowsFormsForecastLactalis
                         }
                     }
                 }
-
                 FillInfo();
             }
         }
 
-
+        //Velidate that input is valid value
         private void dataGridForecastInfo_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
             int columnIndex = e.ColumnIndex;
@@ -470,13 +463,12 @@ namespace WindowsFormsForecastLactalis
                             }
                         }
                     }
-
                 }
             }
-
         }
 
-        private string getLastNumber(string testString)
+        //This function returns last number in a string
+        private string GetLastNumber(string testString)
         {
             var matches = Regex.Matches(testString, @"\d+");
             if(matches.Count < 1)
@@ -492,7 +484,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
+        //returns the prooduct that the row is connected to
         private string GetProductNumberFromRow(int rowIndex)
         {
             string returnString = "";
@@ -507,6 +499,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
+        //Handles when user click in the grid. Different actions for different Cells. 
         private void dataGridForecastInfo_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             string tempSender = sender.ToString();
@@ -531,6 +524,7 @@ namespace WindowsFormsForecastLactalis
                         infoboxSales.SetInfoText(this, temp, " Product: " + latestProductNumber + " Week: " + latestWeek);
                         infoboxSales.TopMost = true;
 
+                        //First time it is showed needs special handling
                         if (infoboxSales.desiredStartLocationX == 0 && infoboxSales.desiredStartLocationY == 0)
                         {
                             infoboxSales.SetNextLocation(latestMouseClick);
@@ -565,9 +559,9 @@ namespace WindowsFormsForecastLactalis
 
                         latestWeek = columnIndex - 2;
                         latestProductNumber = GetProductNumberFromRow(rowIndex);
-                        infoboxSales.SetInfoText(this, temp, "History Product: " + latestProductNumber + " Week: " + latestWeek);
+                        infoboxSales.SetInfoText(this, temp, "Salgsbudget History Product: " + latestProductNumber + " Week: " + latestWeek);
                         infoboxSales.TopMost = true;
-
+                        //First time it is showed needs special handling
                         if (infoboxSales.desiredStartLocationX == 0 && infoboxSales.desiredStartLocationY == 0)
                         {
                             infoboxSales.SetNextLocation(latestMouseClick);
@@ -588,7 +582,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
+        //Return the value of a grid cell as string
         private string GetValueFromGridAsString(int row, int col)
         {
             string returnValue = "";
@@ -602,7 +596,7 @@ namespace WindowsFormsForecastLactalis
             }
             else
             {
-                Console.WriteLine("Value from grid out of bounds Row: " + row + " Col: " + col);
+                Console.WriteLine("Sales, Value from grid out of bounds Row: " + row + " Col: " + col);
             }
             return returnValue;
         }

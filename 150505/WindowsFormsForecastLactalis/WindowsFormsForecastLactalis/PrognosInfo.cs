@@ -61,7 +61,7 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        internal void FillNumbers()
+        public void FillNumbers()
         {
             for (int i = 0; i < 53; i++)
             {

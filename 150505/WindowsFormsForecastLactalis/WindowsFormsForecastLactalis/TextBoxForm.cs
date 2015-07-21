@@ -102,7 +102,7 @@ namespace WindowsFormsForecastLactalis
             Load += new EventHandler(Form2_Load);
         }
 
-        internal void FocusTextBox()
+        public void FocusTextBox()
         {
             richTextBoxInfo.Focus();
             if (richTextBoxInfo.Text == "Comment")
@@ -152,7 +152,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        internal void SaveButtonVisible(bool visible)
+        public void SaveButtonVisible(bool visible)
         {
             buttonSaveInfo.Visible = visible;
         }

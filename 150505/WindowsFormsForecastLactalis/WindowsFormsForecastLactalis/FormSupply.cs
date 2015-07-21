@@ -79,7 +79,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        //NAme the columns in the info
+        //NAme the columns in the grid
         public void SetupColumns()
         {
             dataGridForecastInfo.ColumnCount = 55;
@@ -357,7 +357,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-        internal void SetForm1Instanse(Form1 form1)
+        public void SetForm1Instanse(Form1 form1)
         {
             form1Instance = form1;
         }
@@ -525,7 +525,7 @@ namespace WindowsFormsForecastLactalis
             }
             else
             {
-                Console.WriteLine("Value from grid out of bounds Row: " + row + " Col: " + col);
+                Console.WriteLine("Supply, Value from grid out of bounds Row: " + row + " Col: " + col);
             }
             return returnValue;
         }
@@ -639,7 +639,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        internal void SetProductRegComment(string comment)
+        public void SetProductRegComment(string comment)
         {
             foreach (PrognosInfo item in SupplierProducts)
             {

@@ -15,7 +15,6 @@ namespace WindowsFormsForecastLactalis
         {
             List<int> productList = new List<int>();
 
-
             Console.WriteLine("fake M3 communication: 1");
             productList.Add(Convert.ToInt32("23046"));
             productList.Add(Convert.ToInt32("23409"));
@@ -28,11 +27,8 @@ namespace WindowsFormsForecastLactalis
 
         public string GetNameByItemNumber(int itemNbr)
         {
-
-
             string returnString = "";
             List<int> productList = new List<int>();
-
 
             Console.WriteLine("fake M3 communication! 2");
             if (firstTime)
@@ -47,6 +43,5 @@ namespace WindowsFormsForecastLactalis
             returnString = productName[itemNbr];
             return returnString;
         }
-
     }
 }
