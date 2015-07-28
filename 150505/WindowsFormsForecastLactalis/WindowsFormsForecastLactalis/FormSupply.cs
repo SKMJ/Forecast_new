@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace WindowsFormsForecastLactalis
 {
     public partial class FormSupply : Form
     {
-        public static List<PrognosInfo> SupplierProducts = new List<PrognosInfo>();
+        public static List<PrognosInfoForSupply> SupplierProducts = new List<PrognosInfoForSupply>();
         Form1 form1Instance = new Form1();
         //private List<string> supplier = new List<string>();
         GetFromM3 m3Info = new GetFromM3();
@@ -29,11 +30,12 @@ namespace WindowsFormsForecastLactalis
         public FormSupply()
         {
             InitializeComponent();
+            Console.WriteLine("Start FormSupply!");
             FixSupplierChoices();
             FixMotherChildList();
 
             SetupColumns();
-            FillInfo();
+            //FillInfo();
         }
 
         private void FixMotherChildList()
@@ -97,7 +99,7 @@ namespace WindowsFormsForecastLactalis
         //Fill the UI info
         private void FillInfo()
         {
-            SupplierProducts = new List<PrognosInfo>();
+            SupplierProducts = new List<PrognosInfoForSupply>();
             this.dataGridForecastInfo.DataSource = null;
 
             this.dataGridForecastInfo.Rows.Clear();
@@ -105,36 +107,12 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToDeleteRows = false;
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
-            bool even = true;
+            //bool even = true;
             if (comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 1") || comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 2"))
             {
                 //This is just testcode to show something
-                if (comboBoxSupplier.SelectedItem.ToString().Contains("1"))
-                {
-                    even = false;
-                    numericSupplyNBR.Value = 1;
-                }
-                else
-                {
-                    numericSupplyNBR.Value = 2;
-                }
-
-                PrognosInfo tempPrognosInfo;
-                foreach (PrognosInfo item in Form1.Products)
-                {
-                    bool thisEven = true;
-                    if (item.ProductNumber % 2 > 0)
-                    {
-                        thisEven = false;
-                    }
-
-                    if (thisEven == even)
-                    {
-                        tempPrognosInfo = new PrognosInfo(item);
-                        SupplierProducts.Add(tempPrognosInfo);
-
-                    }
-                }
+                bool suppl1 = comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 1");
+                CreateSupplyProducts(suppl1);                
             }
             else if (comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 1102"))
             {
@@ -147,8 +125,9 @@ namespace WindowsFormsForecastLactalis
                     foreach (string item in tempList)
                     {
                         string tempName = m3Info.GetItemNameByItemNumber(item);
-                        PrognosInfo product1 = new PrognosInfo(tempName, Convert.ToInt32(item), 999);
-                        product1.FillNumbers();
+                        PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item));
+
+                        product1.FillNumbers(2432);
                         SupplierProducts.Add(product1);
                         //SupplierProductsFromM3.Add(product1);
                         Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
@@ -159,7 +138,7 @@ namespace WindowsFormsForecastLactalis
 
             Random randomNumber = new Random();
 
-            foreach (PrognosInfo item in SupplierProducts)
+            foreach (PrognosInfoForSupply item in SupplierProducts)
             {
 
                 List<object> tempList = new List<object>();
@@ -219,7 +198,7 @@ namespace WindowsFormsForecastLactalis
                 tempList = new List<object>();
                 tempList.Add("");
                 tempList.Add("");
-                tempList.Add("SalgsbudgetReguleret_ThisYear");
+                tempList.Add("SalgsbudgetReguleret_TY");
                 for (int i = 1; i < 53; i++)
                 {
                     tempList.Add(item.SalgsbudgetReguleret_ThisYear[i]);
@@ -297,7 +276,7 @@ namespace WindowsFormsForecastLactalis
                     //row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Regular);
                     row.ReadOnly = true;
                 }
-                else if (Convert.ToString(row.Cells[2].Value) == "SalgsbudgetReguleret_ThisYear")
+                else if (Convert.ToString(row.Cells[2].Value) == "SalgsbudgetReguleret_TY")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Black;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 10, FontStyle.Bold);
@@ -339,7 +318,7 @@ namespace WindowsFormsForecastLactalis
                 if (colNBR < 2)
                 {
                     col.DefaultCellStyle.ForeColor = Color.Black;
-                    col.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
+                    col.DefaultCellStyle.Font = new Font("Tahoma", 8, FontStyle.Bold);
                     col.DefaultCellStyle.ForeColor = Color.Black;
                 }
                 if (colNBR < 3)
@@ -348,6 +327,39 @@ namespace WindowsFormsForecastLactalis
                 }
                 colNBR++;
             }
+        }
+
+
+        //Add testinfo Products
+        private void CreateSupplyProducts(bool even)
+        {
+            SupplierProducts = new List<PrognosInfoForSupply>();
+            if (even)
+            {
+                PrognosInfoForSupply product1 = new PrognosInfoForSupply("GALBANI MOZZARELLA MAXI 200 G", 2432);
+                PrognosInfoForSupply product2 = new PrognosInfoForSupply("RONDELE M./VALNØD 125 G", 1442);
+                product1.FillNumbers(2432);
+                product2.FillNumbers(1442);
+                SupplierProducts.Add(product1);
+                SupplierProducts.Add(product2);
+            }
+            else
+            {
+                PrognosInfoForSupply product3 = new PrognosInfoForSupply("RONDELE M./HAVSALT 125 g", 1443);
+                PrognosInfoForSupply product4 = new PrognosInfoForSupply("RONDELE BLEU 125 G", 1447);
+                PrognosInfoForSupply product5 = new PrognosInfoForSupply("IGOR BLUE PORTION, 200 G", 2239);
+
+
+                product3.FillNumbers(1443);
+                product4.FillNumbers(1447);
+                product5.FillNumbers(2239);
+                SupplierProducts.Add(product3);
+                SupplierProducts.Add(product4);
+                SupplierProducts.Add(product5);
+            }
+
+
+
         }
 
 
@@ -384,7 +396,11 @@ namespace WindowsFormsForecastLactalis
         {
             if (!infoboxSupply.Visible)
             {
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 FillInfo();
+                stopwatch.Stop();
+                double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
+                Console.WriteLine("Load all Customers Supply! Time (s): " + timeConnectSeconds);
             }
             else
             {
@@ -418,22 +434,16 @@ namespace WindowsFormsForecastLactalis
                     int productNumber = Convert.ToInt32(temp2);
 
                     int latestWeek = columnIndex - 2;
-                    PrognosInfo tempInfo = GetProductInfoByNumber(productNumber);
+                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(productNumber);
                     Console.WriteLine(" Product: " + temp2 + " Week: " + latestWeek);
 
                     //Create dummy value to show something before real numbers
-                    int all = Convert.ToInt32(GetValueFromGridAsString(rowIndex, columnIndex));
-                    int part1 = all;
-                    int part2 = 0;
-                    int part3 = 0;
-                    if (all >= 25)
-                    {
-                        part1 = all - 25;
-                        part2 = 15;
-                        part3 = 10;
-                    }
-                    string temp = "\n\nCustomer1: " + part1 + "\nCustomer2: " + part2 + "\nCustomer3: " + part3 + "\nComment: " + tempInfo.Salgsbudget_Comment[latestWeek];
-                    temp = "Salgsbudget" + " Product: " + temp2 + " Week: " + latestWeek + temp;
+
+                    string temp = "";
+                    NavSQLSupplyInformation sqlConnection = new NavSQLSupplyInformation();
+                    temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, productNumber);
+
+                    temp = "Salgsbudget" + " Product: " + temp2 + " Week: " + latestWeek + "\n\n" + temp;
                     MessageBox.Show(temp);
                 }
                 else
@@ -448,7 +458,7 @@ namespace WindowsFormsForecastLactalis
                     string temp2 = GetProductNumberFromRow(rowIndex);
                     int productNumber = Convert.ToInt32(temp2);
                     int latestWeek = columnIndex - 2;
-                    PrognosInfo tempInfo = GetProductInfoByNumber(productNumber);
+                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(productNumber);
                     Console.WriteLine(" Product: " + temp2 + " Week: " + latestWeek);
 
                     //Create dummy value to show something before real numbers
@@ -502,9 +512,9 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        public PrognosInfo GetProductInfoByNumber(int productNbr)
+        public PrognosInfoForSupply GetProductInfoByNumber(int productNbr)
         {
-            foreach (PrognosInfo item in SupplierProducts)
+            foreach (PrognosInfoForSupply item in SupplierProducts)
             {
                 if (item.ProductNumber == productNbr)
                 {
@@ -536,6 +546,10 @@ namespace WindowsFormsForecastLactalis
         {
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
+            if (columnIndex == 0 & rowIndex == 0 )
+            {
+                return;
+            }
 
             if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsbudget_ThisYear") && columnIndex > 2) // 1 should be your column index
             {
@@ -619,7 +633,7 @@ namespace WindowsFormsForecastLactalis
 
         private void SetKöpsbudget1102(int week, string productNumber, int value)
         {
-            foreach (PrognosInfo item in SupplierProducts)
+            foreach (PrognosInfoForSupply item in SupplierProducts)
             {
                 if (item.ProductNumber.ToString() == productNumber)
                 {
@@ -630,7 +644,7 @@ namespace WindowsFormsForecastLactalis
 
         public void SetRegulerat1102(int week, string productNumber, int value)
         {
-            foreach (PrognosInfo item in SupplierProducts)
+            foreach (PrognosInfoForSupply item in SupplierProducts)
             {
                 if (item.ProductNumber.ToString() == productNumber)
                 {
@@ -641,7 +655,7 @@ namespace WindowsFormsForecastLactalis
 
         public void SetProductRegComment(string comment)
         {
-            foreach (PrognosInfo item in SupplierProducts)
+            foreach (PrognosInfoForSupply item in SupplierProducts)
             {
                 if (item.ProductNumber.ToString() == latestProductNumber)
                 {
@@ -651,14 +665,14 @@ namespace WindowsFormsForecastLactalis
                     //TODO: Write to database
                 }
             }
-            
+
             //FillInfo();
         }
 
         private void buttonGetSupplierFromNBR_Click(object sender, EventArgs e)
         {
             if (numericSupplyNBR.Value == 1102)
-            {                
+            {
                 comboBoxSupplier.SelectedItem = "SUPPLIER 1102";
                 if (!infoboxSupply.Visible)
                 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace WindowsFormsForecastLactalis
 {
     public partial class Form1 : Form
     {
-        public static List<PrognosInfo> Products = new List<PrognosInfo>();
+        private static List<PrognosInfoSales> Products = new List<PrognosInfoSales>();
         public FormSupply supplyViewInstance;
         private List<string> assortments = new List<string>();
         GetFromM3 m3Info = new GetFromM3();
@@ -26,6 +27,7 @@ namespace WindowsFormsForecastLactalis
         public Form1()
         {
             InitializeComponent();
+            Console.WriteLine("Start Form1!");
             //test with Coop and test customer
             FixCustomerChoices();
 
@@ -83,7 +85,7 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToDeleteRows = false;
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
-            foreach (PrognosInfo item in Products)
+            foreach (PrognosInfoSales item in Products)
             {
                 List<object> tempList = new List<object>();
                 tempList.Add(item.ProductNumber.ToString());
@@ -216,7 +218,7 @@ namespace WindowsFormsForecastLactalis
                 if (colNBR < 2)
                 {
                     col.DefaultCellStyle.ForeColor = Color.Black;
-                    col.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
+                    col.DefaultCellStyle.Font = new Font("Tahoma", 8, FontStyle.Bold);
                     col.DefaultCellStyle.ForeColor = Color.Black;
                 }
                 if (colNBR < 3)
@@ -230,17 +232,17 @@ namespace WindowsFormsForecastLactalis
         //Add testinfo Products
         private void CreateProducts()
         {
-            PrognosInfo product1 = new PrognosInfo("Brie 400gr", 1, 1);
-            PrognosInfo product2 = new PrognosInfo("Mozarellabollar", 2, 1);
-            PrognosInfo product3 = new PrognosInfo("Prästost", 3, 1);
-            PrognosInfo product4 = new PrognosInfo("MögelFranskost", 4, 1);
-            PrognosInfo product5 = new PrognosInfo("Limhamns Specialost", 5, 1);
+            PrognosInfoSales product1 = new PrognosInfoSales("GALBANI MOZZARELLA MAXI 200 G", 2432, 1);
+            PrognosInfoSales product2 = new PrognosInfoSales("RONDELE M./VALNØD 125 G", 1442, 1);
+            PrognosInfoSales product3 = new PrognosInfoSales("RONDELE M./HAVSALT 125 g", 1443, 1);
+            PrognosInfoSales product4 = new PrognosInfoSales("RONDELE BLEU 125 G", 1447, 1);
+            PrognosInfoSales product5 = new PrognosInfoSales("IGOR BLUE PORTION, 200 G", 2239, 1);
 
-            product1.FillNumbers();
-            product2.FillNumbers();
-            product3.FillNumbers();
-            product4.FillNumbers();
-            product5.FillNumbers();
+            product1.FillNumbers(2432);
+            product2.FillNumbers(1442);
+            product3.FillNumbers(1443);
+            product4.FillNumbers(1447);
+            product5.FillNumbers(2239);
 
             Products.Add(product1);
             Products.Add(product2);
@@ -269,15 +271,15 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("User press Supply View");
             if (!infoboxSales.Visible)
             {
-                if (Products.Count < 1)
-                {
-                    comboBoxAssortment.SelectedItem = "TEST CUSTOMER";
-                    Console.WriteLine("Fill with Fake customer before switch to supply");
-                    Products = new List<PrognosInfo>();
-                    CreateProducts();
+                //if (Products.Count < 1)
+                //{
+                //    comboBoxAssortment.SelectedItem = "TEST CUSTOMER";
+                //    Console.WriteLine("Fill with Fake customer before switch to supply");
+                //    Products = new List<PrognosInfo>();
+                //    CreateProducts();
 
-                    FillInfo();
-                }
+                //    FillInfo();
+                //}
                 //SupplyViewInstance = new FormSupply();
                 Point tempLocation = this.Location;
                 supplyViewInstance = new FormSupply(tempLocation);
@@ -303,28 +305,31 @@ namespace WindowsFormsForecastLactalis
         //Load products by customer
         private void button1_Click(object sender, EventArgs e)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            
             if (!infoboxSales.Visible)
             {
                 if (comboBoxAssortment.SelectedItem.ToString() != "COOP")
                 {
                     Console.WriteLine("Hittepåkund vald");
-                    Products = new List<PrognosInfo>();
+                    Products = new List<PrognosInfoSales>();
                     CreateProducts();
 
                     FillInfo();
                 }
                 else
                 {
+
                     Console.WriteLine("COOP vald");
-                    Products = new List<PrognosInfo>();
+                    Products = new List<PrognosInfoSales>();
                     List<int> productList = m3Info.GetListOfProductsNbrByAssortment("COOP");
                     if (productList != null)
                     {
                         foreach (int item in productList)
                         {
                             string temp = m3Info.GetItemNameByItemNumber(item.ToString());
-                            PrognosInfo product1 = new PrognosInfo(temp, item, 2);
-                            product1.FillNumbers();
+                            PrognosInfoSales product1 = new PrognosInfoSales(temp, item, 1);
+                            product1.FillNumbers(2432);
                             Products.Add(product1);
                         }
                         FillInfo();
@@ -339,12 +344,16 @@ namespace WindowsFormsForecastLactalis
             {
                 MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before loading new info!");
             }
+
+            stopwatch.Stop();
+            double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
+            Console.WriteLine("Load all Customers Sales! Time (s): " + timeConnectSeconds);
         }
 
         //Set comment from outside this form (textbox)
         public void SetProductComment(string comment)
         {
-            foreach (PrognosInfo item in Products)
+            foreach (PrognosInfoSales item in Products)
             {
                 if (item.ProductNumber.ToString() == latestProductNumber)
                 {
@@ -379,17 +388,17 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        public PrognosInfo GetProductInfoByNumber(int productNbr)
-        {
-            foreach (PrognosInfo item in Products)
-            {
-                if (item.ProductNumber == productNbr)
-                {
-                    return item;
-                }
-            }
-            return null;
-        }
+        //public PrognosInfoSales GetProductInfoByNumber(int productNbr)
+        //{
+        //    foreach (PrognosInfoSales item in Products)
+        //    {
+        //        if (item.ProductNumber == productNbr)
+        //        {
+        //            return item;
+        //        }
+        //    }
+        //    return null;
+        //}
 
 
         private void dataGridForecastInfo_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -398,14 +407,14 @@ namespace WindowsFormsForecastLactalis
             int rowIndex = e.RowIndex;
 
             //Take care of History value and fill value when value changed
-            if (GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
+            if (rowIndex >= 0 && GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
             {
                 int i;
                 string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
                 int week = columnIndex - 2;
                 if (int.TryParse(GetValueFromGridAsString(rowIndex, columnIndex), out i))
                 {
-                    foreach (PrognosInfo item in Products)
+                    foreach (PrognosInfoSales item in Products)
                     {
                         if (item.ProductNumber.ToString() == productNumber)
                         {
@@ -450,7 +459,7 @@ namespace WindowsFormsForecastLactalis
                     }
                     else
                     {
-                        foreach (PrognosInfo item in Products)
+                        foreach (PrognosInfoSales item in Products)
                         {
                             if (item.ProductNumber.ToString() == productNumber)
                             {
@@ -605,7 +614,7 @@ namespace WindowsFormsForecastLactalis
 
         public void SetKöpsbudget(int week, string productNumber, int value)
         {
-            foreach (PrognosInfo item in Products)
+            foreach (PrognosInfoSales item in Products)
             {
                 if (item.ProductNumber.ToString() == productNumber)
                 {

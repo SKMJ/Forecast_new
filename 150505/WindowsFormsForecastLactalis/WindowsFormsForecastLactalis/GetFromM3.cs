@@ -51,7 +51,7 @@ namespace WindowsFormsForecastLactalis
             }            
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
-            Console.WriteLine("time connect: " + elapsedMs);
+            Console.WriteLine("time M3 connect (ms): " + elapsedMs);
             if (rc != 0)
             {
                 Console.WriteLine("M3 communication: FAIL!!");

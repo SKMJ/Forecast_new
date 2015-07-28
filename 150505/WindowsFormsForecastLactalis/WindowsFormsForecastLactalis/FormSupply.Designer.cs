@@ -30,6 +30,14 @@
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.dataGridForecastInfo = new System.Windows.Forms.DataGridView();
+            this.buttonSalesView = new System.Windows.Forms.Button();
+            this.buttonGetProductsBySupplier = new System.Windows.Forms.Button();
+            this.labelSupplier = new System.Windows.Forms.Label();
+            this.comboBoxSupplier = new System.Windows.Forms.ComboBox();
+            this.buttonTestSupplItems = new System.Windows.Forms.Button();
+            this.numericSupplyNBR = new System.Windows.Forms.NumericUpDown();
+            this.buttonGetSupplierFromNBR = new System.Windows.Forms.Button();
+            this.labelSupplierFreeText = new System.Windows.Forms.Label();
             this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -39,14 +47,6 @@
             this.ColumnWeek4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnWeek5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Week6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.buttonSalesView = new System.Windows.Forms.Button();
-            this.buttonGetProductsBySupplier = new System.Windows.Forms.Button();
-            this.labelSupplier = new System.Windows.Forms.Label();
-            this.comboBoxSupplier = new System.Windows.Forms.ComboBox();
-            this.buttonTestSupplItems = new System.Windows.Forms.Button();
-            this.numericSupplyNBR = new System.Windows.Forms.NumericUpDown();
-            this.buttonGetSupplierFromNBR = new System.Windows.Forms.Button();
-            this.labelSupplierFreeText = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).BeginInit();
@@ -84,56 +84,6 @@
             this.dataGridForecastInfo.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellClick);
             this.dataGridForecastInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellContentClick);
             this.dataGridForecastInfo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridForecastInfo_CellValidating_1);
-            // 
-            // ColumnVareNR
-            // 
-            this.ColumnVareNR.Frozen = true;
-            this.ColumnVareNR.HeaderText = "VareNr";
-            this.ColumnVareNR.Name = "ColumnVareNR";
-            // 
-            // ColumnProductName
-            // 
-            this.ColumnProductName.Frozen = true;
-            this.ColumnProductName.HeaderText = "Beskrivelse";
-            this.ColumnProductName.Name = "ColumnProductName";
-            this.ColumnProductName.Width = 200;
-            // 
-            // ColumnType
-            // 
-            this.ColumnType.Frozen = true;
-            this.ColumnType.HeaderText = "Type";
-            this.ColumnType.Name = "ColumnType";
-            this.ColumnType.Width = 300;
-            // 
-            // ColumnWeek1
-            // 
-            this.ColumnWeek1.HeaderText = "1.2015";
-            this.ColumnWeek1.Name = "ColumnWeek1";
-            // 
-            // ColumnWeek2
-            // 
-            this.ColumnWeek2.HeaderText = "2.2015";
-            this.ColumnWeek2.Name = "ColumnWeek2";
-            // 
-            // ColumnWeek3
-            // 
-            this.ColumnWeek3.HeaderText = "3.2015";
-            this.ColumnWeek3.Name = "ColumnWeek3";
-            // 
-            // ColumnWeek4
-            // 
-            this.ColumnWeek4.HeaderText = "4.2015";
-            this.ColumnWeek4.Name = "ColumnWeek4";
-            // 
-            // ColumnWeek5
-            // 
-            this.ColumnWeek5.HeaderText = "5.2015";
-            this.ColumnWeek5.Name = "ColumnWeek5";
-            // 
-            // Week6
-            // 
-            this.Week6.HeaderText = "6.2015";
-            this.Week6.Name = "Week6";
             // 
             // buttonSalesView
             // 
@@ -214,6 +164,57 @@
             this.labelSupplierFreeText.TabIndex = 13;
             this.labelSupplierFreeText.Text = "Supplier Number";
             // 
+            // ColumnVareNR
+            // 
+            this.ColumnVareNR.Frozen = true;
+            this.ColumnVareNR.HeaderText = "VareNr";
+            this.ColumnVareNR.Name = "ColumnVareNR";
+            this.ColumnVareNR.Width = 70;
+            // 
+            // ColumnProductName
+            // 
+            this.ColumnProductName.Frozen = true;
+            this.ColumnProductName.HeaderText = "Beskrivelse";
+            this.ColumnProductName.Name = "ColumnProductName";
+            this.ColumnProductName.Width = 270;
+            // 
+            // ColumnType
+            // 
+            this.ColumnType.Frozen = true;
+            this.ColumnType.HeaderText = "Type";
+            this.ColumnType.Name = "ColumnType";
+            this.ColumnType.Width = 250;
+            // 
+            // ColumnWeek1
+            // 
+            this.ColumnWeek1.HeaderText = "1.2015";
+            this.ColumnWeek1.Name = "ColumnWeek1";
+            // 
+            // ColumnWeek2
+            // 
+            this.ColumnWeek2.HeaderText = "2.2015";
+            this.ColumnWeek2.Name = "ColumnWeek2";
+            // 
+            // ColumnWeek3
+            // 
+            this.ColumnWeek3.HeaderText = "3.2015";
+            this.ColumnWeek3.Name = "ColumnWeek3";
+            // 
+            // ColumnWeek4
+            // 
+            this.ColumnWeek4.HeaderText = "4.2015";
+            this.ColumnWeek4.Name = "ColumnWeek4";
+            // 
+            // ColumnWeek5
+            // 
+            this.ColumnWeek5.HeaderText = "5.2015";
+            this.ColumnWeek5.Name = "ColumnWeek5";
+            // 
+            // Week6
+            // 
+            this.Week6.HeaderText = "6.2015";
+            this.Week6.Name = "Week6";
+            // 
             // FormSupply
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -245,6 +246,14 @@
 
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.DataGridView dataGridForecastInfo;
+        private System.Windows.Forms.Button buttonSalesView;
+        private System.Windows.Forms.Button buttonGetProductsBySupplier;
+        private System.Windows.Forms.Label labelSupplier;
+        private System.Windows.Forms.ComboBox comboBoxSupplier;
+        private System.Windows.Forms.Button buttonTestSupplItems;
+        private System.Windows.Forms.NumericUpDown numericSupplyNBR;
+        private System.Windows.Forms.Button buttonGetSupplierFromNBR;
+        private System.Windows.Forms.Label labelSupplierFreeText;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnVareNR;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnProductName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
@@ -254,13 +263,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnWeek4;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnWeek5;
         private System.Windows.Forms.DataGridViewTextBoxColumn Week6;
-        private System.Windows.Forms.Button buttonSalesView;
-        private System.Windows.Forms.Button buttonGetProductsBySupplier;
-        private System.Windows.Forms.Label labelSupplier;
-        private System.Windows.Forms.ComboBox comboBoxSupplier;
-        private System.Windows.Forms.Button buttonTestSupplItems;
-        private System.Windows.Forms.NumericUpDown numericSupplyNBR;
-        private System.Windows.Forms.Button buttonGetSupplierFromNBR;
-        private System.Windows.Forms.Label labelSupplierFreeText;
     }
 }
