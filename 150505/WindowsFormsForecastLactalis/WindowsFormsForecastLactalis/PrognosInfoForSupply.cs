@@ -45,13 +45,13 @@ namespace WindowsFormsForecastLactalis
         public string ProductName = "";
         public int ProductNumber = 0;
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
-        public Dictionary<int, int> RealiseretSalgsbudget_LastYear = new Dictionary<int, int>();
+        public Dictionary<int, int> RealiseretSalg_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_ThisYear = new Dictionary<int, int>();
-        public Dictionary<int, int> Salgsbudget_LastYear = new Dictionary<int, int>();
+        //public Dictionary<int, int> Salgsbudget_LastYear = new Dictionary<int, int>();
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
         public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
-        public Dictionary<int, int> Realiserat_ThisYear = new Dictionary<int, int>();
+        public Dictionary<int, int> RealiseratSalg_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> SalgsbudgetReguleret_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, string> SalgsbudgetReguleret_Comment = new Dictionary<int, string>();
         public Dictionary<int, int> Kopsbudget_ThisYear = new Dictionary<int, int>();
@@ -81,10 +81,10 @@ namespace WindowsFormsForecastLactalis
             Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY(prodNumber);
 
             sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalgsbudget_LY(prodNumber);
+            Dictionary<int, int> relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY(prodNumber);
 
             sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalgsbudget_TY(prodNumber);
+            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY(prodNumber);
 
             sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY(prodNumber);
@@ -95,17 +95,17 @@ namespace WindowsFormsForecastLactalis
             for (int i = 0; i < 53; i++)
             {
                 RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
-                RealiseretSalgsbudget_LastYear[i] = relaiseratSalgsbudget_LY[i];
+                RealiseretSalg_LastYear[i] = relaiseratSalgsbudget_LY[i];
                 Kampagn_ThisYear[i] = KampagnTY[i];
-                Salgsbudget_LastYear[i] = 0;
+                //Salgsbudget_LastYear[i] = 0;
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
-                Realiserat_ThisYear[i] = relaiseratSalgsbudget_TY[i];
+                RealiseratSalg_ThisYear[i] = relaiseratSalgsbudget_TY[i];
                 SalgsbudgetReguleret_ThisYear[i] = salesBudget_REG_TY[i];
                 Kopsbudget_ThisYear[i] = kopesBudgetTY[i];
                 Kopsorder_ThisYear[i] = kopsOrder_TY[i];
-                Salgsbudget_Comment[i] = "Comment";
+                //Salgsbudget_Comment[i] = "Comment";
                 SalgsbudgetReguleret_Comment[i] = "Comment";
-                Salgsbudget_ChangeHistory[i] = "";
+                //Salgsbudget_ChangeHistory[i] = "";
             }
 
             stopwatch2.Stop();

@@ -157,20 +157,20 @@ namespace WindowsFormsForecastLactalis
                 tempList = new List<object>();
                 tempList.Add("");
                 tempList.Add("På lager: " + number);
-                tempList.Add("RealiseretSalgsbudget_LastYear");
+                tempList.Add("RealiseretSalg_LastYear");
                 for (int i = 1; i < 53; i++)
                 {
-                    tempList.Add(item.RealiseretSalgsbudget_LastYear[i]);
+                    tempList.Add(item.RealiseretSalg_LastYear[i]);
                 }
                 AddRowFromList(tempList);
 
                 tempList = new List<object>();
                 tempList.Add("");
                 tempList.Add("");
-                tempList.Add("Realiserat_ThisYear");
+                tempList.Add("RealiseratSalg_ThisYear");
                 for (int i = 1; i < 53; i++)
                 {
-                    tempList.Add(item.Realiserat_ThisYear[i]);
+                    tempList.Add(item.RealiseratSalg_ThisYear[i]);
                 }
                 AddRowFromList(tempList);
 
@@ -255,14 +255,14 @@ namespace WindowsFormsForecastLactalis
                     row.DefaultCellStyle.ForeColor = Color.Blue;
                     row.ReadOnly = true;
                 }
-                else if (Convert.ToString(row.Cells[2].Value) == "RealiseretSalgsbudget_LastYear")
+                else if (Convert.ToString(row.Cells[2].Value) == "RealiseretSalg_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
                     row.ReadOnly = true;
                 }
-                else if (Convert.ToString(row.Cells[2].Value) == "Realiserat_ThisYear")
+                else if (Convert.ToString(row.Cells[2].Value) == "RealiseratSalg_ThisYear")
                 {
-                    row.DefaultCellStyle.ForeColor = Color.Blue;
+                    row.DefaultCellStyle.ForeColor = Color.Black;
                     row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Kampagn_ThisYear")
@@ -472,7 +472,7 @@ namespace WindowsFormsForecastLactalis
                         part2 = 15;
                         part3 = 10;
                     }
-                    string temp = "\n\nCustomer1: " + part1 + "\nCustomer2: " + part2 + "\nCustomer3: " + part3 + "\nComment: " + tempInfo.Salgsbudget_Comment[latestWeek];
+                    string temp = "\n\nCustomer1: " + part1 + "\nCustomer2: " + part2 + "\nCustomer3: " + part3 + "\nComment: ";// +tempInfo.Salgsbudget_Comment[latestWeek];
                     temp = "Realiserat" + " Product: " + temp2 + " Week: " + latestWeek + temp;
                     MessageBox.Show(temp);
                 }

@@ -19,6 +19,7 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, int> kopesBudget = new Dictionary<int, int>();
 
         Dictionary<int, int> realKampagn_LY = new Dictionary<int, int>();
+
         Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
         Dictionary<int, int> relSalg_LY = new Dictionary<int, int>();
         Dictionary<int, int> kopsOrderTY = new Dictionary<int, int>();
@@ -64,6 +65,10 @@ namespace WindowsFormsForecastLactalis
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
             conn.Close();
         }
+
+         //Load the sales budget numbers from SQL Database
+
+       
 
 
         //Get the data you need from sales budget 
@@ -400,14 +405,14 @@ namespace WindowsFormsForecastLactalis
             return kopesBudget;
         }
 
-        internal Dictionary<int, int> GetRelSalgsbudget_LY(int prodNumber)
+        internal Dictionary<int, int> GetRelSalg_LY(int prodNumber)
         {
             LoadRelSalgsbudget_LY_FromSQL(prodNumber, 2014);
             PrepareRelSalgsbudget_LYForGUI(2014);
             return relSalg_LY;
         }
 
-        internal Dictionary<int, int> GetRelSalgsbudget_TY(int prodNumber)
+        internal Dictionary<int, int> GetRelSalg_TY(int prodNumber)
         {
             LoadRelSalgsbudget_LY_FromSQL(prodNumber, 2015);
             PrepareRelSalgsbudget_LYForGUI(2015);

@@ -22,6 +22,7 @@ namespace WindowsFormsForecastLactalis
         private string latestProductNumber;
         private int latestWeek;
         Point latestMouseClick;
+        Dictionary<string, string> custDictionary;
 
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
         public Form1()
@@ -39,10 +40,14 @@ namespace WindowsFormsForecastLactalis
         //Populate the drop downlist wit customers
         private void FixCustomerChoices()
         {
-            assortments.Add("COOP");
-            assortments.Add("TEST CUSTOMER");
-            comboBoxAssortment.DataSource = assortments;
+            //Dictionary<string, string> cust = GetCustomers();
+            custDictionary = GetCustomersWitohutLoad();
+
             comboBoxAssortment.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            comboBoxAssortment.DataSource = new BindingSource(custDictionary, null);
+            comboBoxAssortment.DisplayMember = "Key";
+            comboBoxAssortment.ValueMember = "Key";
         }
 
 
@@ -75,7 +80,7 @@ namespace WindowsFormsForecastLactalis
         }
 
         //Fill the grid with info from the Products
-        public void FillInfo()
+        public void FillSalesGUIInfo()
         {
             this.dataGridForecastInfo.DataSource = null;
 
@@ -100,10 +105,10 @@ namespace WindowsFormsForecastLactalis
                 tempList = new List<object>();
                 tempList.Add("");
                 tempList.Add("");
-                tempList.Add("RealiseretSalgsbudget_LastYear");
+                tempList.Add("RealiseretSalg_LastYear");
                 for (int i = 1; i < 53; i++)
                 {
-                    tempList.Add(item.RealiseretSalgsbudget_LastYear[i]);
+                    tempList.Add(item.RealiseretSalgs_LastYear[i]);
                 }
                 AddRowFromList(tempList);
 
@@ -120,10 +125,10 @@ namespace WindowsFormsForecastLactalis
                 tempList = new List<object>();
                 tempList.Add("");
                 tempList.Add("");
-                tempList.Add("Realiserat_ThisYear");
+                tempList.Add("RealiseratSalg_ThisYear");
                 for (int i = 1; i < 53; i++)
                 {
-                    tempList.Add(item.Realiserat_ThisYear[i]);
+                    tempList.Add(item.RealiseratSalg_ThisYear[i]);
                 }
                 AddRowFromList(tempList);
 
@@ -178,7 +183,7 @@ namespace WindowsFormsForecastLactalis
                     row.DefaultCellStyle.ForeColor = Color.Blue;
                     row.ReadOnly = true;
                 }
-                else if (Convert.ToString(row.Cells[2].Value) == "RealiseretSalgsbudget_LastYear")
+                else if (Convert.ToString(row.Cells[2].Value) == "RealiseretSalg_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
                     row.ReadOnly = true;
@@ -205,7 +210,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.ReadOnly = true;
                 }
-                else if (Convert.ToString(row.Cells[2].Value) == "Realiserat_ThisYear")
+                else if (Convert.ToString(row.Cells[2].Value) == "RealiseratSalg_ThisYear")
                 {
                     row.ReadOnly = true;
                 }
@@ -232,17 +237,18 @@ namespace WindowsFormsForecastLactalis
         //Add testinfo Products
         private void CreateProducts()
         {
-            PrognosInfoSales product1 = new PrognosInfoSales("GALBANI MOZZARELLA MAXI 200 G", 2432, 1);
-            PrognosInfoSales product2 = new PrognosInfoSales("RONDELE M./VALNØD 125 G", 1442, 1);
-            PrognosInfoSales product3 = new PrognosInfoSales("RONDELE M./HAVSALT 125 g", 1443, 1);
-            PrognosInfoSales product4 = new PrognosInfoSales("RONDELE BLEU 125 G", 1447, 1);
-            PrognosInfoSales product5 = new PrognosInfoSales("IGOR BLUE PORTION, 200 G", 2239, 1);
+            string tempCustNumber = custDictionary[comboBoxAssortment.Text];
+            PrognosInfoSales product1 = new PrognosInfoSales("GALBANI MOZZARELLA MAXI 200 G", 2432, tempCustNumber);
+            PrognosInfoSales product2 = new PrognosInfoSales("RONDELE M./VALNØD 125 G", 1442, tempCustNumber);
+            PrognosInfoSales product3 = new PrognosInfoSales("RONDELE M./HAVSALT 125 g", 1443, tempCustNumber);
+            PrognosInfoSales product4 = new PrognosInfoSales("RONDELE BLEU 125 G", 1447, tempCustNumber);
+            PrognosInfoSales product5 = new PrognosInfoSales("IGOR BLUE PORTION, 200 G", 2239, tempCustNumber);
 
-            product1.FillNumbers(2432);
-            product2.FillNumbers(1442);
-            product3.FillNumbers(1443);
-            product4.FillNumbers(1447);
-            product5.FillNumbers(2239);
+            product1.FillNumbers();
+            product2.FillNumbers();
+            product3.FillNumbers();
+            product4.FillNumbers();
+            product5.FillNumbers();
 
             Products.Add(product1);
             Products.Add(product2);
@@ -271,16 +277,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("User press Supply View");
             if (!infoboxSales.Visible)
             {
-                //if (Products.Count < 1)
-                //{
-                //    comboBoxAssortment.SelectedItem = "TEST CUSTOMER";
-                //    Console.WriteLine("Fill with Fake customer before switch to supply");
-                //    Products = new List<PrognosInfo>();
-                //    CreateProducts();
 
-                //    FillInfo();
-                //}
-                //SupplyViewInstance = new FormSupply();
                 Point tempLocation = this.Location;
                 supplyViewInstance = new FormSupply(tempLocation);
                 supplyViewInstance.Location = this.Location;
@@ -306,7 +303,7 @@ namespace WindowsFormsForecastLactalis
         private void button1_Click(object sender, EventArgs e)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
-            
+
             if (!infoboxSales.Visible)
             {
                 if (comboBoxAssortment.SelectedItem.ToString() != "COOP")
@@ -315,7 +312,7 @@ namespace WindowsFormsForecastLactalis
                     Products = new List<PrognosInfoSales>();
                     CreateProducts();
 
-                    FillInfo();
+                    FillSalesGUIInfo();
                 }
                 else
                 {
@@ -328,11 +325,11 @@ namespace WindowsFormsForecastLactalis
                         foreach (int item in productList)
                         {
                             string temp = m3Info.GetItemNameByItemNumber(item.ToString());
-                            PrognosInfoSales product1 = new PrognosInfoSales(temp, item, 1);
-                            product1.FillNumbers(2432);
+                            PrognosInfoSales product1 = new PrognosInfoSales(temp, item, "COOP");
+                            product1.FillNumbers();
                             Products.Add(product1);
                         }
-                        FillInfo();
+                        FillSalesGUIInfo();
                     }
                     else
                     {
@@ -361,7 +358,7 @@ namespace WindowsFormsForecastLactalis
                     //TODO: Write to database
                 }
             }
-            FillInfo();
+            FillSalesGUIInfo();
         }
 
 
@@ -428,7 +425,7 @@ namespace WindowsFormsForecastLactalis
                         }
                     }
                 }
-                FillInfo();
+                FillSalesGUIInfo();
             }
         }
 
@@ -480,7 +477,7 @@ namespace WindowsFormsForecastLactalis
         private string GetLastNumber(string testString)
         {
             var matches = Regex.Matches(testString, @"\d+");
-            if(matches.Count < 1)
+            if (matches.Count < 1)
             {
                 return "No Number";
             }
@@ -562,7 +559,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     if (!infoboxSales.Visible)
                     {
-                        string temp = GetValueFromGridAsString(rowIndex, columnIndex).Replace("Changed" , "\nChanged");
+                        string temp = GetValueFromGridAsString(rowIndex, columnIndex).Replace("Changed", "\nChanged");
                         //string temp2 = GetValueFromGridAsString(rowIndex - 6, 0);
 
 
@@ -622,6 +619,101 @@ namespace WindowsFormsForecastLactalis
                 }
             }
         }
+
+        private Dictionary<string, string> GetCustomers()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            SQLCallsSalesCustomerInfo newSQL = new SQLCallsSalesCustomerInfo();
+            Dictionary<string, string> allCustomers = newSQL.GetAllCustomers();
+
+            stopwatch.Stop();
+            double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
+            Console.WriteLine("Load all Customers Sales! Time (s): " + timeConnectSeconds);
+            Console.WriteLine("Number of Customers: " + allCustomers.Count);
+
+            foreach (KeyValuePair<string, string> kvp in allCustomers)
+            {
+                Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+            }
+
+            return allCustomers;
+        }
+
+
+        private Dictionary<string, string> GetCustomersWitohutLoad()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            Dictionary<string, string> allCustomers = new Dictionary<string, string>();
+            allCustomers.Add("0", " ");
+            allCustomers.Add("904", "914-KristianstadsOstföräd.EUR");
+            allCustomers.Add("981", "ArlaNorge");
+            allCustomers.Add("980", "ASKOLactalisNorge");
+            allCustomers.Add("975", "AxFood");
+            allCustomers.Add("986", "AxfooddirektebutiksLev.");
+            allCustomers.Add("976", "Bergendahls");
+            allCustomers.Add("60", "BESTWESTERN");
+            allCustomers.Add("56", "CHEVALBLANCKANTINER");
+            allCustomers.Add("67", "CHOISEHOTELS");
+            allCustomers.Add("977", "CityGross");
+            allCustomers.Add("52", "COOPCENTRALLAGER");
+            allCustomers.Add("984", "Coopdirekteleverancer");
+            allCustomers.Add("974", "COOPSverige");
+            allCustomers.Add("41", "COORKANTINER");
+            allCustomers.Add("47", "DANSKCATER");
+            allCustomers.Add("68", "DANSKKROFERIE");
+            allCustomers.Add("63", "DANSKEKONF.CENT.BOOK.SERVICE");
+            allCustomers.Add("90", "Div.Finland");
+            allCustomers.Add("51", "DIVERSE");
+            allCustomers.Add("15", "DSCENTRAL-LAGER");
+            allCustomers.Add("989", "Gekås");
+            allCustomers.Add("26", "GENNEMFAKTVIASUPERGROS");
+            allCustomers.Add("58", "grossist");
+            allCustomers.Add("19", "HKI(tidlS-engros)");
+            allCustomers.Add("65", "HOTELLER");
+            allCustomers.Add("45", "HØRKRAM");
+            allCustomers.Add("973", "ICA");
+            allCustomers.Add("983", "ICAbutikspakketCentraltLev.");
+            allCustomers.Add("982", "ICANorge");
+            allCustomers.Add("71", "INCOCaterKBHgennemfak");
+            allCustomers.Add("73", "INCOgennemfakMeyer");
+            allCustomers.Add("92", "INEXFinland");
+            allCustomers.Add("6", "Intervare");
+            allCustomers.Add("IRMA", "IRMA");
+            allCustomers.Add("101", "Island");
+            allCustomers.Add("44", "KANTINER");
+            allCustomers.Add("96", "KESKO");
+            allCustomers.Add("43", "KURSUSEJD.");
+            allCustomers.Add("34", "METRO");
+            allCustomers.Add("4", "NETTO");
+            allCustomers.Add("969", "NettoSverigeAB");
+            allCustomers.Add("42", "OSTEHANDEL");
+            allCustomers.Add("32", "OstehandlereSverige");
+            allCustomers.Add("103", "Polen");
+            allCustomers.Add("28", "REITAN");
+            allCustomers.Add("988", "RemaNorge");
+            allCustomers.Add("40", "RESTAURANTER");
+            allCustomers.Add("979", "SalgsbilskunderiSverige");
+            allCustomers.Add("10", "SALLING");
+            allCustomers.Add("69", "SASRADDISON");
+            allCustomers.Add("76", "Sodexo");
+            allCustomers.Add("23", "SUPERGROSCENTRALLAGER");
+            allCustomers.Add("967", "SvenskeKunde");
+            allCustomers.Add("102", "Tyskland");
+            allCustomers.Add("27", "ØVRIGEDANSKCATER-GENNEMFAK");
+            allCustomers.Add("94", "Øvrigeexport(grønland)");
+            allCustomers.Add("93", "ØvrigeFinland");
+
+            Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
+            foreach (KeyValuePair<string,string> item in allCustomers)
+            {
+                allCustomersSwitched.Add(item.Value, item.Key);
+            }
+
+
+            return allCustomersSwitched;
+        }
+
 
 
     }

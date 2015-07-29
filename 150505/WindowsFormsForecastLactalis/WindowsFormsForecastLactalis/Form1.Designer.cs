@@ -29,11 +29,6 @@
         private void InitializeComponent()
         {
             this.dataGridForecastInfo = new System.Windows.Forms.DataGridView();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.buttonSupplyView = new System.Windows.Forms.Button();
-            this.comboBoxAssortment = new System.Windows.Forms.ComboBox();
-            this.labelAssortment = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -43,6 +38,11 @@
             this.ColumnWeek4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnWeek5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Week6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.buttonSupplyView = new System.Windows.Forms.Button();
+            this.comboBoxAssortment = new System.Windows.Forms.ComboBox();
+            this.labelAssortment = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -71,57 +71,6 @@
             this.dataGridForecastInfo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridForecastInfo_CellValidating);
             this.dataGridForecastInfo.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellValueChanged);
             this.dataGridForecastInfo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridForecastInfo_MouseClick);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Image = global::WindowsFormsForecastLactalis.Properties.Resources.lactalis;
-            this.pictureBox1.Location = new System.Drawing.Point(13, 13);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(289, 103);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // buttonSupplyView
-            // 
-            this.buttonSupplyView.Location = new System.Drawing.Point(469, 39);
-            this.buttonSupplyView.Name = "buttonSupplyView";
-            this.buttonSupplyView.Size = new System.Drawing.Size(200, 34);
-            this.buttonSupplyView.TabIndex = 2;
-            this.buttonSupplyView.Text = "Change to Supply View";
-            this.buttonSupplyView.UseVisualStyleBackColor = true;
-            this.buttonSupplyView.Click += new System.EventHandler(this.buttonSupplyView_Click);
-            this.buttonSupplyView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.buttonSupplyView_MouseClick);
-            // 
-            // comboBoxAssortment
-            // 
-            this.comboBoxAssortment.FormattingEnabled = true;
-            this.comboBoxAssortment.Location = new System.Drawing.Point(328, 121);
-            this.comboBoxAssortment.Name = "comboBoxAssortment";
-            this.comboBoxAssortment.Size = new System.Drawing.Size(190, 24);
-            this.comboBoxAssortment.TabIndex = 3;
-            this.comboBoxAssortment.SelectedIndexChanged += new System.EventHandler(this.comboBoxAssortment_SelectedIndexChanged);
-            // 
-            // labelAssortment
-            // 
-            this.labelAssortment.AutoSize = true;
-            this.labelAssortment.Location = new System.Drawing.Point(328, 97);
-            this.labelAssortment.Name = "labelAssortment";
-            this.labelAssortment.Size = new System.Drawing.Size(79, 17);
-            this.labelAssortment.TabIndex = 4;
-            this.labelAssortment.Text = "Assortment";
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(328, 146);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(102, 27);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Get Products";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // ColumnVareNR
             // 
@@ -173,6 +122,57 @@
             // 
             this.Week6.HeaderText = "6.2015";
             this.Week6.Name = "Week6";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pictureBox1.Image = global::WindowsFormsForecastLactalis.Properties.Resources.lactalis;
+            this.pictureBox1.Location = new System.Drawing.Point(13, 13);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(289, 103);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 1;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
+            // buttonSupplyView
+            // 
+            this.buttonSupplyView.Location = new System.Drawing.Point(469, 39);
+            this.buttonSupplyView.Name = "buttonSupplyView";
+            this.buttonSupplyView.Size = new System.Drawing.Size(200, 34);
+            this.buttonSupplyView.TabIndex = 2;
+            this.buttonSupplyView.Text = "Change to Supply View";
+            this.buttonSupplyView.UseVisualStyleBackColor = true;
+            this.buttonSupplyView.Click += new System.EventHandler(this.buttonSupplyView_Click);
+            this.buttonSupplyView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.buttonSupplyView_MouseClick);
+            // 
+            // comboBoxAssortment
+            // 
+            this.comboBoxAssortment.FormattingEnabled = true;
+            this.comboBoxAssortment.Location = new System.Drawing.Point(328, 121);
+            this.comboBoxAssortment.Name = "comboBoxAssortment";
+            this.comboBoxAssortment.Size = new System.Drawing.Size(190, 24);
+            this.comboBoxAssortment.TabIndex = 3;
+            this.comboBoxAssortment.SelectedIndexChanged += new System.EventHandler(this.comboBoxAssortment_SelectedIndexChanged);
+            // 
+            // labelAssortment
+            // 
+            this.labelAssortment.AutoSize = true;
+            this.labelAssortment.Location = new System.Drawing.Point(328, 97);
+            this.labelAssortment.Name = "labelAssortment";
+            this.labelAssortment.Size = new System.Drawing.Size(79, 17);
+            this.labelAssortment.TabIndex = 4;
+            this.labelAssortment.Text = "Assortment";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(328, 146);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(102, 27);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Get Products";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
