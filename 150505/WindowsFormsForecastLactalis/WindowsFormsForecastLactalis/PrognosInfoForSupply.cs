@@ -16,32 +16,6 @@ namespace WindowsFormsForecastLactalis
             ProductNumber = number;
         }
 
-        //public PrognosInfo(PrognosInfo item)
-        //{
-        //    // TODO: Complete member initialization
-        //    this.ProductName = item.ProductName;
-        //    this.ProductNumber = item.ProductNumber;
-        //    this.CustomerNumber = item.CustomerNumber;
-
-
-        //    this.RealiseretKampagn_LastYear = item.RealiseretKampagn_LastYear;
-        //    this.RealiseretSalgsbudget_LastYear = item.RealiseretSalgsbudget_LastYear;
-        //    this.Kampagn_ThisYear = item.Kampagn_ThisYear;
-        //    this.Salgsbudget_ThisYear = item.Salgsbudget_ThisYear;
-        //    this.Salgsbudget_LastYear = item.Salgsbudget_LastYear;
-        //    this.Salgsbudget_Comment = item.Salgsbudget_Comment;
-        //    this.Realiserat_ThisYear = item.Realiserat_ThisYear;
-        //    this.SalgsbudgetReguleret_ThisYear = item.SalgsbudgetReguleret_ThisYear;
-        //    this.SalgsbudgetReguleret_Comment = item.SalgsbudgetReguleret_Comment;
-        //    this.Kopsbudget_ThisYear = item.Kopsbudget_ThisYear;
-        //    this.Kopsorder_ThisYear = item.Kopsorder_ThisYear;
-        //    this.Salgsbudget_ChangeHistory = item.Salgsbudget_ChangeHistory;
-        //    //this.item = item.item;
-
-
-        //}
-
-
         public string ProductName = "";
         public int ProductNumber = 0;
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
@@ -61,38 +35,39 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        public void FillNumbers(int prodNumber)
+        public void FillNumbers(int selectedYear)
         {
-            Console.WriteLine("Fill info For Product Number: " + prodNumber);
+            Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
 
 
 
-            NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget(prodNumber);
-            Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG(prodNumber);
-            Dictionary<int, int> kopesBudgetTY = sqlSupplyCalls.GetKopesBudget(prodNumber);
+            NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
+            sqlSupplyCalls.SetSelectedYear(selectedYear);
+            Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget();
+            Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG_TY();
+            Dictionary<int, int> kopesBudgetTY = sqlSupplyCalls.GetKopesBudget_TY();
 
 
-            sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY(prodNumber);
+            //sqlSupplyCalls = new NavSQLSupplyInformation();
+            Dictionary<int, int> realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY();
 
-            sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY(prodNumber);
+            //sqlSupplyCalls = new NavSQLSupplyInformation();
+            Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY();
 
-            sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY(prodNumber);
+            //sqlSupplyCalls = new NavSQLSupplyInformation();
+            Dictionary<int, int> relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY();
 
-            sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY(prodNumber);
+            //sqlSupplyCalls = new NavSQLSupplyInformation();
+            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY();
 
-            sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY(prodNumber);
+            //sqlSupplyCalls = new NavSQLSupplyInformation();
+            Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
 
 
             //Todo add the code for the otther fileds.
 
-            for (int i = 0; i < 53; i++)
+            for (int i = 0; i < 54; i++)
             {
                 RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
                 RealiseretSalg_LastYear[i] = relaiseratSalgsbudget_LY[i];
@@ -110,7 +85,7 @@ namespace WindowsFormsForecastLactalis
 
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
-            Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + prodNumber);
+            Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
         }
     }
 }

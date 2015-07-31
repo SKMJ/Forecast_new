@@ -22,7 +22,9 @@ namespace WindowsFormsForecastLactalis
         private string latestProductNumber;
         private int latestWeek;
         Point latestMouseClick;
+        int selectedYear;
         Dictionary<string, string> custDictionary;
+
 
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
         public Form1()
@@ -48,6 +50,14 @@ namespace WindowsFormsForecastLactalis
             comboBoxAssortment.DataSource = new BindingSource(custDictionary, null);
             comboBoxAssortment.DisplayMember = "Key";
             comboBoxAssortment.ValueMember = "Key";
+
+            List<int> yearList = new List<int>();
+            yearList.Add(2015);
+            yearList.Add(2016);
+            yearList.Add(2017);
+
+            comboBoxYear.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxYear.DataSource = new BindingSource(yearList, null);
         }
 
 
@@ -67,12 +77,12 @@ namespace WindowsFormsForecastLactalis
         //Name the columns in the grid
         public void SetupColumns()
         {
-            dataGridForecastInfo.ColumnCount = 55;
+            dataGridForecastInfo.ColumnCount = 56;
             dataGridForecastInfo.Columns[0].Name = "VareNr";
             dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
             dataGridForecastInfo.Columns[2].Name = "Type";
 
-            for (int i = 1; i < 53; i++)
+            for (int i = 1; i < 54; i++)
             {
                 string temp = i + ".2015";
                 dataGridForecastInfo.Columns[i + 2].Name = temp;
@@ -96,7 +106,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add(item.ProductNumber.ToString());
                 tempList.Add(item.ProductName);
                 tempList.Add("RealiseretKampagn_LastYear");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.RealiseretKampagn_LastYear[i]);
                 }
@@ -106,7 +116,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("");
                 tempList.Add("");
                 tempList.Add("RealiseretSalg_LastYear");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.RealiseretSalgs_LastYear[i]);
                 }
@@ -116,7 +126,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("");
                 tempList.Add("");
                 tempList.Add("Salgsbudget_LastYear");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.Salgsbudget_LastYear[i]);
                 }
@@ -126,7 +136,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("");
                 tempList.Add("");
                 tempList.Add("RealiseratSalg_ThisYear");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.RealiseratSalg_ThisYear[i]);
                 }
@@ -136,7 +146,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("");
                 tempList.Add("");
                 tempList.Add("Kampagn_ThisYear");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.Kampagn_ThisYear[i]);
                 }
@@ -146,7 +156,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("");
                 tempList.Add("");
                 tempList.Add("Salgsbudget_ThisYear");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.Salgsbudget_ThisYear[i]);
                 }
@@ -156,7 +166,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("");
                 tempList.Add("");
                 tempList.Add("Salgsbudget_Comment");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.Salgsbudget_Comment[i]);
                 }
@@ -166,7 +176,7 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("");
                 tempList.Add("");
                 tempList.Add("Salgsbudget_ChangeHistory");
-                for (int i = 1; i < 53; i++)
+                for (int i = 1; i < 54; i++)
                 {
                     tempList.Add(item.Salgsbudget_ChangeHistory[i]);
                 }
@@ -241,14 +251,14 @@ namespace WindowsFormsForecastLactalis
             PrognosInfoSales product1 = new PrognosInfoSales("GALBANI MOZZARELLA MAXI 200 G", 2432, tempCustNumber);
             PrognosInfoSales product2 = new PrognosInfoSales("RONDELE M./VALNØD 125 G", 1442, tempCustNumber);
             PrognosInfoSales product3 = new PrognosInfoSales("RONDELE M./HAVSALT 125 g", 1443, tempCustNumber);
-            PrognosInfoSales product4 = new PrognosInfoSales("RONDELE BLEU 125 G", 1447, tempCustNumber);
-            PrognosInfoSales product5 = new PrognosInfoSales("IGOR BLUE PORTION, 200 G", 2239, tempCustNumber);
+            PrognosInfoSales product4 = new PrognosInfoSales("RICOTTA I BAEGER 250G -GALBANI", 2442, tempCustNumber);
+            PrognosInfoSales product5 = new PrognosInfoSales("FRISK RIVET GRANGUSTO 100g", 2735, tempCustNumber);
 
-            product1.FillNumbers();
-            product2.FillNumbers();
-            product3.FillNumbers();
-            product4.FillNumbers();
-            product5.FillNumbers();
+            product1.FillNumbers(selectedYear);
+            product2.FillNumbers(selectedYear);
+            product3.FillNumbers(selectedYear);
+            product4.FillNumbers(selectedYear);
+            product5.FillNumbers(selectedYear);
 
             Products.Add(product1);
             Products.Add(product2);
@@ -326,7 +336,7 @@ namespace WindowsFormsForecastLactalis
                         {
                             string temp = m3Info.GetItemNameByItemNumber(item.ToString());
                             PrognosInfoSales product1 = new PrognosInfoSales(temp, item, "COOP");
-                            product1.FillNumbers();
+                            product1.FillNumbers(selectedYear);
                             Products.Add(product1);
                         }
                         FillSalesGUIInfo();
@@ -712,6 +722,11 @@ namespace WindowsFormsForecastLactalis
 
 
             return allCustomersSwitched;
+        }
+
+        private void comboBoxYear_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedYear = (int)comboBoxYear.SelectedItem;
         }
 
 

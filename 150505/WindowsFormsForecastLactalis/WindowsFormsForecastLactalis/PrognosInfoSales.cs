@@ -33,48 +33,50 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        public void FillNumbers()
+        public void FillNumbers(int selectedYear)
         {
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
 
 
             SQLCallsSalesCustomerInfo  sqlSalesCalls = new SQLCallsSalesCustomerInfo();
+            sqlSalesCalls.SetYear(selectedYear);
+
             Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerNumber);
 
-            sqlSalesCalls = new SQLCallsSalesCustomerInfo();
+            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerNumber);
 
-            sqlSalesCalls = new SQLCallsSalesCustomerInfo();
+            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerNumber);
 
 
-            sqlSalesCalls = new SQLCallsSalesCustomerInfo();
+            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerNumber);
 
 
 
 
-            NavSQLSupplyInformation sqlSupplyCalls;
-            sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> relaiseratSalg_LY = sqlSupplyCalls.GetRelSalg_LY(ProductNumber);
+            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
 
-            sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> relaiseratSalg_TY = sqlSupplyCalls.GetRelSalg_TY(ProductNumber);
+            Dictionary<int, int> relaiseratSalg_LY = sqlSalesCalls.GetRelSalg_LY(ProductNumber, CustomerNumber);
+
+            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
+            Dictionary<int, int> relaiseratSalg_TY = sqlSalesCalls.GetRelSalg_TY(ProductNumber, CustomerNumber);
 
 
 
             //Todo add the code for the otther fileds.
 
-            for (int i = 0; i < 53; i++)
+            for (int i = 0; i < 54; i++)
             {
                 Salgsbudget_LastYear[i] = salesBudgetLY[i];
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
 
                 RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
-                RealiseretSalgs_LastYear[i] = -1;//relaiseratSalgsbudget_LY[i];
+                RealiseretSalgs_LastYear[i] = relaiseratSalg_LY[i];
                 Kampagn_ThisYear[i] = KampagnTY[i];
-                RealiseratSalg_ThisYear[i] = -1;//relaiseratSalgsbudget_TY[i];
+                RealiseratSalg_ThisYear[i] = relaiseratSalg_TY[i];
                 Salgsbudget_Comment[i] = "Comment";
                 Salgsbudget_ChangeHistory[i] = "";
             }

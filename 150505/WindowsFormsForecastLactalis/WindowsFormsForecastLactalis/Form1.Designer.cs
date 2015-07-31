@@ -43,6 +43,8 @@
             this.comboBoxAssortment = new System.Windows.Forms.ComboBox();
             this.labelAssortment = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.labelYear = new System.Windows.Forms.Label();
+            this.comboBoxYear = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -174,12 +176,32 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // labelYear
+            // 
+            this.labelYear.AutoSize = true;
+            this.labelYear.Location = new System.Drawing.Point(578, 97);
+            this.labelYear.Name = "labelYear";
+            this.labelYear.Size = new System.Drawing.Size(38, 17);
+            this.labelYear.TabIndex = 7;
+            this.labelYear.Text = "Year";
+            // 
+            // comboBoxYear
+            // 
+            this.comboBoxYear.FormattingEnabled = true;
+            this.comboBoxYear.Location = new System.Drawing.Point(578, 121);
+            this.comboBoxYear.Name = "comboBoxYear";
+            this.comboBoxYear.Size = new System.Drawing.Size(79, 24);
+            this.comboBoxYear.TabIndex = 6;
+            this.comboBoxYear.SelectedIndexChanged += new System.EventHandler(this.comboBoxYear_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.labelYear);
+            this.Controls.Add(this.comboBoxYear);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.labelAssortment);
             this.Controls.Add(this.comboBoxAssortment);
@@ -213,6 +235,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnWeek4;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnWeek5;
         private System.Windows.Forms.DataGridViewTextBoxColumn Week6;
+        private System.Windows.Forms.Label labelYear;
+        private System.Windows.Forms.ComboBox comboBoxYear;
     }
 }
 

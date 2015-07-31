@@ -14,17 +14,29 @@ namespace WindowsFormsForecastLactalis
         DataTable latestQueryTable2; //Holds latest loaded Query output if 2 needed
         NavSQLExecute conn;
         Dictionary<string, string> infoDict = new Dictionary<string, string>();
-        Dictionary<int, int> salesBudget = new Dictionary<int, int>();
-        Dictionary<int, int> salesBudgetREG = new Dictionary<int, int>();
-        Dictionary<int, int> kopesBudget = new Dictionary<int, int>();
+        Dictionary<int, int> salesBudget_TY = new Dictionary<int, int>();
+        Dictionary<int, int> salesBudgetREG_TY = new Dictionary<int, int>();
+        Dictionary<int, int> kopesBudget_TY = new Dictionary<int, int>();
 
         Dictionary<int, int> realKampagn_LY = new Dictionary<int, int>();
 
         Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
         Dictionary<int, int> relSalg_LY = new Dictionary<int, int>();
+        Dictionary<int, int> relSalg_TY = new Dictionary<int, int>();
+
         Dictionary<int, int> kopsOrderTY = new Dictionary<int, int>();
-        DateTime startdate2015; //Week one day one
-        DateTime startdate2014;//Week one day one
+
+        Dictionary<int, string> startDateStrings = new Dictionary<int, string>();
+        Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
+
+        Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+
+        int debug1 = 0;
+        int debug2 = 0;
+        int debug3 = 0;
+
+        int currentSelectedYear = 2015;
+        int currentProdNumber = 2015;
 
         enum TypeEnum
         {
@@ -35,40 +47,60 @@ namespace WindowsFormsForecastLactalis
 
 
         //Constructor
-        public NavSQLSupplyInformation()
+        public NavSQLSupplyInformation(int yearForInfo, int prodNumberForInfo)
+        {
+            InitiateProperties();
+            currentProdNumber = prodNumberForInfo;
+            currentSelectedYear = yearForInfo;
+
+        }
+
+        private void InitiateProperties()
         {
             string st = "12/29/2014";
-            startdate2015 = DateTime.Parse(st);
+            startDate.Add(2015, DateTime.Parse(st));
             st = "12/30/2013";
-            startdate2014 = DateTime.Parse(st);
+            startDate.Add(2014, DateTime.Parse(st));
+            st = "01/04/2016";
+            startDate.Add(2016, DateTime.Parse(st));
+            st = "01/02/2017";
+            startDate.Add(2017, DateTime.Parse(st));
 
-            for (int k = 0; k < 53; k++)
+            startDateStrings.Add(2014, @"2013/12/30");
+            endDateStrings.Add(2014, @"2014/12/30");
+            startDateStrings.Add(2015, @"2014/12/29");
+            endDateStrings.Add(2015, @"2016/01/05");
+            startDateStrings.Add(2016, @"2016/01/04");
+            endDateStrings.Add(2016, @"2017/01/01");
+            startDateStrings.Add(2017, @"2017/01/02");
+            endDateStrings.Add(2017, @"2018/01/01");
+
+            for (int k = 0; k < 54; k++)
             {
-                salesBudget.Add(k, 0);
+                salesBudget_TY.Add(k, 0);
                 realKampagn_LY.Add(k, 0);
                 kampagn_TY.Add(k, 0);
-                salesBudgetREG.Add(k, 0);
-                kopesBudget.Add(k, 0);
+                salesBudgetREG_TY.Add(k, 0);
+                kopesBudget_TY.Add(k, 0);
                 relSalg_LY.Add(k, 0);
+                relSalg_TY.Add(k, 0);
                 kopsOrderTY.Add(k, 0);
             }
         }
 
         //Load the sales budget numbers from SQL Database
-        private void LoadSalesBudgetForProductFromSQL(int prodNumber)
+        private void LoadSalesBudgetTYFromSQL()
         {
             conn = new NavSQLExecute();
 
-            string queryString = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from Debitor_Budgetlinjepost where Varenr='XXXX' and startdato >= '2014/12/29' and startdato < '2016/01/05' order by startdato";
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+            string queryString = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from Debitor_Budgetlinjepost where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("Load Sales Budget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
             conn.Close();
         }
 
-         //Load the sales budget numbers from SQL Database
 
-       
 
 
         //Get the data you need from sales budget 
@@ -96,26 +128,28 @@ namespace WindowsFormsForecastLactalis
                     string levKedja = row["Navn_DebBogfGr"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week = (tempDate - startdate2015).TotalDays;
+                    double week = (tempDate - startDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
+                    if (weekInt > 0 && weekInt < 54)
+                    {
+                        if (intType == (int)TypeEnum.SalgsBudget)
+                        {
+                            salesBudget_TY[weekInt] = salesBudget_TY[weekInt] + Antal;
 
-                    if (intType == (int)TypeEnum.SalgsBudget)
-                    {
-                        salesBudget[weekInt] = salesBudget[weekInt] + Antal;
-
-                        antalTot = antalTot + Antal;
-                    }
-                    else if (intType == (int)TypeEnum.SalgsBudget_Regulering)
-                    {
-                        salesBudgetREG[weekInt] = salesBudgetREG[weekInt] + Antal;
-                        //Console.WriteLine("SalesBudgetREg week: " + weekInt + " Antal: " + Antal);
-                    }
-                    else if (intType == (int)TypeEnum.KøbsBudget)
-                    {
-                        kopesBudget[weekInt] = kopesBudget[weekInt] + Antal;
-                        //Console.WriteLine("KopesBudget week: " + weekInt + " Antal: " + Antal);
+                            antalTot = antalTot + Antal;
+                        }
+                        else if (intType == (int)TypeEnum.SalgsBudget_Regulering)
+                        {
+                            salesBudgetREG_TY[weekInt] = salesBudgetREG_TY[weekInt] + Antal;
+                            //Console.WriteLine("SalesBudgetREg week: " + weekInt + " Antal: " + Antal);
+                        }
+                        else if (intType == (int)TypeEnum.KøbsBudget)
+                        {
+                            kopesBudget_TY[weekInt] = kopesBudget_TY[weekInt] + Antal;
+                            //Console.WriteLine("KopesBudget week: " + weekInt + " Antal: " + Antal);
+                        }
                     }
                 }
 
@@ -123,18 +157,18 @@ namespace WindowsFormsForecastLactalis
         }
 
         //Get sales buget data as dictionary
-        public Dictionary<int, int> GetSalesBudget(int prodNumber)
+        public Dictionary<int, int> GetSalesBudget()
         {
-            LoadSalesBudgetForProductFromSQL(prodNumber);
+            LoadSalesBudgetTYFromSQL();
             PrepareLoadedSalesBudgetForGUI();
-            return salesBudget;
+            return salesBudget_TY;
         }
 
 
         //Get info about salesbuget number for specific week
-        public string GetSalesBudgetWeekInfo(int week, int prodNumber)
+        public string GetSalesBudgetWeekInfo(int week)
         {
-            LoadSalesBudgetForProductFromSQL(prodNumber);
+            LoadSalesBudgetTYFromSQL();
             infoDict = new Dictionary<string, string>();
             string returnString = "";
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
@@ -157,7 +191,7 @@ namespace WindowsFormsForecastLactalis
                     string comment = row["Kommentar"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week1 = (tempDate - startdate2015).TotalDays;
+                    double week1 = (tempDate - startDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week1 / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
@@ -193,12 +227,12 @@ namespace WindowsFormsForecastLactalis
 
 
         //Load info for the RealiseretKampagnLY from SQL 
-        private void LoadRealiseretKampagnLY_FromSQL(int prodNumber)
+        private void LoadRealiseretKampagnLY_FromSQL()
         {
             conn = new NavSQLExecute();
 
-            string queryString = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '2013/12/30' and startdato < '2014/12/30' order by startdato";
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+            string queryString = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear - 1] + "' and startdato < '" + endDateStrings[currentSelectedYear - 1] + "' order by startdato";
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("LoadRealiseretKampagnLY Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
@@ -222,12 +256,12 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - startdate2014).TotalDays;
+                    double week = (tempDate - startDate[currentSelectedYear - 1]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
 
 
-                    if (weekInt > 0 && weekInt < 53)
+                    if (weekInt > 0 && weekInt < 54)
                     {
                         realKampagn_LY[weekInt] = realKampagn_LY[weekInt] + Antal;
                     }
@@ -235,32 +269,32 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        public Dictionary<int, int> GetRealiseretKampagnLY(int prodNumber)
+        public Dictionary<int, int> GetRealiseretKampagnLY()
         {
-            LoadRealiseretKampagnLY_FromSQL(prodNumber);
+            LoadRealiseretKampagnLY_FromSQL();
             PrepareRealiseretKampagnLY_ForGUI();
             return realKampagn_LY;
         }
 
-        internal Dictionary<int, int> GetKampagnTY(int prodNumber)
+        internal Dictionary<int, int> GetKampagnTY()
         {
-            LoadKampagnTY_FromSQL(prodNumber);
+            LoadKampagnTY_FromSQL();
             PrepareKampagnTY_ForGUI();
             return kampagn_TY;
         }
 
 
-        private void LoadKampagnTY_FromSQL(int prodNumber)
+        private void LoadKampagnTY_FromSQL()
         {
             conn = new NavSQLExecute();
 
-            string queryString = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '2014/12/29' and startdato < '2016/01/05' order by startdato";
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+            string queryString = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("LoadKampagnTY1 Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
-            queryString = @"select Dato, Antal_Budget  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '2014/12/29' and Dato < '2016/01/05' order by Dato";
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+            queryString = @"select Dato, Antal_Budget  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '" + startDateStrings[currentSelectedYear] + "' and Dato < '" + endDateStrings[currentSelectedYear] + "' order by Dato";
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("LoadKampagnTY2 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(queryString);
 
@@ -285,12 +319,12 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - startdate2015).TotalDays;
+                    double week = (tempDate - startDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
 
 
-                    if (weekInt > 0 && weekInt < 53)
+                    if (weekInt > 0 && weekInt < 54)
                     {
                         kampagn_TY[weekInt] = kampagn_TY[weekInt] + Antal;
                     }
@@ -312,12 +346,12 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Dato"].ToString());
-                    double week = (tempDate - startdate2015).TotalDays;
+                    double week = (tempDate - startDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
 
 
-                    if (weekInt > 0 && weekInt < 53)
+                    if (weekInt > 0 && weekInt < 54)
                     {
                         kampagn_TY[weekInt] = kampagn_TY[weekInt] + Antal;
                     }
@@ -331,7 +365,7 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
 
 
-            string queryString = @"select *  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '2014/12/29' and Dato < '2016/01/05' order by Dato";
+            string queryString = @"select *  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '" + startDateStrings[currentSelectedYear] + "' and Dato < '" + endDateStrings[currentSelectedYear] + "' order by Dato";
             queryString = queryString.Replace("XXXX", prodNumber.ToString());
             Console.WriteLine("LoadKampagnTY3 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(queryString);
@@ -358,7 +392,7 @@ namespace WindowsFormsForecastLactalis
                     //string comment = row["Kommentar"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week1 = (tempDate - startdate2015).TotalDays;
+                    double week1 = (tempDate - startDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week1 / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
@@ -394,34 +428,38 @@ namespace WindowsFormsForecastLactalis
 
 
         //Always call after GetSalesBudget
-        public Dictionary<int, int> GetSalesBudgetREG(int prodNumber)
+        public Dictionary<int, int> GetSalesBudgetREG_TY()
         {
-            return salesBudgetREG;
+            return salesBudgetREG_TY;
         }
 
 
-        internal Dictionary<int, int> GetKopesBudget(int prodNumber)
+        internal Dictionary<int, int> GetKopesBudget_TY()
         {
-            return kopesBudget;
+            return kopesBudget_TY;
         }
 
-        internal Dictionary<int, int> GetRelSalg_LY(int prodNumber)
+        internal Dictionary<int, int> GetRelSalg_LY()
         {
-            LoadRelSalgsbudget_LY_FromSQL(prodNumber, 2014);
-            PrepareRelSalgsbudget_LYForGUI(2014);
+            LoadRelSalg_LY_FromSQL(currentSelectedYear - 1);
+            Console.WriteLine("Call 1 REl salg LY: " + currentSelectedYear + " prodNBR " + currentProdNumber);
+            PrepareRelSalg_LYForGUI(currentSelectedYear - 1);
             return relSalg_LY;
         }
 
-        internal Dictionary<int, int> GetRelSalg_TY(int prodNumber)
+        internal Dictionary<int, int> GetRelSalg_TY()
         {
-            LoadRelSalgsbudget_LY_FromSQL(prodNumber, 2015);
-            PrepareRelSalgsbudget_LYForGUI(2015);
-            return relSalg_LY;
+            LoadRelSalg_LY_FromSQL(currentSelectedYear);
+            Console.WriteLine("Call 2 REl salg LY: " + currentSelectedYear + " prodNBR " + currentProdNumber);
+            PrepareRelSalg_LYForGUI(currentSelectedYear);
+            int sum = debug2 - debug3;
+            Console.WriteLine(" var1: " + debug1 + " var2: " + debug2 + " var3: " + debug3 + " sum: " + sum);
+            return relSalg_TY;
         }
 
-        private void PrepareRelSalgsbudget_LYForGUI(int year)
+        private void PrepareRelSalg_LYForGUI(int year)
         {
-
+            int weekInt;
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
 
             if (currentRows.Length < 1)
@@ -442,45 +480,87 @@ namespace WindowsFormsForecastLactalis
 
                     DateTime tempDate = DateTime.Parse(row["Bogføringsdato"].ToString());
                     double dayOFYear = 0;
-                    if (year == 2014)
-                    {
-                        dayOFYear = (tempDate - startdate2014).TotalDays;
-                    }
-                    else
-                    {
-                        dayOFYear = (tempDate - startdate2015).TotalDays;
-                    }
+
+                    dayOFYear = (tempDate - startDate[year]).TotalDays;
+
                     double weekNBR = dayOFYear / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
+                    weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
 
-                    if (Antal > 0)
+
+                    if (currentSelectedYear == year)
                     {
-
-                        //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
-                    }
-
-
-                    if (weekInt > 0 && weekInt < 53)
-                    {
-                        if (levEgetLager)
+                        if (weekInt > 0 && weekInt < 54)
                         {
-                            if (lokKode.Equals("8"))
+                            if (postType == 2)
                             {
-                                relSalg_LY[weekInt] = relSalg_LY[weekInt] - Antal;
-                            }
-                            else if (lokKode.Equals("100"))
-                            {
-                                relSalg_LY[weekInt] = relSalg_LY[weekInt] - Antal;
+                                if (levEgetLager)
+                                {
+                                    if (lokKode.Equals("8"))
+                                    {
+                                        relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
+
+                                    }
+                                    else if (lokKode.Equals("100"))
+                                    {
+                                        relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
+
+                                    }
+                                }
+                                else
+                                {
+                                    //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
+
+                                    if (postType == 1)
+                                    {
+                                        relSalg_TY[weekInt] = relSalg_TY[weekInt] - Antal;
+                                    }
+                                }
                             }
                         }
-                        else
+                    }
+                    else if (currentSelectedYear == year + 1)
+                    {
+                        if (weekInt > 0 && weekInt < 54)
                         {
-                            //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
-
-                            if (postType == 1)
+                            if (levEgetLager)
                             {
-                                relSalg_LY[weekInt] = relSalg_LY[weekInt] + Math.Abs(Antal);
+                                if (postType ==2)
+                                {
+                                    if (lokKode.Equals("8"))
+                                    {
+
+                                        relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
+                                        if (currentProdNumber == 2432 && weekInt == 23)
+                                        {
+                                            debug1 = debug1 - Antal;
+                                        }
+
+                                    }
+                                    else if (lokKode.Equals("100"))
+                                    {
+                                        relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
+                                        if (currentProdNumber == 2432 && weekInt == 23)
+                                        {
+                                            Console.WriteLine(year + " Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postType + " bool: " + levEgetLager + " lokCode: " + lokKode);
+                                            Console.WriteLine("antal Lokekod100: " + Antal);
+                                            debug2 = debug2 + Antal;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
+
+                                if (postType == 1)
+                                {
+                                    relSalg_LY[weekInt] = relSalg_LY[weekInt] - Antal;
+                                    if (currentProdNumber == 2432 && weekInt == 23)
+                                    {
+                                        debug3 = debug3 + Antal;
+                                    }
+                                }
                             }
                         }
                     }
@@ -490,46 +570,41 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-        private void LoadRelSalgsbudget_LY_FromSQL(int prodNumber, int year)
+        private void LoadRelSalg_LY_FromSQL(int year)
         {
             conn = new NavSQLExecute();
             string queryString = "";
-            if (year == 2014)
-            {
-                queryString = @"select Bogføringsdato, Faktureret_antal, LeverandørlagerOrdre, Posttype, Lokationskode  from  Varepost_Skyggetabel where Varenr='XXXX' and Bogføringsdato >= '2013/12/30' and Bogføringsdato < '2014/12/30'";
 
-            }
-            else
-            {
-                queryString = @"select Bogføringsdato, Faktureret_antal, LeverandørlagerOrdre, Posttype, Lokationskode  from  Varepost_Skyggetabel where Varenr='XXXX' and Bogføringsdato >= '2014/12/29' and Bogføringsdato < '2016/01/05'";
+            queryString = @"select Bogføringsdato, Faktureret_antal, LeverandørlagerOrdre, Posttype, Lokationskode  from  Varepost_Skyggetabel where Varenr='XXXX' and Bogføringsdato >= '" + startDateStrings[year] + "' and Bogføringsdato < '" + endDateStrings[year] + "' order by Bogføringsdato";
 
-            }
 
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+
+
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("LoadRelSalgsbudget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
             //throw new NotImplementedException();
         }
 
-        internal Dictionary<int, int> GetKopsorder_TY(int prodNumber)
+        internal Dictionary<int, int> GetKopsorder_TY()
         {
-            LoadKopsorder_TY_FromSQL(prodNumber);
+            LoadKopsorder_TY_FromSQL();
             PrepareKopsorder_TYForGUI();
             return kopsOrderTY;
         }
 
 
-        private void LoadKopsorder_TY_FromSQL(int prodNumber)
+        private void LoadKopsorder_TY_FromSQL()
         {
             conn = new NavSQLExecute();
 
-            string queryString = @"select Forventet_modtdato, Udestående_antal_basis  from Købslinie where Nummer='XXXX' and Forventet_modtdato >= '2014/12/29' and Forventet_modtdato < '2016/01/05' order by Forventet_modtdato";
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+            string queryString = @"select Forventet_modtdato, Udestående_antal_basis  from Købslinie where Nummer='XXXX' and Forventet_modtdato >= '" + startDateStrings[currentSelectedYear] + "' and Forventet_modtdato < '" + endDateStrings[currentSelectedYear] + "' order by Forventet_modtdato";
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("LoadKopsorder1 Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
-            queryString = @"select Forventet_modtdato, Antal_basis  from dbo.Købsleverancelinie where Nummer='XXXX' and Forventet_modtdato >= '2014/12/29' and Forventet_modtdato < '2016/01/05' order by Forventet_modtdato";
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+            queryString = @"select Forventet_modtdato, Antal_basis  from dbo.Købsleverancelinie where Nummer='XXXX' and Forventet_modtdato >= '" + startDateStrings[currentSelectedYear] + "' and Forventet_modtdato < '" + endDateStrings[currentSelectedYear] + "' order by Forventet_modtdato";
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("LoadKopsorder2 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(queryString);
 
@@ -554,13 +629,13 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Forventet_modtdato"].ToString());
-                    double week = (tempDate - startdate2015).TotalDays;
+                    double week = (tempDate - startDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
 
 
-                    if (weekInt > 0 && weekInt < 53)
+                    if (weekInt > 0 && weekInt < 54)
                     {
                         kopsOrderTY[weekInt] = kopsOrderTY[weekInt] + Antal;
                     }
@@ -582,18 +657,23 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Forventet_modtdato"].ToString());
-                    double week = (tempDate - startdate2015).TotalDays;
+                    double week = (tempDate - startDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
 
 
-                    if (weekInt > 0 && weekInt < 53)
+                    if (weekInt > 0 && weekInt < 54)
                     {
                         kopsOrderTY[weekInt] = kopsOrderTY[weekInt] + Antal;
                     }
                 }
             }
 
+        }
+
+        internal void SetSelectedYear(int selectedYear)
+        {
+            currentSelectedYear = selectedYear;
         }
     }
 }

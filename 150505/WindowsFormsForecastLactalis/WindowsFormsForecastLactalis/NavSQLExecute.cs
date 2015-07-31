@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.Odbc;
 using System.Data;
 using System.Diagnostics;
+using System.Data.SqlClient;
 
 namespace WindowsFormsForecastLactalis
 {
@@ -21,7 +22,7 @@ namespace WindowsFormsForecastLactalis
 
 
         public NavSQLExecute()
-        {            
+        {
             //Navision SQL
             try
             {
@@ -43,7 +44,7 @@ namespace WindowsFormsForecastLactalis
         public DataTable QueryExWithTableReturn(string textQuery)
         {
             Stopwatch stopwatch2 = Stopwatch.StartNew();
-           
+
             Command = new OdbcCommand(textQuery, conn);
             dataAddapter = new OdbcDataAdapter(Command);
             dataTable = new DataTable();
@@ -67,6 +68,36 @@ namespace WindowsFormsForecastLactalis
         public void Close()
         {
             conn.Close();
+        }
+
+        public void InsertQueryToDatabase(string textQuery)
+        {
+            using (SqlConnection connection = new SqlConnection("ConnectionStringHere"))
+            {
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = connection;            // <== lacking
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = "INSERT into tbl_staff (staffName, userID, idDepartment) VALUES (@staffName, @userID, @idDepart)";
+                    command.Parameters.AddWithValue("@staffName", "name namesson");
+                    command.Parameters.AddWithValue("@userID", "userIdExample");
+                    command.Parameters.AddWithValue("@idDepart", "idDepart ");
+
+                    try
+                    {
+                        connection.Open();
+                        int recordsAffected = command.ExecuteNonQuery();
+                    }
+                    catch (SqlException)
+                    {
+                        // error here
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
         }
     }
 }
