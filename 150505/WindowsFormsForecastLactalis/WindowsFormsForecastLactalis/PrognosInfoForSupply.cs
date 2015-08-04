@@ -17,6 +17,10 @@ namespace WindowsFormsForecastLactalis
         }
 
         public string ProductName = "";
+        public string WareHouse = "";
+        public string Supplier = "";
+        public string PrepLocation = "";
+
         public int ProductNumber = 0;
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> RealiseretSalg_LastYear = new Dictionary<int, int>();
@@ -64,7 +68,10 @@ namespace WindowsFormsForecastLactalis
             //sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
 
-
+            if (ProductName.Length < 2)
+            {
+                ProductName = sqlSupplyCalls.GetBeskrivelse();
+            }
             //Todo add the code for the otther fileds.
 
             for (int i = 0; i < 54; i++)

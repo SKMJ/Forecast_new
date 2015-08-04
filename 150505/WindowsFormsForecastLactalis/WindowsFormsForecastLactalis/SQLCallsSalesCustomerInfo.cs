@@ -12,6 +12,7 @@ namespace WindowsFormsForecastLactalis
         DataTable latestQueryTable; //Holds latest loaded Query output
         DataTable latestQueryTable2; //Holds latest loaded Query output if 2 needed
         NavSQLExecute conn;
+        String Beskrivelse = "A";
 
         Dictionary<string, string> allCustomers = new Dictionary<string, string>();
         Dictionary<int, int> salesBudgetTY = new Dictionary<int, int>();
@@ -282,7 +283,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("LoadKampagnTY1 Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
-            queryString = @"select Dato, Antal_Budget  from Kampagnelinier_Fordelt where Debitorbogføringsgruppe='YYYY' and Varenr='XXXX' and Dato >= '" + startDateStrings[thisYear] + "' and Dato < '" + endDateStrings[thisYear] + "' order by Dato";
+            queryString = @"select Beskrivelse, Dato, Antal_Budget  from Kampagnelinier_Fordelt where Debitorbogføringsgruppe='YYYY' and Varenr='XXXX' and Dato >= '" + startDateStrings[thisYear] + "' and Dato < '" + endDateStrings[thisYear] + "' order by Dato";
             queryString = queryString.Replace("XXXX", prodNumber.ToString());
             queryString = queryString.Replace("YYYY", custNumber);
             Console.WriteLine("LoadKampagnTY2 Query: ");
@@ -339,6 +340,7 @@ namespace WindowsFormsForecastLactalis
                     double week = (tempDate - startDate[thisYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
+                    Beskrivelse = row["Beskrivelse"].ToString();
 
 
                     if (weekInt > 0 && weekInt < 54)
@@ -412,12 +414,12 @@ namespace WindowsFormsForecastLactalis
                                     {
                                         if (lokKode.Equals("8"))
                                         {
-                                            Console.WriteLine("Antal 1: " + Antal + " week: " + weekInt);
+                                           // Console.WriteLine("Antal 1: " + Antal + " week: " + weekInt);
                                             relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
                                         }
                                         else if (lokKode.Equals("100"))
                                         {
-                                            Console.WriteLine("Antal 2: " + Antal + " week: " + weekInt);
+                                           // Console.WriteLine("Antal 2: " + Antal + " week: " + weekInt);
                                             relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
                                         }
                                     }
@@ -428,7 +430,7 @@ namespace WindowsFormsForecastLactalis
 
                                     if (postType == 1)
                                     {
-                                        Console.WriteLine("Antal 3: " + Antal + " week: " + weekInt);
+                                        //Console.WriteLine("Antal 3: " + Antal + " week: " + weekInt);
                                         relSalg_LY[weekInt] = relSalg_LY[weekInt] - Antal; 
                                     }
                                 }
@@ -495,6 +497,11 @@ namespace WindowsFormsForecastLactalis
         internal void SetYear(int selectedYear)
         {
             thisYear = selectedYear;
+        }
+
+        internal string GetBeskrivelse()
+        {
+            return Beskrivelse;
         }
     }
 }

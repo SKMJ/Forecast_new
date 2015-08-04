@@ -20,12 +20,15 @@ namespace WindowsFormsForecastLactalis
         GetFromM3 m3Info = new GetFromM3();
         TextBoxForm infoboxSupply = new TextBoxForm();
         public Dictionary<int, List<int>> MotherSupplierWithChilds = new Dictionary<int, List<int>>();
+
+        public Dictionary<string, string> OrderCodes = new Dictionary<string, string>();
         int desiredStartLocationX;
         int desiredStartLocationY;
         int latestWeek;
         string latestProductNumber;
         Point latestMouseClick;
         int latestRow;
+        string latestSelectedYear;
         int selectedYear;
 
         public FormSupply()
@@ -53,6 +56,7 @@ namespace WindowsFormsForecastLactalis
             supplier.Add("SUPPLIER 1");
             supplier.Add("SUPPLIER 2");
             supplier.Add("SUPPLIER 1102");
+            supplier.Add("SUPPLIER 2000");
             comboBoxSupplier.DataSource = supplier;
             comboBoxSupplier.DropDownStyle = ComboBoxStyle.DropDownList;
 
@@ -93,15 +97,18 @@ namespace WindowsFormsForecastLactalis
         //NAme the columns in the grid
         public void SetupColumns()
         {
-            dataGridForecastInfo.ColumnCount = 56;
-            dataGridForecastInfo.Columns[0].Name = "VareNr";
-            dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
-            dataGridForecastInfo.Columns[2].Name = "Type";
-
-            for (int i = 1; i < 54; i++)
+            if (latestSelectedYear != comboBoxYear.Text)
             {
-                string temp = i + ".2015";
-                dataGridForecastInfo.Columns[i + 2].Name = temp;
+                dataGridForecastInfo.ColumnCount = 56;
+                dataGridForecastInfo.Columns[0].Name = "VareNr";
+                dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
+                dataGridForecastInfo.Columns[2].Name = "Type";
+
+                for (int i = 1; i < 54; i++)
+                {
+                    string temp = i + "." + comboBoxYear.Text;
+                    dataGridForecastInfo.Columns[i + 2].Name = temp;
+                }
             }
         }
 
@@ -144,7 +151,30 @@ namespace WindowsFormsForecastLactalis
                 }
 
             }
+            else if (comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 2000"))
+            {
+                numericSupplyNBR.Value = 2000;
+                    List<string> tempList = m3Info.GetListOfProductsBySupplier("2000");
 
+                    foreach (string item in tempList)
+                    {
+                        string tempName = m3Info.GetItemNameByItemNumber(item);
+                        PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item));
+
+                        product1.FillNumbers(selectedYear);
+                        SupplierProducts.Add(product1);
+                        //SupplierProductsFromM3.Add(product1);
+                        Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
+                    }
+            }
+
+            PrepareGUI();
+        }
+
+
+        //Load GUI with info from SupplierProducts
+        private void PrepareGUI()
+        {
             Random randomNumber = new Random();
 
             foreach (PrognosInfoForSupply item in SupplierProducts)
@@ -345,29 +375,24 @@ namespace WindowsFormsForecastLactalis
             SupplierProducts = new List<PrognosInfoForSupply>();
             if (even)
             {
-                PrognosInfoForSupply product1 = new PrognosInfoForSupply("GALBANI MOZZARELLA MAXI 200 G", 2432);
-                PrognosInfoForSupply product2 = new PrognosInfoForSupply("RONDELE M./VALNØD 125 G", 1442);
-                product1.FillNumbers(selectedYear);
-                product2.FillNumbers(selectedYear);
-                SupplierProducts.Add(product1);
-                SupplierProducts.Add(product2);
+                AddProductByNumber("GALBANI MOZZARELLA MAXI 200 G", 2432);
+                AddProductByNumber("RONDELE M./VALNØD 125 G", 1442);
+
             }
             else
             {
-                PrognosInfoForSupply product3 = new PrognosInfoForSupply("RONDELE M./HAVSALT 125 g", 1443);
-                PrognosInfoForSupply product4 = new PrognosInfoForSupply("RONDELE BLEU 125 G", 1447);
-                PrognosInfoForSupply product5 = new PrognosInfoForSupply("IGOR BLUE PORTION, 200 G", 2239);
-
-
-                product3.FillNumbers(selectedYear);
-                product4.FillNumbers(selectedYear);
-                product5.FillNumbers(selectedYear);
-                SupplierProducts.Add(product3);
-                SupplierProducts.Add(product4);
-                SupplierProducts.Add(product5);
+                AddProductByNumber("RONDELE M./HAVSALT 125 g", 1443);
+                AddProductByNumber("RONDELE BLEU 125 G", 1447);
+                AddProductByNumber("IGOR BLUE PORTION, 200 G", 2239);
             }
+        }
 
 
+        private void AddProductByNumber(string name, int number)
+        {
+            PrognosInfoForSupply product1 = new PrognosInfoForSupply(name, number);
+            product1.FillNumbers(selectedYear);
+            SupplierProducts.Add(product1);
 
         }
 
@@ -403,6 +428,7 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonGetProductsBySupplier_Click(object sender, EventArgs e)
         {
+            SetupColumns();
             if (!infoboxSupply.Visible)
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
@@ -540,7 +566,10 @@ namespace WindowsFormsForecastLactalis
 
             if (row >= 0 && row < dataGridForecastInfo.RowCount && col >= 0 && col < dataGridForecastInfo.ColumnCount)
             {
-                returnValue = dataGridForecastInfo.Rows[row].Cells[col].Value.ToString();
+                if (dataGridForecastInfo.Rows[row].Cells[col].Value != null)
+                {
+                    returnValue = dataGridForecastInfo.Rows[row].Cells[col].Value.ToString();
+                }
             }
             else
             {
@@ -680,6 +709,7 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonGetSupplierFromNBR_Click(object sender, EventArgs e)
         {
+            SetupColumns();
             if (numericSupplyNBR.Value == 1102)
             {
                 comboBoxSupplier.SelectedItem = "SUPPLIER 1102";
@@ -703,6 +733,49 @@ namespace WindowsFormsForecastLactalis
         private void comboBoxYear_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedYear = (int)comboBoxYear.SelectedItem;
+        }
+
+        private void buttonGetProductByNumber_Click(object sender, EventArgs e)
+        {
+            SetupColumns();
+
+            SupplierProducts = new List<PrognosInfoForSupply>();
+            this.dataGridForecastInfo.DataSource = null;
+
+            this.dataGridForecastInfo.Rows.Clear();
+            this.dataGridForecastInfo.AllowUserToAddRows = false;
+            this.dataGridForecastInfo.AllowUserToDeleteRows = false;
+            this.dataGridForecastInfo.AllowUserToOrderColumns = false;
+
+
+            int prodNMBR = (int)numericUpDownPRoductNumber.Value;
+            AddProductByNumber("A", prodNMBR);
+            PrepareGUI();
+        }
+
+        private void buttonCreateM3LactalisOrders_Click(object sender, EventArgs e)
+        {
+            CreateOrderForProduct(5, 23303);
+        }
+
+        private void CreateOrderForProduct(int week, int prodNumber)
+        {
+            if (SupplierProducts.Count > 0)
+            {
+                string codeOrder = SupplierProducts[0].Supplier + "XYZ" + SupplierProducts[0].WareHouse + "XYZ" + SupplierProducts[0].PrepLocation;
+                string M3_order_code = "";
+                if (OrderCodes.ContainsKey(codeOrder))
+                {
+                    M3_order_code = OrderCodes[codeOrder];
+                }
+                else
+                {
+                    M3_order_code = m3Info.GetNewOrderCode();
+                    OrderCodes.Add(codeOrder, M3_order_code);
+                }
+
+                m3Info.CreateNewOrderProposal(M3_order_code, prodNumber.ToString(), 10, "2000", "20150821");
+            }
         }
     }
 }

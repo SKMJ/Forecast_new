@@ -173,7 +173,7 @@ namespace WindowsFormsForecastLactalis
                     //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
                     return null;
                 }
-                SetMaxList(sid, 99);
+                SetMaxList(sid, 299);
                 //Set the field without need to know position Start from this customer 00752
                 //MvxSock.SetField(ref sid, "ASCD", Assortment);
                 MvxSock.SetField(ref sid, "CONO", "001");
@@ -220,7 +220,7 @@ namespace WindowsFormsForecastLactalis
                     return null;
                 }
 
-                SetMaxList(sid, 99);
+                SetMaxList(sid, 299);
 
                 //Set the field without need to know position Start from this customer 00752
                 MvxSock.SetField(ref sid, "SUNO", supplNbr);
@@ -330,6 +330,81 @@ namespace WindowsFormsForecastLactalis
             {
                 Console.WriteLine("List set MAX number Error" + ex.Message);
             }
+        }
+
+
+        //Get Msgn code for new order
+        internal string GetNewOrderCode()
+        {
+            //Catrin helps to get this new code
+            string returnString = "";
+            uint rc;
+            SERVER_ID sid = new SERVER_ID();
+
+            rc = ConnectToM3Interface(ref sid, "PPS370MI");
+            //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                return returnString;
+            }
+
+            //Set the field without need to know position Start from this customer 00752
+            MvxSock.SetField(ref sid, "BAOR", "NORMAL");
+            rc = MvxSock.Access(ref sid, "StartEntry");
+
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Error in get Supplier by number " + rc + "\n");
+                MvxSock.Close(ref sid);
+                return returnString;
+            }
+            returnString = MvxSock.GetField(ref sid, "MSGN");
+            Console.WriteLine("Message Number: " + returnString );
+            MvxSock.Close(ref sid);
+            return returnString;
+        }
+
+        //Creates order purposal line.
+        //Added line to ol order if same MSGN
+        internal string CreateNewOrderProposal(string MSGN, string ITNO, int ordQuant, string SUNO, string Date)
+        {
+            string returnString = "";
+            uint rc;
+            SERVER_ID sid = new SERVER_ID();
+
+            rc = ConnectToM3Interface(ref sid, "PPS370MI");
+            //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                return returnString;
+            }
+
+            //Set the field without need to know position Start from this customer 00752
+            MvxSock.SetField(ref sid, "MSGN", MSGN);
+            MvxSock.SetField(ref sid, "ITNO", ITNO);
+            MvxSock.SetField(ref sid, "ORQA", ordQuant.ToString());
+            MvxSock.SetField(ref sid, "FACI", "LAD");
+            MvxSock.SetField(ref sid, "WHLO", "LSK");
+            MvxSock.SetField(ref sid, "SUNO", SUNO);
+            MvxSock.SetField(ref sid, "DWDT", Date);
+            MvxSock.SetField(ref sid, "BUYE", "DK045104");
+
+
+            rc = MvxSock.Access(ref sid, "AddLine");
+
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Error in get Supplier by number " + rc + "\n");
+                MvxSock.Close(ref sid);
+                return returnString;
+            }
+            string orderNumber = MvxSock.GetField(ref sid, "PUNO");
+            returnString = MvxSock.GetField(ref sid, "PNLI");
+            Console.WriteLine("Order Number: " + orderNumber + " Order Number: " + returnString);
+            MvxSock.Close(ref sid);
+            return returnString;
         }
     }
 }

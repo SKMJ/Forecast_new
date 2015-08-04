@@ -12,12 +12,12 @@ namespace WindowsFormsForecastLactalis
 {
     class NavSQLExecute
     {
-        private OdbcConnection conn;
-        //private SqlConnection conn;
-        private OdbcCommand Command;
-        //private SqlCommand Command;
-        private OdbcDataAdapter dataAddapter;
-        //private SqlDataAdapter dataAddapter;
+        //private OdbcConnection conn;
+        private SqlConnection conn;
+        //private OdbcCommand Command;
+        private SqlCommand Command;
+        //private OdbcDataAdapter dataAddapter;
+        private SqlDataAdapter dataAddapter;
         private DataTable dataTable;
 
 
@@ -27,7 +27,9 @@ namespace WindowsFormsForecastLactalis
             try
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                conn = new OdbcConnection("Dsn=Sto;uid=sto;Pwd=sto; app=Microsoft® Visual Studio® 2013;wsid=SM0676L;database=NAV-ForecastData;network=DBMSSOCN; ");
+                conn = new SqlConnection("Data Source=210.2.250.9,1433;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
+                //conn = new SqlConnection("Data Source=210.2.250.9,1433;Network Library=DBMSSOCN;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
+                //conn = new OdbcConnection("Dsn=Sto;uid=sto;Pwd=sto; app=Microsoft® Visual Studio® 2013;wsid=SM0676L;database=NAV-ForecastData;network=DBMSSOCN; ");
 
                 conn.Open();
                 stopwatch.Stop();
@@ -44,15 +46,24 @@ namespace WindowsFormsForecastLactalis
         public DataTable QueryExWithTableReturn(string textQuery)
         {
             Stopwatch stopwatch2 = Stopwatch.StartNew();
+            try
+            {
+                //Command = new OdbcCommand(textQuery, conn);
+                //dataAddapter = new OdbcDataAdapter(Command);
+                Command = new SqlCommand(textQuery, conn);
+                dataAddapter = new SqlDataAdapter(Command);
+                dataTable = new DataTable();
+                dataAddapter.Fill(dataTable);
 
-            Command = new OdbcCommand(textQuery, conn);
-            dataAddapter = new OdbcDataAdapter(Command);
-            dataTable = new DataTable();
-            dataAddapter.Fill(dataTable);
+                stopwatch2.Stop();
+                double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
+                Console.WriteLine("Time for Query(s): " + timeQuerySeconds.ToString());
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("No database Connection!     "+ ex.Message);
+            }
 
-            stopwatch2.Stop();
-            double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
-            Console.WriteLine("Time for Query(s): " + timeQuerySeconds.ToString());
 
             return dataTable;
         }
@@ -61,7 +72,8 @@ namespace WindowsFormsForecastLactalis
         //Ett statement som inte retunerar tabell.
         public void NoTableReturnQueryEx(string textQuery)
         {
-            Command = new OdbcCommand(textQuery, conn);
+            //Command = new OdbcCommand(textQuery, conn);
+            Command = new SqlCommand(textQuery, conn);
             Command.ExecuteNonQuery();
         }
 

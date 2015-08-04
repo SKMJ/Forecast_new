@@ -17,6 +17,7 @@ namespace WindowsFormsForecastLactalis
         private static List<PrognosInfoSales> Products = new List<PrognosInfoSales>();
         public FormSupply supplyViewInstance;
         private List<string> assortments = new List<string>();
+        private string latestComboBoxText = "";
         GetFromM3 m3Info = new GetFromM3();
         TextBoxForm infoboxSales = new TextBoxForm();
         private string latestProductNumber;
@@ -77,15 +78,19 @@ namespace WindowsFormsForecastLactalis
         //Name the columns in the grid
         public void SetupColumns()
         {
-            dataGridForecastInfo.ColumnCount = 56;
-            dataGridForecastInfo.Columns[0].Name = "VareNr";
-            dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
-            dataGridForecastInfo.Columns[2].Name = "Type";
-
-            for (int i = 1; i < 54; i++)
+            if (comboBoxYear.Text != latestComboBoxText)
             {
-                string temp = i + ".2015";
-                dataGridForecastInfo.Columns[i + 2].Name = temp;
+                latestComboBoxText = comboBoxYear.Text;
+                dataGridForecastInfo.ColumnCount = 56;
+                dataGridForecastInfo.Columns[0].Name = "VareNr";
+                dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
+                dataGridForecastInfo.Columns[2].Name = "Type";
+
+                for (int i = 1; i < 54; i++)
+                {
+                    string temp = i + "." + comboBoxYear.Text;
+                    dataGridForecastInfo.Columns[i + 2].Name = temp;
+                }
             }
         }
 
@@ -250,7 +255,7 @@ namespace WindowsFormsForecastLactalis
             string tempCustNumber = custDictionary[comboBoxAssortment.Text];
             PrognosInfoSales product1 = new PrognosInfoSales("GALBANI MOZZARELLA MAXI 200 G", 2432, tempCustNumber);
             PrognosInfoSales product2 = new PrognosInfoSales("RONDELE M./VALNØD 125 G", 1442, tempCustNumber);
-            PrognosInfoSales product3 = new PrognosInfoSales("RONDELE M./HAVSALT 125 g", 1443, tempCustNumber);
+            PrognosInfoSales product3 = new PrognosInfoSales("President VIT", 1238, tempCustNumber);
             PrognosInfoSales product4 = new PrognosInfoSales("RICOTTA I BAEGER 250G -GALBANI", 2442, tempCustNumber);
             PrognosInfoSales product5 = new PrognosInfoSales("FRISK RIVET GRANGUSTO 100g", 2735, tempCustNumber);
 
@@ -313,6 +318,8 @@ namespace WindowsFormsForecastLactalis
         private void button1_Click(object sender, EventArgs e)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
+
+            SetupColumns();
 
             if (!infoboxSales.Visible)
             {
@@ -393,19 +400,6 @@ namespace WindowsFormsForecastLactalis
             latestMouseClick = System.Windows.Forms.Cursor.Position;
 
         }
-
-
-        //public PrognosInfoSales GetProductInfoByNumber(int productNbr)
-        //{
-        //    foreach (PrognosInfoSales item in Products)
-        //    {
-        //        if (item.ProductNumber == productNbr)
-        //        {
-        //            return item;
-        //        }
-        //    }
-        //    return null;
-        //}
 
 
         private void dataGridForecastInfo_CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -727,6 +721,26 @@ namespace WindowsFormsForecastLactalis
         private void comboBoxYear_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedYear = (int)comboBoxYear.SelectedItem;
+        }
+
+        private void buttonGetProductByNumber_Click(object sender, EventArgs e)
+        {
+            SetupColumns();
+            Products = new List<PrognosInfoSales>();
+            this.dataGridForecastInfo.DataSource = null;
+
+            this.dataGridForecastInfo.Rows.Clear();
+            this.dataGridForecastInfo.AllowUserToAddRows = false;
+            this.dataGridForecastInfo.AllowUserToDeleteRows = false;
+            this.dataGridForecastInfo.AllowUserToOrderColumns = false;
+
+
+            int prodNMBR = (int)numericUpDownPRoductNumber.Value;
+            string tempCustNumber = custDictionary[comboBoxAssortment.Text];
+            PrognosInfoSales product1 = new PrognosInfoSales("A", prodNMBR, tempCustNumber);
+            product1.FillNumbers(selectedYear);
+            Products.Add(product1);
+            FillSalesGUIInfo();
         }
 
 

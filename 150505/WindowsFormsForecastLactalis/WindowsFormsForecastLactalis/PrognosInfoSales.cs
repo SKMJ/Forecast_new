@@ -64,7 +64,10 @@ namespace WindowsFormsForecastLactalis
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> relaiseratSalg_TY = sqlSalesCalls.GetRelSalg_TY(ProductNumber, CustomerNumber);
 
-
+            if (ProductName.Length < 2)
+            {
+                ProductName = sqlSalesCalls.GetBeskrivelse();
+            }
 
             //Todo add the code for the otther fileds.
 
