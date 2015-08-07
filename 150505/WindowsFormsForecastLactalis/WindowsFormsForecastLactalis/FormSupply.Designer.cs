@@ -30,6 +30,9 @@
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.dataGridForecastInfo = new System.Windows.Forms.DataGridView();
+            this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.buttonSalesView = new System.Windows.Forms.Button();
             this.buttonGetProductsBySupplier = new System.Windows.Forms.Button();
             this.labelSupplier = new System.Windows.Forms.Label();
@@ -43,9 +46,7 @@
             this.buttonGetProductByNumber = new System.Windows.Forms.Button();
             this.numericUpDownPRoductNumber = new System.Windows.Forms.NumericUpDown();
             this.buttonCreateM3LactalisOrders = new System.Windows.Forms.Button();
-            this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.checkBoxLastYear = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).BeginInit();
@@ -78,6 +79,27 @@
             this.dataGridForecastInfo.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellClick);
             this.dataGridForecastInfo.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellContentClick);
             this.dataGridForecastInfo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridForecastInfo_CellValidating_1);
+            // 
+            // ColumnVareNR
+            // 
+            this.ColumnVareNR.Frozen = true;
+            this.ColumnVareNR.HeaderText = "VareNr";
+            this.ColumnVareNR.Name = "ColumnVareNR";
+            this.ColumnVareNR.Width = 70;
+            // 
+            // ColumnProductName
+            // 
+            this.ColumnProductName.Frozen = true;
+            this.ColumnProductName.HeaderText = "Beskrivelse";
+            this.ColumnProductName.Name = "ColumnProductName";
+            this.ColumnProductName.Width = 270;
+            // 
+            // ColumnType
+            // 
+            this.ColumnType.Frozen = true;
+            this.ColumnType.HeaderText = "Type";
+            this.ColumnType.Name = "ColumnType";
+            this.ColumnType.Width = 250;
             // 
             // buttonSalesView
             // 
@@ -208,26 +230,16 @@
             this.buttonCreateM3LactalisOrders.UseVisualStyleBackColor = true;
             this.buttonCreateM3LactalisOrders.Click += new System.EventHandler(this.buttonCreateM3LactalisOrders_Click);
             // 
-            // ColumnVareNR
+            // checkBoxLastYear
             // 
-            this.ColumnVareNR.Frozen = true;
-            this.ColumnVareNR.HeaderText = "VareNr";
-            this.ColumnVareNR.Name = "ColumnVareNR";
-            this.ColumnVareNR.Width = 70;
-            // 
-            // ColumnProductName
-            // 
-            this.ColumnProductName.Frozen = true;
-            this.ColumnProductName.HeaderText = "Beskrivelse";
-            this.ColumnProductName.Name = "ColumnProductName";
-            this.ColumnProductName.Width = 270;
-            // 
-            // ColumnType
-            // 
-            this.ColumnType.Frozen = true;
-            this.ColumnType.HeaderText = "Type";
-            this.ColumnType.Name = "ColumnType";
-            this.ColumnType.Width = 250;
+            this.checkBoxLastYear.AutoSize = true;
+            this.checkBoxLastYear.Location = new System.Drawing.Point(436, 150);
+            this.checkBoxLastYear.Name = "checkBoxLastYear";
+            this.checkBoxLastYear.Size = new System.Drawing.Size(123, 21);
+            this.checkBoxLastYear.TabIndex = 19;
+            this.checkBoxLastYear.Text = "Load LastYear";
+            this.checkBoxLastYear.UseVisualStyleBackColor = true;
+            this.checkBoxLastYear.CheckedChanged += new System.EventHandler(this.checkBoxLastYear_CheckedChanged);
             // 
             // FormSupply
             // 
@@ -235,6 +247,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaGreen;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.checkBoxLastYear);
             this.Controls.Add(this.buttonCreateM3LactalisOrders);
             this.Controls.Add(this.buttonGetProductByNumber);
             this.Controls.Add(this.numericUpDownPRoductNumber);
@@ -282,5 +295,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnVareNR;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnProductName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
+        private System.Windows.Forms.CheckBox checkBoxLastYear;
     }
 }

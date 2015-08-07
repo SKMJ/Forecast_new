@@ -10,16 +10,18 @@ namespace WindowsFormsForecastLactalis
     //this is the supply prognos info not connected to any customer
     public class PrognosInfoForSupply
     {
-        public PrognosInfoForSupply(string name, int number)
+        public PrognosInfoForSupply(string name, int number, bool showLastYear)
         {
             ProductName = name;
             ProductNumber = number;
+            ShowLastYear = showLastYear;
         }
 
         public string ProductName = "";
         public string WareHouse = "";
         public string Supplier = "";
         public string PrepLocation = "";
+        public bool ShowLastYear = false;
 
         public int ProductNumber = 0;
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
@@ -53,31 +55,34 @@ namespace WindowsFormsForecastLactalis
             Dictionary<int, int> kopesBudgetTY = sqlSupplyCalls.GetKopesBudget_TY();
 
 
-            //sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY();
-
+            
             //sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY();
+            Dictionary<int, int> realiseretKampagnLY = new Dictionary<int,int>();
+            Dictionary<int, int> relaiseratSalgsbudget_LY = new Dictionary<int, int>();
+            if (ShowLastYear)
+            {
+                //sqlSupplyCalls = new NavSQLSupplyInformation();
+                realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY();
 
-            //sqlSupplyCalls = new NavSQLSupplyInformation();
-            Dictionary<int, int> relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY();
-
+                //sqlSupplyCalls = new NavSQLSupplyInformation();
+                relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY();
+            }
             //sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY();
 
             //sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
 
-            if (ProductName.Length < 2)
-            {
-                ProductName = sqlSupplyCalls.GetBeskrivelse();
-            }
             //Todo add the code for the otther fileds.
 
             for (int i = 0; i < 54; i++)
             {
-                RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
-                RealiseretSalg_LastYear[i] = relaiseratSalgsbudget_LY[i];
+                if (ShowLastYear)
+                {
+                    RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
+                    RealiseretSalg_LastYear[i] = relaiseratSalgsbudget_LY[i];
+                }
                 Kampagn_ThisYear[i] = KampagnTY[i];
                 //Salgsbudget_LastYear[i] = 0;
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];

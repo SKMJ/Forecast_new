@@ -25,6 +25,8 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, string> startDateStrings = new Dictionary<int, string>();
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
         Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+
+        Dictionary<string, string> infoDict = new Dictionary<string, string>();
         
 
 
@@ -136,7 +138,7 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
             string queryString = "";
 
-            queryString = @"select Type, Antal, Debitorbogføringsruppe, Startdato, Kommentar from Debitor_Budgetlinjepost where Debitorbogføringsruppe='YYYY' and Varenr='XXXX' and startdato >= '" + startDateStrings[year] + "' and startdato < '" + endDateStrings[year] + "' order by startdato";
+            queryString = @"select Type, Antal, Debitorbogføringsruppe, Startdato, Navn_DebBogfGr, Tastedato, Kommentar from Debitor_Budgetlinjepost where Debitorbogføringsruppe='YYYY' and Varenr='XXXX' and startdato >= '" + startDateStrings[year] + "' and startdato < '" + endDateStrings[year] + "' order by startdato";
 
 
             
@@ -201,9 +203,9 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        internal Dictionary<int, int> GetSalesBudget_LY(int ProductNumber, string CustomerName)
+        internal Dictionary<int, int> GetSalesBudget_LY(int ProductNumber, string CustomerNumber)
         {
-            LoadSalesBudgetForProductFromSQL(ProductNumber, CustomerName, thisYear-1);
+            LoadSalesBudgetForProductFromSQL(ProductNumber, CustomerNumber, thisYear-1);
             PrepareLoadedSalesBudgetForGUI(thisYear - 1);
             return salesBudgetLY;
         }
@@ -352,6 +354,67 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
+        public string GetSalesBudgetWeekInfo(int week, int prodNumber, string customerName)
+        {
+            LoadSalesBudgetForProductFromSQL(prodNumber, customerName, thisYear);
+             infoDict = new Dictionary<string, string>();
+            string returnString = "";
+            DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Supplier Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                int i = 1;
+                foreach (DataRow row in currentRows)
+                {
+                    string stringType = row["Type"].ToString();
+                    int intType = Convert.ToInt32(stringType);
+                    string levAntal = row["Antal"].ToString();
+                    int Antal = Convert.ToInt32(levAntal);
+                    string levKedja = row["Navn_DebBogfGr"].ToString();
+                    string comment = row["Kommentar"].ToString();
+                    string dateforNumber = row["Tastedato"].ToString();
+
+                    DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                    double week1 = (tempDate - startDate[thisYear]).TotalDays;
+                    double weekNBR = week1 / 7.0;
+                    int weekInt = (int)Math.Floor(weekNBR);
+                    weekInt = weekInt + 1;
+
+                    if (intType == (int)TypeEnum.SalgsBudget && weekInt == week)
+                    {
+                        if (!infoDict.ContainsKey(levKedja))
+                        {
+                            infoDict.Add(levKedja, dateforNumber + " " + levAntal + comment);
+                        }
+                        else
+                        {
+                            i++;
+                            string temp = i.ToString() + " " + levKedja;
+                            infoDict.Add(temp, dateforNumber + " " + levAntal + "  " + comment);
+                        }
+                    }
+                }
+                string infoString = "";
+                foreach (KeyValuePair<string, string> kvp in infoDict)
+                {
+                    string temp = kvp.Key;
+                    while (!Char.IsLetter(temp, 0))
+                    {
+                        temp = temp.Substring(1, temp.Length - 1);
+                    }
+                    infoString = infoString + "\n " + temp + "  " + kvp.Value;
+                }
+                returnString = infoString;
+            }
+            return returnString;
+        }
+        
 
         internal Dictionary<int, int> GetRelSalg_LY(int prodNumber, string custNumber)
         {

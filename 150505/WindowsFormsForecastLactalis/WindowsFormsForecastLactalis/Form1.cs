@@ -26,19 +26,27 @@ namespace WindowsFormsForecastLactalis
         int selectedYear;
         Dictionary<string, string> custDictionary;
 
+        private bool loadingNewProductsOngoing;
+
+        public Dictionary<int, string> allProductsDict = new Dictionary<int, string>();
+
 
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
         public Form1()
         {
             InitializeComponent();
             Console.WriteLine("Start Form1!");
+            loadingNewProductsOngoing = false;
             //test with Coop and test customer
             FixCustomerChoices();
 
             m3Info.TestM3Connection();
             SetupColumns();
 
+            LoadAllProductDict();
+
         }
+
 
         //Populate the drop downlist wit customers
         private void FixCustomerChoices()
@@ -67,6 +75,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
+
         //This takes a list of strings and add a row column by column
         private void AddRowFromList(List<object> stringList)
         {
@@ -74,6 +83,7 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Rows.Add(array);
 
         }
+
 
         //Name the columns in the grid
         public void SetupColumns()
@@ -93,6 +103,7 @@ namespace WindowsFormsForecastLactalis
                 }
             }
         }
+
 
         //Fill the grid with info from the Products
         public void FillSalesGUIInfo()
@@ -249,15 +260,16 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
         //Add testinfo Products
         private void CreateProducts()
         {
             string tempCustNumber = custDictionary[comboBoxAssortment.Text];
-            PrognosInfoSales product1 = new PrognosInfoSales("GALBANI MOZZARELLA MAXI 200 G", 2432, tempCustNumber);
-            PrognosInfoSales product2 = new PrognosInfoSales("RONDELE M./VALNØD 125 G", 1442, tempCustNumber);
-            PrognosInfoSales product3 = new PrognosInfoSales("President VIT", 1238, tempCustNumber);
-            PrognosInfoSales product4 = new PrognosInfoSales("RICOTTA I BAEGER 250G -GALBANI", 2442, tempCustNumber);
-            PrognosInfoSales product5 = new PrognosInfoSales("FRISK RIVET GRANGUSTO 100g", 2735, tempCustNumber);
+            PrognosInfoSales product1 = new PrognosInfoSales(allProductsDict[2432], 2432, tempCustNumber);
+            PrognosInfoSales product2 = new PrognosInfoSales(allProductsDict[1442], 1442, tempCustNumber);
+            PrognosInfoSales product3 = new PrognosInfoSales(allProductsDict[1238], 1238, tempCustNumber);
+            PrognosInfoSales product4 = new PrognosInfoSales(allProductsDict[2442], 2442, tempCustNumber);
+            PrognosInfoSales product5 = new PrognosInfoSales(allProductsDict[2735], 2735, tempCustNumber);
 
             product1.FillNumbers(selectedYear);
             product2.FillNumbers(selectedYear);
@@ -286,6 +298,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
+
         //Change to supply view
         private void buttonSupplyView_Click(object sender, EventArgs e)
         {
@@ -301,6 +314,7 @@ namespace WindowsFormsForecastLactalis
                 supplyViewInstance.SetForm1Instanse(this);
                 supplyViewInstance.BringToFront();
                 supplyViewInstance.Show();
+                supplyViewInstance.SetAllProdDict(allProductsDict);
             }
             else
             {
@@ -314,9 +328,14 @@ namespace WindowsFormsForecastLactalis
 
         }
 
+
         //Load products by customer
         private void button1_Click(object sender, EventArgs e)
         {
+            dataGridForecastInfo.Visible = false;
+            Application.DoEvents();  
+
+            loadingNewProductsOngoing = true;
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             SetupColumns();
@@ -362,7 +381,10 @@ namespace WindowsFormsForecastLactalis
             stopwatch.Stop();
             double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Load all Customers Sales! Time (s): " + timeConnectSeconds);
+            loadingNewProductsOngoing = false;
+            dataGridForecastInfo.Visible = true;
         }
+
 
         //Set comment from outside this form (textbox)
         public void SetProductComment(string comment)
@@ -408,30 +430,31 @@ namespace WindowsFormsForecastLactalis
             int rowIndex = e.RowIndex;
 
             //Take care of History value and fill value when value changed
-            if (rowIndex >= 0 && GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
-            {
-                int i;
-                string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
-                int week = columnIndex - 2;
-                if (int.TryParse(GetValueFromGridAsString(rowIndex, columnIndex), out i))
-                {
-                    foreach (PrognosInfoSales item in Products)
-                    {
-                        if (item.ProductNumber.ToString() == productNumber)
-                        {
-                            //Check so value really is changed to new value
-                            if (GetValueFromGridAsString(rowIndex, columnIndex) != GetLastNumber(item.Salgsbudget_ChangeHistory[week]))
-                            {
-                                string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                                item.Salgsbudget_ChangeHistory[week] = item.Salgsbudget_ChangeHistory[week] + "  Changed by " + userName + " Date: " + DateTime.Now.ToShortDateString() + " To Value: " + GetValueFromGridAsString(rowIndex, columnIndex);
-                            }
-                            //TODO: Write to database
-                        }
-                    }
-                }
-                FillSalesGUIInfo();
-            }
+            //if (rowIndex >= 0 && GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
+            //{
+            //    int i;
+            //    string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
+            //    int week = columnIndex - 2;
+            //    if (int.TryParse(GetValueFromGridAsString(rowIndex, columnIndex), out i))
+            //    {
+            //        foreach (PrognosInfoSales item in Products)
+            //        {
+            //            if (item.ProductNumber.ToString() == productNumber)
+            //            {
+            //                //Check so value really is changed to new value
+            //                if (GetValueFromGridAsString(rowIndex, columnIndex) != GetLastNumber(item.Salgsbudget_ChangeHistory[week]))
+            //                {
+            //                    string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            //                    item.Salgsbudget_ChangeHistory[week] = item.Salgsbudget_ChangeHistory[week] + "  Changed by " + userName + " Date: " + DateTime.Now.ToShortDateString() + " To Value: " + GetValueFromGridAsString(rowIndex, columnIndex);
+            //                }
+            //                //TODO: Write to database
+            //            }
+            //        }
+            //    }
+            //    FillSalesGUIInfo();
+            //}
         }
+
 
         //Velidate that input is valid value
         private void dataGridForecastInfo_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
@@ -439,7 +462,8 @@ namespace WindowsFormsForecastLactalis
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
 
-            if (GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
+            //Do not validate while new products is loading
+            if (!loadingNewProductsOngoing && GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
             {
                 int i;
                 string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
@@ -464,12 +488,8 @@ namespace WindowsFormsForecastLactalis
                         {
                             if (item.ProductNumber.ToString() == productNumber)
                             {
-                                item.Salgsbudget_ThisYear[week] = Convert.ToInt32(e.FormattedValue);
-                                //if (e.FormattedValue.ToString() != getLastNumber(item.Salgsbudget_ChangeHistory[week]))
-                                //{
-                                //    item.Salgsbudget_ChangeHistory[week] = item.Salgsbudget_ChangeHistory[week] + "  " + "Changed " + DateTime.Now.ToShortDateString() + " To: " + e.FormattedValue;
-                                //}
-                                //TODO: Write to database
+                              item.Salgsbudget_ThisYear[week] = Convert.ToInt32(e.FormattedValue);
+
                             }
                         }
                     }
@@ -563,30 +583,27 @@ namespace WindowsFormsForecastLactalis
                 {
                     if (!infoboxSales.Visible)
                     {
-                        string temp = GetValueFromGridAsString(rowIndex, columnIndex).Replace("Changed", "\nChanged");
-                        //string temp2 = GetValueFromGridAsString(rowIndex - 6, 0);
+                        string temp2 = GetProductNumberFromRow(rowIndex);
+                        int productNumber = Convert.ToInt32(temp2);
 
+                        int latestWeek = columnIndex - 2;
+                        //PrognosInfoForSupply tempInfo = GetProductInfoByNumber(productNumber);
+                        //Console.WriteLine(" Product: " + temp2 + " Week: " + latestWeek);
 
-                        latestWeek = columnIndex - 2;
-                        latestProductNumber = GetProductNumberFromRow(rowIndex);
-                        infoboxSales.SetInfoText(this, temp, "Salgsbudget History Product: " + latestProductNumber + " Week: " + latestWeek);
-                        infoboxSales.TopMost = true;
-                        //First time it is showed needs special handling
-                        if (infoboxSales.desiredStartLocationX == 0 && infoboxSales.desiredStartLocationY == 0)
-                        {
-                            infoboxSales.SetNextLocation(latestMouseClick);
-                        }
-                        else
-                        {
-                            infoboxSales.Location = latestMouseClick;
-                        }
-                        infoboxSales.Show();
-                        infoboxSales.SaveButtonVisible(false);
-                        infoboxSales.FocusTextBox();
+                        //Create dummy value to show something before real numbers
+
+                        string temp = "";
+
+                        SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
+                        string tempCustNumber = custDictionary[comboBoxAssortment.Text];
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, productNumber, tempCustNumber);
+
+                        temp = "Salgsbudget" + " Product: " + temp2 + " Week: " + latestWeek + "\n\n" + temp;
+                        MessageBox.Show(temp);
                     }
                     else
                     {
-                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before open a new one!");
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
                     }
                 }
             }
@@ -725,6 +742,9 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonGetProductByNumber_Click(object sender, EventArgs e)
         {
+            dataGridForecastInfo.Visible = false;
+            Application.DoEvents();  
+            loadingNewProductsOngoing = true;
             SetupColumns();
             Products = new List<PrognosInfoSales>();
             this.dataGridForecastInfo.DataSource = null;
@@ -737,10 +757,52 @@ namespace WindowsFormsForecastLactalis
 
             int prodNMBR = (int)numericUpDownPRoductNumber.Value;
             string tempCustNumber = custDictionary[comboBoxAssortment.Text];
-            PrognosInfoSales product1 = new PrognosInfoSales("A", prodNMBR, tempCustNumber);
+            string temp = "Name Unknown";
+            if(allProductsDict.ContainsKey(prodNMBR))
+            {
+                temp = allProductsDict[prodNMBR];
+            }
+
+            PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber);
             product1.FillNumbers(selectedYear);
             Products.Add(product1);
             FillSalesGUIInfo();
+            loadingNewProductsOngoing = false;
+            dataGridForecastInfo.Visible = true;
+        }
+
+        public void LoadAllProductDict()
+        {
+            NavSQLExecute conn = new NavSQLExecute();
+            DataTable tempTable = new DataTable();
+            string queryString = @"select Varenr, Dato, Antal_Budget, Beskrivelse  from Kampagnelinier_Fordelt where Dato >= '2014/12/29' and Dato < '2016/01/05' order by varenr";
+            Console.WriteLine("LoadAllProductsDict Query: ");
+            tempTable = conn.QueryExWithTableReturn(queryString);
+            conn.Close();
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+            currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Kopsorder Line Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string prodNBR__ = row["Varenr"].ToString();
+                    int nbr = Convert.ToInt32(prodNBR__);
+
+                    string beskriv = row["Beskrivelse"].ToString();
+                    if (!allProductsDict.ContainsKey(nbr))
+                    {
+                        allProductsDict.Add(nbr, beskriv);
+                    }
+                }
+                Console.WriteLine(allProductsDict.ToString());
+            }
+
         }
 
 

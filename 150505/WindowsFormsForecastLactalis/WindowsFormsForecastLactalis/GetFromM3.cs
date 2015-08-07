@@ -241,7 +241,7 @@ namespace WindowsFormsForecastLactalis
                     {
                         //Console.Write("Supplier nr: " + tempSupplierNBR);
                         //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-                        Console.WriteLine("Listed Supplyer item Nbr: " + tempItemNbr + " Suppl NBR: " + supplNbr);
+                        Console.WriteLine("M3 Listed Supplyer item Nbr: " + tempItemNbr + " Suppl NBR: " + supplNbr);
                         itemList.Add(tempItemNbr);
                     }
                     //Mooves to next row

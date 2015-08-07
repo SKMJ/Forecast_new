@@ -15,7 +15,7 @@ namespace WindowsFormsForecastLactalis
 
         string Beskrivelse = "A";
         NavSQLExecute conn;
-        Dictionary<string, string> infoDict = new Dictionary<string, string>();
+        Dictionary<string, int> infoDict = new Dictionary<string, int>();
         Dictionary<int, int> salesBudget_TY = new Dictionary<int, int>();
         Dictionary<int, int> salesBudgetREG_TY = new Dictionary<int, int>();
         Dictionary<int, int> kopesBudget_TY = new Dictionary<int, int>();
@@ -32,6 +32,7 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
 
         Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+
 
         int debug1 = 0;
         int debug2 = 0;
@@ -54,6 +55,7 @@ namespace WindowsFormsForecastLactalis
             InitiateProperties();
             currentProdNumber = prodNumberForInfo;
             currentSelectedYear = yearForInfo;
+            
 
         }
 
@@ -171,7 +173,7 @@ namespace WindowsFormsForecastLactalis
         public string GetSalesBudgetWeekInfo(int week)
         {
             LoadSalesBudgetTYFromSQL();
-            infoDict = new Dictionary<string, string>();
+            infoDict = new Dictionary<string, int>();
             string returnString = "";
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
 
@@ -202,23 +204,28 @@ namespace WindowsFormsForecastLactalis
                     {
                         if (!infoDict.ContainsKey(levKedja))
                         {
-                            infoDict.Add(levKedja, levAntal + comment);
+                            //infoDict.Add(levKedja, levAntal + comment);
+                            infoDict.Add(levKedja, Antal);
                         }
                         else
                         {
                             i++;
                             string temp = i.ToString() + " " + levKedja;
-                            infoDict.Add(temp, levAntal + "  " + comment);
+                            infoDict[levKedja] = infoDict[levKedja] + Antal;
+                            //infoDict.Add(temp, infoDict[levKedja]);
                         }
                     }
                 }
                 string infoString = "";
-                foreach (KeyValuePair<string, string> kvp in infoDict)
+                foreach (KeyValuePair<string, int> kvp in infoDict)
                 {
                     string temp = kvp.Key;
-                    while (!Char.IsLetter(temp, 0))
+                    if(temp.Length >0)
                     {
-                        temp = temp.Substring(1, temp.Length - 1);
+                        while (!Char.IsLetter(temp, 0))
+                        {
+                            temp = temp.Substring(1, temp.Length - 1);
+                        }
                     }
                     infoString = infoString + "\n " + temp + "  " + kvp.Value;
                 }
@@ -378,7 +385,7 @@ namespace WindowsFormsForecastLactalis
 
             conn.Close();
 
-            infoDict = new Dictionary<string, string>();
+            infoDict = new Dictionary<string, int>();
             string returnString = "";
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
 
@@ -407,18 +414,18 @@ namespace WindowsFormsForecastLactalis
                     {
                         if (!infoDict.ContainsKey(levKedja))
                         {
-                            infoDict.Add(levKedja, levAntal);
+                            infoDict.Add(levKedja, Antal);
                         }
                         else
                         {
                             i++;
                             string temp = i.ToString() + " " + levKedja;
-                            infoDict.Add(temp, levAntal);
+                            infoDict.Add(temp, Antal);
                         }
                     }
                 }
                 string infoString = "";
-                foreach (KeyValuePair<string, string> kvp in infoDict)
+                foreach (KeyValuePair<string, int> kvp in infoDict)
                 {
                     string temp = kvp.Key;
                     while (!Char.IsLetter(temp, 0))
@@ -636,7 +643,7 @@ namespace WindowsFormsForecastLactalis
 
             if (currentRows.Length < 1)
             {
-                Console.WriteLine("No Kopsorder Line Found");
+                Console.WriteLine("No Kopsorder Line Found 2");
             }
             else
             {
@@ -664,7 +671,7 @@ namespace WindowsFormsForecastLactalis
 
             if (currentRows.Length < 1)
             {
-                Console.WriteLine("No Kopsorder Line Found");
+                Console.WriteLine("No Kopsorder Line Found 3");
             }
             else
             {
@@ -706,5 +713,8 @@ namespace WindowsFormsForecastLactalis
                 return "A";
             }
         }
+
+       
+
     }
 }
