@@ -43,7 +43,7 @@ namespace WindowsFormsForecastLactalis
             sqlSalesCalls.SetYear(selectedYear);
 
             Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerNumber);
-
+            Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerNumber);
 
@@ -80,7 +80,7 @@ namespace WindowsFormsForecastLactalis
                 RealiseretSalgs_LastYear[i] = relaiseratSalg_LY[i];
                 Kampagn_ThisYear[i] = KampagnTY[i];
                 RealiseratSalg_ThisYear[i] = relaiseratSalg_TY[i];
-                Salgsbudget_Comment[i] = "Comment";
+                Salgsbudget_Comment[i] = Sales_CommentTY[i];
                 Salgsbudget_ChangeHistory[i] = "";
             }
 

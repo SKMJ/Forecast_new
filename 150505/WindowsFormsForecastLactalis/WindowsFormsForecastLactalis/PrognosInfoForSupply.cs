@@ -52,29 +52,22 @@ namespace WindowsFormsForecastLactalis
             sqlSupplyCalls.SetSelectedYear(selectedYear);
             Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget();
             Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG_TY();
+            Dictionary<int, string> Reguleret_CommentTY = sqlSupplyCalls.GetRegComment_TY();
             Dictionary<int, int> kopesBudgetTY = sqlSupplyCalls.GetKopesBudget_TY();
 
 
-            
-            //sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY();
             Dictionary<int, int> realiseretKampagnLY = new Dictionary<int,int>();
             Dictionary<int, int> relaiseratSalgsbudget_LY = new Dictionary<int, int>();
             if (ShowLastYear)
             {
-                //sqlSupplyCalls = new NavSQLSupplyInformation();
                 realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY();
 
-                //sqlSupplyCalls = new NavSQLSupplyInformation();
                 relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY();
             }
-            //sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY();
 
-            //sqlSupplyCalls = new NavSQLSupplyInformation();
             Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
-
-            //Todo add the code for the otther fileds.
 
             for (int i = 0; i < 54; i++)
             {
@@ -91,7 +84,7 @@ namespace WindowsFormsForecastLactalis
                 Kopsbudget_ThisYear[i] = kopesBudgetTY[i];
                 Kopsorder_ThisYear[i] = kopsOrder_TY[i];
                 //Salgsbudget_Comment[i] = "Comment";
-                SalgsbudgetReguleret_Comment[i] = "Comment";
+                SalgsbudgetReguleret_Comment[i] = Reguleret_CommentTY[i];
                 //Salgsbudget_ChangeHistory[i] = "";
             }
 

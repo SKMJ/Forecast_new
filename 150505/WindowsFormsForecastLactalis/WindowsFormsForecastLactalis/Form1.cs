@@ -178,15 +178,15 @@ namespace WindowsFormsForecastLactalis
                 }
                 AddRowFromList(tempList);
 
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Salgsbudget_Comment");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(item.Salgsbudget_Comment[i]);
-                }
-                AddRowFromList(tempList);
+                //tempList = new List<object>();
+                //tempList.Add("");
+                //tempList.Add("");
+                //tempList.Add("Salgsbudget_Comment");
+                //for (int i = 1; i < 54; i++)
+                //{
+                //    tempList.Add(item.Salgsbudget_Comment[i]);
+                //}
+                //AddRowFromList(tempList);
 
                 tempList = new List<object>();
                 tempList.Add("");
@@ -488,8 +488,31 @@ namespace WindowsFormsForecastLactalis
                         {
                             if (item.ProductNumber.ToString() == productNumber)
                             {
-                              item.Salgsbudget_ThisYear[week] = Convert.ToInt32(e.FormattedValue);
+                              //here a new budget_line post should be added to the database
+                                int ammount = Convert.ToInt32(e.FormattedValue) - item.Salgsbudget_ThisYear[week];
+                                if (ammount != 0)
+                                {
+                                    NavSQLExecute conn = new NavSQLExecute();
+                                    string tempCustNumber = custDictionary[comboBoxAssortment.Text];
+                                    //string startDato = "datum";
 
+                                    Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+                                    string st = "12/29/2014";
+                                    startDate.Add(2015, DateTime.Parse(st));
+                                    st = "12/30/2013";
+                                    startDate.Add(2014, DateTime.Parse(st));
+                                    st = "01/04/2016";
+                                    startDate.Add(2016, DateTime.Parse(st));
+                                    st = "01/02/2017";
+                                    startDate.Add(2017, DateTime.Parse(st));
+
+                                    DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
+                                    DateTime answer = tempDate.AddDays((week - 1) * 7);
+                                    string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+
+
+                                    conn.InsertBudgetLine(tempCustNumber, comboBoxAssortment.Text, productNumber, answer.ToString(format), ammount);
+                                }
                             }
                         }
                     }
@@ -551,7 +574,8 @@ namespace WindowsFormsForecastLactalis
 
                         latestWeek = columnIndex - 2;
                         latestProductNumber = GetProductNumberFromRow(rowIndex);
-                        infoboxSales.SetInfoText(this, temp, " Product: " + latestProductNumber + " Week: " + latestWeek);
+                        infoboxSales.SetInfoText(this, "", " Product: " + latestProductNumber + " Week: " + latestWeek);
+                        infoboxSales.SetOldInfo(temp);
                         infoboxSales.TopMost = true;
 
                         //First time it is showed needs special handling

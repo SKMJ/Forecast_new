@@ -26,6 +26,8 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
         Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
 
+        public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
+
         Dictionary<string, string> infoDict = new Dictionary<string, string>();
         
 
@@ -76,6 +78,7 @@ namespace WindowsFormsForecastLactalis
                 kampagn_TY.Add(k, 0);
                 relSalg_LY.Add(k, 0);
                 relSalg_TY.Add(k, 0);
+                Salgsbudget_Comment.Add(k, " ");
             }
         }
 
@@ -170,7 +173,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
                     int Antal2 = Convert.ToInt32(row["Antal"]);
-
+                    string comment = row["Kommentar"].ToString();
                     //string levKedja = row["Navn_DebBogfGr"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
@@ -187,6 +190,10 @@ namespace WindowsFormsForecastLactalis
                         if (year == thisYear)
                         {
                             salesBudgetTY[weekInt] = salesBudgetTY[weekInt] + Antal;
+                            if (comment.Length > 0)
+                            {
+                                Salgsbudget_Comment[weekInt] = Salgsbudget_Comment[weekInt] + " \n " + Antal + "  " + comment;
+                            }
                         }
                         else if (year == thisYear-1)
                         {
@@ -565,6 +572,12 @@ namespace WindowsFormsForecastLactalis
         internal string GetBeskrivelse()
         {
             return Beskrivelse;
+        }
+
+
+        internal Dictionary<int, string> GetSalesComment_TY()
+        {
+            return Salgsbudget_Comment;
         }
     }
 }

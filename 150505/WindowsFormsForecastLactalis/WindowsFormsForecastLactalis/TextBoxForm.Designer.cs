@@ -31,20 +31,22 @@
             this.richTextBoxInfo = new System.Windows.Forms.RichTextBox();
             this.buttonSaveInfo = new System.Windows.Forms.Button();
             this.buttonCloseInfo = new System.Windows.Forms.Button();
+            this.richTextBoxOldInfo = new System.Windows.Forms.RichTextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // richTextBoxInfo
             // 
-            this.richTextBoxInfo.Location = new System.Drawing.Point(0, 1);
+            this.richTextBoxInfo.Location = new System.Drawing.Point(0, 127);
             this.richTextBoxInfo.Name = "richTextBoxInfo";
-            this.richTextBoxInfo.Size = new System.Drawing.Size(517, 167);
+            this.richTextBoxInfo.Size = new System.Drawing.Size(517, 85);
             this.richTextBoxInfo.TabIndex = 1;
             this.richTextBoxInfo.Text = "";
             this.richTextBoxInfo.TextChanged += new System.EventHandler(this.richTextBoxInfo_TextChanged);
             // 
             // buttonSaveInfo
             // 
-            this.buttonSaveInfo.Location = new System.Drawing.Point(301, 174);
+            this.buttonSaveInfo.Location = new System.Drawing.Point(300, 218);
             this.buttonSaveInfo.Name = "buttonSaveInfo";
             this.buttonSaveInfo.Size = new System.Drawing.Size(100, 40);
             this.buttonSaveInfo.TabIndex = 2;
@@ -54,7 +56,7 @@
             // 
             // buttonCloseInfo
             // 
-            this.buttonCloseInfo.Location = new System.Drawing.Point(407, 174);
+            this.buttonCloseInfo.Location = new System.Drawing.Point(407, 218);
             this.buttonCloseInfo.Name = "buttonCloseInfo";
             this.buttonCloseInfo.Size = new System.Drawing.Size(100, 40);
             this.buttonCloseInfo.TabIndex = 3;
@@ -63,11 +65,31 @@
             this.buttonCloseInfo.Click += new System.EventHandler(this.buttonCloseInfo_Click);
             this.buttonCloseInfo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.buttonCloseInfo_KeyDown);
             // 
+            // richTextBoxOldInfo
+            // 
+            this.richTextBoxOldInfo.Location = new System.Drawing.Point(0, 1);
+            this.richTextBoxOldInfo.Name = "richTextBoxOldInfo";
+            this.richTextBoxOldInfo.Size = new System.Drawing.Size(517, 85);
+            this.richTextBoxOldInfo.TabIndex = 4;
+            this.richTextBoxOldInfo.Text = "";
+            this.richTextBoxOldInfo.TextChanged += new System.EventHandler(this.richTextBoxOldInfo_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 107);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(172, 17);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Add New Comment Below:";
+            // 
             // TextBoxForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(519, 235);
+            this.ClientSize = new System.Drawing.Size(519, 286);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.richTextBoxOldInfo);
             this.Controls.Add(this.buttonCloseInfo);
             this.Controls.Add(this.buttonSaveInfo);
             this.Controls.Add(this.richTextBoxInfo);
@@ -75,8 +97,8 @@
             this.Text = "Information";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TextBoxForm_FormClosing);
             this.Load += new System.EventHandler(this.TextBoxForm_Load);
-            //this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxForm_KeyDown);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -85,5 +107,7 @@
         private System.Windows.Forms.RichTextBox richTextBoxInfo;
         private System.Windows.Forms.Button buttonSaveInfo;
         private System.Windows.Forms.Button buttonCloseInfo;
+        private System.Windows.Forms.RichTextBox richTextBoxOldInfo;
+        private System.Windows.Forms.Label label1;
     }
 }

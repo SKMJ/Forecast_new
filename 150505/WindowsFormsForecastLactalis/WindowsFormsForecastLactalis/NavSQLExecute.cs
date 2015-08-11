@@ -61,7 +61,7 @@ namespace WindowsFormsForecastLactalis
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("No database Connection!     "+ ex.Message);
+                System.Windows.Forms.MessageBox.Show("No database Connection!     " + ex.Message);
             }
 
 
@@ -82,32 +82,58 @@ namespace WindowsFormsForecastLactalis
             conn.Close();
         }
 
-        public void InsertQueryToDatabase(string textQuery)
+        public void InsertBudgetLine(string custNumber, string custName, string prodNumber, string startdato, int ammount)
         {
-            using (SqlConnection connection = new SqlConnection("ConnectionStringHere"))
-            {
-                using (SqlCommand command = new SqlCommand())
-                {
-                    command.Connection = connection;            // <== lacking
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = "INSERT into tbl_staff (staffName, userID, idDepartment) VALUES (@staffName, @userID, @idDepart)";
-                    command.Parameters.AddWithValue("@staffName", "name namesson");
-                    command.Parameters.AddWithValue("@userID", "userIdExample");
-                    command.Parameters.AddWithValue("@idDepart", "idDepart ");
 
-                    try
-                    {
-                        connection.Open();
-                        int recordsAffected = command.ExecuteNonQuery();
-                    }
-                    catch (SqlException)
-                    {
-                        // error here
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.Connection = conn;            // <== lacking
+                command.CommandType = CommandType.Text;
+                command.CommandText = "INSERT into Debitor_Budgetlinjepost (DebitorBogføringsruppe, Varenr, Type, Startdato, Antal, Navn_DebBogfGr, Tastedato) VALUES (@DebitorBogføringsruppe, @Varenr, @Type, @Startdato, @Antal, @Navn_DebBogfGr, @Tastedato)";
+                command.Parameters.AddWithValue("@DebitorBogføringsruppe", custNumber);
+                command.Parameters.AddWithValue("@Varenr", prodNumber);
+                command.Parameters.AddWithValue("@Type", "4");
+                command.Parameters.AddWithValue("@Startdato", startdato);
+                command.Parameters.AddWithValue("@Antal", ammount);
+                command.Parameters.AddWithValue("@Navn_DebBogfGr", custName);
+                DateTime time = DateTime.Now;              // Use current time
+                string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+                command.Parameters.AddWithValue("@Tastedato", time.ToString(format));
+
+                try
+                {
+                    int recordsAffected = command.ExecuteNonQuery();
+                }
+                catch (SqlException ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Info can not be added to database     " + ex.Message);
+                }
+            }
+        }
+
+
+        public void InsertReguleretBudgetLine(string prodNumber, string startdato, int ammount, string comment)
+        {
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.Connection = conn;            // <== lacking
+                command.CommandType = CommandType.Text;
+                command.CommandText = "INSERT into Debitor_Budgetlinjepost (Varenr, Type, Startdato, Antal, Tastedato, Kommentar) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato, @Kommentar)";
+                command.Parameters.AddWithValue("@Varenr", prodNumber);
+                command.Parameters.AddWithValue("@Type", "5");
+                command.Parameters.AddWithValue("@Startdato", startdato);
+                command.Parameters.AddWithValue("@Antal", ammount);
+                command.Parameters.AddWithValue("@Kommentar", comment);
+                DateTime time = DateTime.Now;              // Use current time
+                string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+                command.Parameters.AddWithValue("@Tastedato", time.ToString(format));
+                try
+                {
+                    int recordsAffected = command.ExecuteNonQuery();
+                }
+                catch (SqlException ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Reguleret Info can not be added to database     " + ex.Message);
                 }
             }
         }

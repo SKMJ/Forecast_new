@@ -14,7 +14,7 @@ namespace WindowsFormsForecastLactalis
 {
     public partial class FormSupply : Form
     {
-        public static List<PrognosInfoForSupply> SupplierProducts = new List<PrognosInfoForSupply>();
+        public static Dictionary<int, PrognosInfoForSupply> SupplierProducts = new Dictionary<int, PrognosInfoForSupply>();
         Form1 form1Instance = new Form1();
         //private List<string> supplier = new List<string>();
         GetFromM3 m3Info = new GetFromM3();
@@ -127,7 +127,7 @@ namespace WindowsFormsForecastLactalis
         //Fill the UI info
         private void FillInfo()
         {
-            SupplierProducts = new List<PrognosInfoForSupply>();
+            SupplierProducts = new Dictionary<int, PrognosInfoForSupply>();
             this.dataGridForecastInfo.DataSource = null;
 
             this.dataGridForecastInfo.Rows.Clear();
@@ -156,7 +156,7 @@ namespace WindowsFormsForecastLactalis
                         PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
 
                         product1.FillNumbers(selectedYear);
-                        SupplierProducts.Add(product1);
+                        SupplierProducts.Add(Convert.ToInt32(item), product1);
                         //SupplierProductsFromM3.Add(product1);
                         Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
                     }
@@ -174,7 +174,7 @@ namespace WindowsFormsForecastLactalis
                     PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
 
                     product1.FillNumbers(selectedYear);
-                    SupplierProducts.Add(product1);
+                    SupplierProducts.Add(Convert.ToInt32(item), product1);
                     //SupplierProductsFromM3.Add(product1);
                     Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
                 }
@@ -189,7 +189,7 @@ namespace WindowsFormsForecastLactalis
         {
             Random randomNumber = new Random();
 
-            foreach (PrognosInfoForSupply item in SupplierProducts)
+            foreach (PrognosInfoForSupply item in SupplierProducts.Values)
             {
                 List<object> tempList;
 
@@ -255,6 +255,16 @@ namespace WindowsFormsForecastLactalis
                 tempList = new List<object>();
                 tempList.Add("");
                 tempList.Add("");
+                tempList.Add("Reguleret_Comment");
+                for (int i = 1; i < 54; i++)
+                {
+                    tempList.Add("");
+                }
+                AddRowFromList(tempList);
+
+                tempList = new List<object>();
+                tempList.Add("");
+                tempList.Add("");
                 tempList.Add("SalgsbudgetReguleret_TY");
                 for (int i = 1; i < 54; i++)
                 {
@@ -262,15 +272,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 AddRowFromList(tempList);
 
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Reguleret_Comment");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(item.SalgsbudgetReguleret_Comment[i]);
-                }
-                AddRowFromList(tempList);
+
 
                 tempList = new List<object>();
                 tempList.Add("");
@@ -390,7 +392,7 @@ namespace WindowsFormsForecastLactalis
         //Add testinfo Products
         private void CreateSupplyProducts(bool even)
         {
-            SupplierProducts = new List<PrognosInfoForSupply>();
+            SupplierProducts = new Dictionary<int, PrognosInfoForSupply>();
             if (even)
             {
                 AddProductByNumber(2432);
@@ -415,7 +417,7 @@ namespace WindowsFormsForecastLactalis
             }
             PrognosInfoForSupply product1 = new PrognosInfoForSupply(prodName, number, checkBoxLastYear.Checked);
             product1.FillNumbers(selectedYear);
-            SupplierProducts.Add(product1);
+            SupplierProducts.Add(number, product1);
         }
 
 
@@ -546,13 +548,18 @@ namespace WindowsFormsForecastLactalis
             {
                 if (!infoboxSupply.Visible)
                 {
-                    string temp = GetValueFromGridAsString(rowIndex, columnIndex);
-                    //string temp2 = GetValueFromGridAsString(rowIndex - 6, 0);
+
+                    string temp = "";
+                    string tempNewComment = GetValueFromGridAsString(rowIndex, columnIndex);
 
                     latestRow = rowIndex;
                     latestWeek = columnIndex - 2;
                     latestProductNumber = GetProductNumberFromRow(rowIndex);
-                    infoboxSupply.SetInfoText(this, temp, "Reguleret Product: " + latestProductNumber + " Week: " + latestWeek);
+
+                    temp = SupplierProducts[Convert.ToInt32(latestProductNumber)].SalgsbudgetReguleret_Comment[latestWeek];
+
+                    infoboxSupply.SetInfoText(this, tempNewComment, "Reguleret Product: " + latestProductNumber + " Week: " + latestWeek);
+                    infoboxSupply.SetOldInfo(temp);
                     infoboxSupply.TopMost = true;
 
                     if (infoboxSupply.desiredStartLocationX == 0 && infoboxSupply.desiredStartLocationY == 0)
@@ -575,14 +582,14 @@ namespace WindowsFormsForecastLactalis
 
         public PrognosInfoForSupply GetProductInfoByNumber(int productNbr)
         {
-            foreach (PrognosInfoForSupply item in SupplierProducts)
+            if (SupplierProducts.ContainsKey(productNbr))
             {
-                if (item.ProductNumber == productNbr)
-                {
-                    return item;
-                }
+                return SupplierProducts[productNbr];
             }
-            return null;
+            else
+            {
+                return null;
+            }
         }
 
 
@@ -639,14 +646,14 @@ namespace WindowsFormsForecastLactalis
 
                         SetKöpsbudget1102(week, productNumber, Convert.ToInt32(e.FormattedValue));
                         //Todo write to database
-
+                       
                     }
                 }
             }
-            else if ((GetValueFromGridAsString(rowIndex, 2) == "SalgsbudgetReguleret_ThisYear") && columnIndex > 2) // 1 should be your column index
+            else if ((GetValueFromGridAsString(rowIndex, 2) == "SalgsbudgetReguleret_TY") && columnIndex > 2) // 1 should be your column index
             {
                 int i;
-                string productNumber = GetProductNumberFromRow(rowIndex);
+                int productNumber = Convert.ToInt32(GetProductNumberFromRow(rowIndex));
                 int week = columnIndex - 2;
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
@@ -664,13 +671,57 @@ namespace WindowsFormsForecastLactalis
                     }
                     else
                     {
-                        SetRegulerat1102(week, productNumber, Convert.ToInt32(e.FormattedValue));
+                        if (Convert.ToInt32(e.FormattedValue) != SupplierProducts[productNumber].SalgsbudgetReguleret_ThisYear[week])
+                        {
+                            int ammount = Convert.ToInt32(e.FormattedValue) - SupplierProducts[productNumber].SalgsbudgetReguleret_ThisYear[week];
 
-                        int sBudget = Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value);
-                        int regSbudget = Convert.ToInt32(e.FormattedValue);
-                        dataGridForecastInfo.Rows[rowIndex + 2].Cells[columnIndex].Value = sBudget + regSbudget;
+                            if (dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString() != "")
+                            {
+                                SetRegulerat1102(week, productNumber.ToString(), Convert.ToInt32(e.FormattedValue));
 
-                        //TODO: Write to database
+                                int sBudget = Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - 2].Cells[columnIndex].Value);
+                                int regSbudget = Convert.ToInt32(e.FormattedValue);
+                                dataGridForecastInfo.Rows[rowIndex + 2].Cells[columnIndex].Value = sBudget + regSbudget;
+                                //TODO: Write to database
+
+                                //here a new budget_line post should be added to the database
+                                
+                                NavSQLExecute conn = new NavSQLExecute();
+                               
+                                //string startDato = "datum";
+                                string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString(); 
+
+                                Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+                                string st = "12/29/2014";
+                                startDate.Add(2015, DateTime.Parse(st));
+                                st = "12/30/2013";
+                                startDate.Add(2014, DateTime.Parse(st));
+                                st = "01/04/2016";
+                                startDate.Add(2016, DateTime.Parse(st));
+                                st = "01/02/2017";
+                                startDate.Add(2017, DateTime.Parse(st));
+
+                                DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
+                                DateTime answer = tempDate.AddDays((week - 1) * 7);
+                                string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+
+                                conn.InsertReguleretBudgetLine(productNumber.ToString(), answer.ToString(format), ammount, comment);
+                                //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
+
+                                dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value = "";
+                            
+
+                            }
+                            else
+                            {
+                                dataGridForecastInfo.Rows[rowIndex].Cells[columnIndex].Value = SupplierProducts[productNumber].SalgsbudgetReguleret_ThisYear[week];
+                                MessageBox.Show("Please Write comment before changing value. Then type the value again and press enter to save.");
+
+                            }
+
+                            
+                        }
+                       
 
                     }
                 }
@@ -697,41 +748,37 @@ namespace WindowsFormsForecastLactalis
 
         private void SetKöpsbudget1102(int week, string productNumber, int value)
         {
-            foreach (PrognosInfoForSupply item in SupplierProducts)
+            int prodNBRint = Convert.ToInt32(productNumber);
+            if (SupplierProducts.ContainsKey(prodNBRint))
             {
-                if (item.ProductNumber.ToString() == productNumber)
-                {
-                    item.Salgsbudget_ThisYear[week] = Convert.ToInt32(value);
-                }
+                SupplierProducts[prodNBRint].Salgsbudget_ThisYear[week] = Convert.ToInt32(value);
             }
+
         }
 
         public void SetRegulerat1102(int week, string productNumber, int value)
         {
-            foreach (PrognosInfoForSupply item in SupplierProducts)
+            int prodNBRint = Convert.ToInt32(productNumber);
+            if (SupplierProducts.ContainsKey(prodNBRint))
             {
-                if (item.ProductNumber.ToString() == productNumber)
-                {
-                    item.SalgsbudgetReguleret_ThisYear[week] = Convert.ToInt32(value);
-                }
+                SupplierProducts[prodNBRint].SalgsbudgetReguleret_ThisYear[week] = Convert.ToInt32(value);
+
             }
         }
+
 
         public void SetProductRegComment(string comment)
         {
-            foreach (PrognosInfoForSupply item in SupplierProducts)
-            {
-                if (item.ProductNumber.ToString() == latestProductNumber)
-                {
-                    //item.SalgsbudgetReguleret_ThisYear[week] = Convert.ToInt32(value);
-                    dataGridForecastInfo.Rows[latestRow].Cells[latestWeek + 2].Value = comment;
-                    item.Salgsbudget_Comment[latestWeek] = comment;
-                    //TODO: Write to database
-                }
-            }
+            int prodNBRint = Convert.ToInt32(latestProductNumber);
 
+            dataGridForecastInfo.Rows[latestRow].Cells[latestWeek + 2].Value = comment;
+            if (SupplierProducts.ContainsKey(prodNBRint))
+            {
+                SupplierProducts[prodNBRint].Salgsbudget_Comment[latestWeek] = comment;
+            }
             //FillInfo();
         }
+
 
         private void buttonGetSupplierFromNBR_Click(object sender, EventArgs e)
         {
@@ -771,7 +818,7 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.ClearSelection();
             SetupColumns();
 
-            SupplierProducts = new List<PrognosInfoForSupply>();
+            SupplierProducts = new Dictionary<int, PrognosInfoForSupply>();
             this.dataGridForecastInfo.DataSource = null;
 
             this.dataGridForecastInfo.Rows.Clear();

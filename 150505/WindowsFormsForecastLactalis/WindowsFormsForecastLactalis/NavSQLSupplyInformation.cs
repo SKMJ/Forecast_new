@@ -20,6 +20,8 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, int> salesBudgetREG_TY = new Dictionary<int, int>();
         Dictionary<int, int> kopesBudget_TY = new Dictionary<int, int>();
 
+        public Dictionary<int, string> SalgsbudgetReg_Comment = new Dictionary<int, string>();
+
         Dictionary<int, int> realKampagn_LY = new Dictionary<int, int>();
 
         Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
@@ -89,6 +91,7 @@ namespace WindowsFormsForecastLactalis
                 relSalg_LY.Add(k, 0);
                 relSalg_TY.Add(k, 0);
                 kopsOrderTY.Add(k, 0);
+                SalgsbudgetReg_Comment.Add(k, " ");
             }
         }
 
@@ -128,6 +131,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
                     int Antal2 = Convert.ToInt32(row["Antal"]);
+                    string comment = row["Kommentar"].ToString();
 
                     string levKedja = row["Navn_DebBogfGr"].ToString();
 
@@ -147,6 +151,8 @@ namespace WindowsFormsForecastLactalis
                         else if (intType == (int)TypeEnum.SalgsBudget_Regulering)
                         {
                             salesBudgetREG_TY[weekInt] = salesBudgetREG_TY[weekInt] + Antal;
+                            SalgsbudgetReg_Comment[weekInt] = SalgsbudgetReg_Comment[weekInt] + " \n " + Antal + "  " + comment;
+                            
                             //Console.WriteLine("SalesBudgetREg week: " + weekInt + " Antal: " + Antal);
                         }
                         else if (intType == (int)TypeEnum.KøbsBudget)
@@ -500,13 +506,6 @@ namespace WindowsFormsForecastLactalis
                     weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
 
-                    //if (currentProdNumber == 1442 && weekInt == 4)
-                    //{
-                    //    //Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" + year + " Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postType + " bool: " + levEgetLager + " lokCode: " + lokKode);
-                    //    //Console.WriteLine("antal Lokekod100: " + Antal);
-                    //    debug2 = debug2 + Antal;
-                    //}
-
 
                     if (currentSelectedYear == year)
                     {
@@ -565,26 +564,19 @@ namespace WindowsFormsForecastLactalis
                                 {
                                     if (lokKode.Equals("8"))
                                     {
-
                                         relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
-
-
                                     }
                                     else if (lokKode.Equals("100"))
                                     {
                                         relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
-
                                     }
                                 }
                             }
                             else
                             {
-                                //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
-
                                 if (postType == 1)
                                 {
                                     relSalg_LY[weekInt] = relSalg_LY[weekInt] - Antal;
-
                                 }
                             }
                         }
@@ -714,7 +706,12 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-       
 
+
+
+        internal Dictionary<int, string> GetRegComment_TY()
+        {
+            return SalgsbudgetReg_Comment;
+        }
     }
 }

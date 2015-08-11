@@ -156,5 +156,17 @@ namespace WindowsFormsForecastLactalis
         {
             buttonSaveInfo.Visible = visible;
         }
+
+        private void richTextBoxOldInfo_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        public void SetOldInfo(string text)
+        {
+            richTextBoxOldInfo.ReadOnly = true;
+            richTextBoxOldInfo.Text = text;
+
+        }
     }
 }
