@@ -29,6 +29,8 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
         public Dictionary<int, int> RealiseratSalg_ThisYear = new Dictionary<int, int>();
 
+        int[] weekPartPercentage = new int[8];
+
 
 
 
@@ -37,6 +39,15 @@ namespace WindowsFormsForecastLactalis
         {
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
+
+            NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
+            sqlSupplyCalls.UpdateVareKort();
+            weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+
+            if (ProductName.Length < 2 || ProductName == "Name Unknown")
+            {
+                ProductName = sqlSupplyCalls.GetBeskrivelse();
+            }
 
 
             SQLCallsSalesCustomerInfo  sqlSalesCalls = new SQLCallsSalesCustomerInfo();

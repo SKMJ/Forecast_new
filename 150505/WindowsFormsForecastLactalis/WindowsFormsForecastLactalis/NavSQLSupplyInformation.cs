@@ -34,6 +34,7 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
 
         Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+        int[] weekPartPercentage;
 
 
         int debug1 = 0;
@@ -700,10 +701,61 @@ namespace WindowsFormsForecastLactalis
             {
                 return Beskrivelse;
             }
+            return "A";
+
+        }
+
+
+        public void UpdateVareKort()
+        {
+            loadVareKortTable();
+            PrepareVareKort();
+        }
+
+        private void PrepareVareKort()
+        {
+            DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Varekort Line Found 2");
+            }
             else
             {
-                return "A";
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string beskrivelse = row["Beskrivelse"].ToString();
+                    int Antal = Convert.ToInt32(row["Antal_forecast_uger"].ToString());
+                    int FCMan = Convert.ToInt32(row["FC_man"].ToString());
+                    int FCTis = Convert.ToInt32(row["FC_tis"].ToString());
+                    int FCOns = Convert.ToInt32(row["FC_ons"].ToString());
+                    int FCTors = Convert.ToInt32(row["FC_tor"].ToString());
+                    int FCFre = Convert.ToInt32(row["FC_fre"].ToString());
+                    int FCLor = Convert.ToInt32(row["FC_lor"].ToString());
+                    int FCSon = Convert.ToInt32(row["FC_son"].ToString());
+                    weekPartPercentage = new int[] { Antal, FCMan, FCTis, FCOns, FCTors, FCFre, FCLor, FCSon };
+                    Console.WriteLine("VareKort: beskriv: " + beskrivelse + " Antal Forecast Veckor:  " + Antal + " , Procent: " + FCMan +
+                        ", " + FCTis + ", " + FCOns + ", " + FCTors + ", " + FCFre + ", " + FCLor + ", " + FCSon);
+                    Beskrivelse = beskrivelse;
+                }
+                
             }
+        }
+
+        private void loadVareKortTable()
+        {
+            string queryString = @"select Nummer, Beskrivelse, Antal_Forecast_uger, Forecast_fordelingsC_Mandag as FC_man, Forecast_fordelingsC_Tirsdag as FC_tis, Forecast_fordelingsC_Onsdag as FC_ons, Forecast_fordelingsC_Torsdag as FC_tor, Forecast_fordelingsC_Fredag as FC_fre, Forecast_fordelingsC_Lørdag as FC_lor, Forecast_fordelingsC_Søndag as FC_son   from vare where nummer = 'XXXX' ";
+
+            conn = new NavSQLExecute();
+
+            
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            Console.WriteLine("LoadVarekort Query: ");
+            latestQueryTable = conn.QueryExWithTableReturn(queryString);
+
+
+            conn.Close();
         }
 
 
@@ -712,6 +764,11 @@ namespace WindowsFormsForecastLactalis
         internal Dictionary<int, string> GetRegComment_TY()
         {
             return SalgsbudgetReg_Comment;
+        }
+
+        internal int[] GetPercentageWeekArray()
+        {
+            return weekPartPercentage;
         }
     }
 }

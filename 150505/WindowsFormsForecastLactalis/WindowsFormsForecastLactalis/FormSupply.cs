@@ -625,7 +625,7 @@ namespace WindowsFormsForecastLactalis
             if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsbudget_ThisYear") && columnIndex > 2) // 1 should be your column index
             {
                 int i;
-                string productNumber = GetProductNumberFromRow(rowIndex);
+                int productNumber = Convert.ToInt32(GetProductNumberFromRow(rowIndex));
                 int week = columnIndex - 2;
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
@@ -643,10 +643,31 @@ namespace WindowsFormsForecastLactalis
                     }
                     else
                     {
-
-                        SetKöpsbudget1102(week, productNumber, Convert.ToInt32(e.FormattedValue));
+                        int ammountToKop = Convert.ToInt32(e.FormattedValue) - SupplierProducts[productNumber].Kopsbudget_ThisYear[week];
+                        SetKöpsbudget1102(week, productNumber.ToString(), Convert.ToInt32(e.FormattedValue));
                         //Todo write to database
-                       
+                        NavSQLExecute conn = new NavSQLExecute();
+
+                        //string startDato = "datum";
+                        string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString();
+
+                        Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+                        string st = "12/29/2014";
+                        startDate.Add(2015, DateTime.Parse(st));
+                        st = "12/30/2013";
+                        startDate.Add(2014, DateTime.Parse(st));
+                        st = "01/04/2016";
+                        startDate.Add(2016, DateTime.Parse(st));
+                        st = "01/02/2017";
+                        startDate.Add(2017, DateTime.Parse(st));
+
+                        DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
+                        DateTime answer = tempDate.AddDays((week - 1) * 7);
+                        string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+
+                        conn.InsertKöpsbudgetLine(productNumber.ToString(), answer.ToString(format), ammountToKop);
+                        //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
+
                     }
                 }
             }

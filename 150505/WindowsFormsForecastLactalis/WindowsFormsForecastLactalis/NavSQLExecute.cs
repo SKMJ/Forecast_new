@@ -116,6 +116,9 @@ namespace WindowsFormsForecastLactalis
         {
             using (SqlCommand command = new SqlCommand())
             {
+                string cleanComment = System.Text.RegularExpressions.Regex.Replace(comment, "[áàäâãåÁÀÄÂÃÅ]", "a");
+                cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
+
                 command.Connection = conn;            // <== lacking
                 command.CommandType = CommandType.Text;
                 command.CommandText = "INSERT into Debitor_Budgetlinjepost (Varenr, Type, Startdato, Antal, Tastedato, Kommentar) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato, @Kommentar)";
@@ -123,7 +126,7 @@ namespace WindowsFormsForecastLactalis
                 command.Parameters.AddWithValue("@Type", "5");
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
-                command.Parameters.AddWithValue("@Kommentar", comment);
+                command.Parameters.AddWithValue("@Kommentar", cleanComment);
                 DateTime time = DateTime.Now;              // Use current time
                 string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
                 command.Parameters.AddWithValue("@Tastedato", time.ToString(format));
@@ -134,6 +137,35 @@ namespace WindowsFormsForecastLactalis
                 catch (SqlException ex)
                 {
                     System.Windows.Forms.MessageBox.Show("Reguleret Info can not be added to database     " + ex.Message);
+                }
+            }
+        }
+
+        internal void InsertKöpsbudgetLine(string prodNumber, string startdato, int ammount)
+        {
+            if (ammount != 0)
+            {
+                using (SqlCommand command = new SqlCommand())
+                {
+
+                    command.Connection = conn;            // <== lacking
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = "INSERT into Debitor_Budgetlinjepost (Varenr, Type, Startdato, Antal, Tastedato) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato)";
+                    command.Parameters.AddWithValue("@Varenr", prodNumber);
+                    command.Parameters.AddWithValue("@Type", "6");
+                    command.Parameters.AddWithValue("@Startdato", startdato);
+                    command.Parameters.AddWithValue("@Antal", ammount);
+                    DateTime time = DateTime.Now;              // Use current time
+                    string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+                    command.Parameters.AddWithValue("@Tastedato", time.ToString(format));
+                    try
+                    {
+                        int recordsAffected = command.ExecuteNonQuery();
+                    }
+                    catch (SqlException ex)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Kopsbudget could not be added to database     " + ex.Message);
+                    }
                 }
             }
         }

@@ -23,6 +23,9 @@ namespace WindowsFormsForecastLactalis
         public string PrepLocation = "";
         public bool ShowLastYear = false;
 
+        int[] weekPartPercentage = new int[8];
+
+
         public int ProductNumber = 0;
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> RealiseretSalg_LastYear = new Dictionary<int, int>();
@@ -46,10 +49,16 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
 
-
-
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             sqlSupplyCalls.SetSelectedYear(selectedYear);
+            sqlSupplyCalls.UpdateVareKort();
+            weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+
+            if (ProductName.Length <2 ||ProductName == "Unknown Name")
+            {
+                ProductName = sqlSupplyCalls.GetBeskrivelse();
+            }
+
             Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget();
             Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG_TY();
             Dictionary<int, string> Reguleret_CommentTY = sqlSupplyCalls.GetRegComment_TY();
@@ -62,11 +71,10 @@ namespace WindowsFormsForecastLactalis
             if (ShowLastYear)
             {
                 realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY();
-
                 relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY();
             }
-            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY();
 
+            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY();
             Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
 
             for (int i = 0; i < 54; i++)
@@ -87,7 +95,6 @@ namespace WindowsFormsForecastLactalis
                 SalgsbudgetReguleret_Comment[i] = Reguleret_CommentTY[i];
                 //Salgsbudget_ChangeHistory[i] = "";
             }
-
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
