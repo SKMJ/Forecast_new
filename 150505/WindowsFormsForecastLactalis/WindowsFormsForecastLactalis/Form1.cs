@@ -271,19 +271,35 @@ namespace WindowsFormsForecastLactalis
             PrognosInfoSales product4 = new PrognosInfoSales(allProductsDict[2442], 2442, tempCustNumber);
             PrognosInfoSales product5 = new PrognosInfoSales(allProductsDict[2735], 2735, tempCustNumber);
 
+            SetStatus("Products loading 1/5");
             product1.FillNumbers(selectedYear);
+            SetStatus("Products loading 2/5");
             product2.FillNumbers(selectedYear);
+            SetStatus("Products loading 3/5");
             product3.FillNumbers(selectedYear);
+            SetStatus("Products loading 4/5");
             product4.FillNumbers(selectedYear);
+            SetStatus("Products loading 5/5");
             product5.FillNumbers(selectedYear);
+
 
             Products.Add(product1);
             Products.Add(product2);
             Products.Add(product3);
             Products.Add(product4);
             Products.Add(product5);
+            labelStatus.Visible = false;
         }
 
+
+        private void SetStatus(string status)
+        {
+            labelStatus.Text = status;
+            labelStatus.Invalidate();
+            labelStatus.Update();
+            labelStatus.Refresh();
+            Application.DoEvents();
+        }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -332,8 +348,9 @@ namespace WindowsFormsForecastLactalis
         //Load products by customer
         private void button1_Click(object sender, EventArgs e)
         {
+            labelStatus.Visible = true;
             dataGridForecastInfo.Visible = false;
-            Application.DoEvents();  
+            SetStatus("Loading Products");
 
             loadingNewProductsOngoing = true;
             Stopwatch stopwatch = Stopwatch.StartNew();
@@ -356,14 +373,18 @@ namespace WindowsFormsForecastLactalis
                     Console.WriteLine("COOP vald");
                     Products = new List<PrognosInfoSales>();
                     List<int> productList = m3Info.GetListOfProductsNbrByAssortment("COOP");
+                    int nbrItems = productList.Count;
                     if (productList != null)
                     {
+                        int i = 0;
                         foreach (int item in productList)
                         {
+                            i++;
                             string temp = m3Info.GetItemNameByItemNumber(item.ToString());
                             PrognosInfoSales product1 = new PrognosInfoSales(temp, item, "COOP");
                             product1.FillNumbers(selectedYear);
                             Products.Add(product1);
+                            SetStatus("Products Loading " + i + "/" + nbrItems);
                         }
                         FillSalesGUIInfo();
                     }
@@ -383,6 +404,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Load all Customers Sales! Time (s): " + timeConnectSeconds);
             loadingNewProductsOngoing = false;
             dataGridForecastInfo.Visible = true;
+            labelStatus.Visible = false;
         }
 
 
@@ -767,7 +789,8 @@ namespace WindowsFormsForecastLactalis
         private void buttonGetProductByNumber_Click(object sender, EventArgs e)
         {
             dataGridForecastInfo.Visible = false;
-            Application.DoEvents();  
+            labelStatus.Visible = true;
+            SetStatus("Product Loading"); 
             loadingNewProductsOngoing = true;
             SetupColumns();
             Products = new List<PrognosInfoSales>();
@@ -793,6 +816,7 @@ namespace WindowsFormsForecastLactalis
             FillSalesGUIInfo();
             loadingNewProductsOngoing = false;
             dataGridForecastInfo.Visible = true;
+            labelStatus.Visible = false;
         }
 
         public void LoadAllProductDict()
@@ -826,6 +850,11 @@ namespace WindowsFormsForecastLactalis
                 }
                 Console.WriteLine(allProductsDict.ToString());
             }
+
+        }
+
+        private void labelStatus_Click(object sender, EventArgs e)
+        {
 
         }
 

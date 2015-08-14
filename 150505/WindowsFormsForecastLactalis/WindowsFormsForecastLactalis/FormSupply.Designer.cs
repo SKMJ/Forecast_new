@@ -47,6 +47,7 @@
             this.numericUpDownPRoductNumber = new System.Windows.Forms.NumericUpDown();
             this.buttonCreateM3LactalisOrders = new System.Windows.Forms.Button();
             this.checkBoxLastYear = new System.Windows.Forms.CheckBox();
+            this.labelStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).BeginInit();
@@ -241,12 +242,24 @@
             this.checkBoxLastYear.UseVisualStyleBackColor = true;
             this.checkBoxLastYear.CheckedChanged += new System.EventHandler(this.checkBoxLastYear_CheckedChanged);
             // 
+            // labelStatus
+            // 
+            this.labelStatus.AutoSize = true;
+            this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelStatus.Location = new System.Drawing.Point(804, 151);
+            this.labelStatus.Name = "labelStatus";
+            this.labelStatus.Size = new System.Drawing.Size(181, 25);
+            this.labelStatus.TabIndex = 21;
+            this.labelStatus.Text = "Loading Numbers";
+            this.labelStatus.Visible = false;
+            // 
             // FormSupply
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaGreen;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.checkBoxLastYear);
             this.Controls.Add(this.buttonCreateM3LactalisOrders);
             this.Controls.Add(this.buttonGetProductByNumber);
@@ -296,5 +309,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnProductName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
         private System.Windows.Forms.CheckBox checkBoxLastYear;
+        private System.Windows.Forms.Label labelStatus;
     }
 }

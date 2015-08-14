@@ -382,7 +382,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 if (colNBR < 3)
                 {
-                    col.ReadOnly = false;
+                    col.ReadOnly = true;
                 }
                 colNBR++;
             }
@@ -395,14 +395,20 @@ namespace WindowsFormsForecastLactalis
             SupplierProducts = new Dictionary<int, PrognosInfoForSupply>();
             if (even)
             {
+
                 AddProductByNumber(2432);
+                SetStatus("Loading products 1/2");
                 AddProductByNumber(1442);
+                SetStatus("Loading products 2/2");
 
             }
             else
             {
+                SetStatus("Loading products 1/3");
                 AddProductByNumber(1443);
+                SetStatus("Loading products 2/3");
                 AddProductByNumber(1447);
+                SetStatus("Loading products 3/3");
                 AddProductByNumber(2239);
             }
         }
@@ -453,7 +459,7 @@ namespace WindowsFormsForecastLactalis
         private void buttonGetProductsBySupplier_Click(object sender, EventArgs e)
         {
             dataGridForecastInfo.Visible = false;
-            Application.DoEvents();
+            SetStatus("Load Products");
             dataGridForecastInfo.ClearSelection();
             SetupColumns();
             if (!infoboxSupply.Visible)
@@ -469,7 +475,20 @@ namespace WindowsFormsForecastLactalis
                 MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before changing Supplier!");
             }
             dataGridForecastInfo.Visible = true;
+            labelStatus.Visible = false;
         }
+
+
+        private void SetStatus(string status)
+        {
+            labelStatus.Text = status;
+            labelStatus.Visible = true;
+            labelStatus.Invalidate();
+            labelStatus.Update();
+            labelStatus.Refresh();
+            Application.DoEvents();
+        }
+
 
         private void buttonTestSupplItems_Click(object sender, EventArgs e)
         {
@@ -804,7 +823,7 @@ namespace WindowsFormsForecastLactalis
         private void buttonGetSupplierFromNBR_Click(object sender, EventArgs e)
         {
             dataGridForecastInfo.Visible = false;
-            Application.DoEvents();
+            SetStatus("Loading products");
             dataGridForecastInfo.ClearSelection();
             SetupColumns();
             if (numericSupplyNBR.Value == 1102)
@@ -824,6 +843,7 @@ namespace WindowsFormsForecastLactalis
                 MessageBox.Show(new Form() { TopMost = true }, "No supplier with that number");
             }
             dataGridForecastInfo.Visible = true;
+            labelStatus.Visible = false;
 
         }
 
@@ -835,7 +855,7 @@ namespace WindowsFormsForecastLactalis
         private void buttonGetProductByNumber_Click(object sender, EventArgs e)
         {
             dataGridForecastInfo.Visible = false;
-            Application.DoEvents();  
+            SetStatus("Loading Products");  
             dataGridForecastInfo.ClearSelection();
             SetupColumns();
 
@@ -852,6 +872,7 @@ namespace WindowsFormsForecastLactalis
             AddProductByNumber(prodNMBR);
             PrepareGUI();
             dataGridForecastInfo.Visible = true;
+            labelStatus.Visible = false;
         }
 
         private void buttonCreateM3LactalisOrders_Click(object sender, EventArgs e)

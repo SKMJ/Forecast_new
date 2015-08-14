@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.dataGridForecastInfo = new System.Windows.Forms.DataGridView();
+            this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonSupplyView = new System.Windows.Forms.Button();
             this.comboBoxAssortment = new System.Windows.Forms.ComboBox();
@@ -38,9 +41,7 @@
             this.comboBoxYear = new System.Windows.Forms.ComboBox();
             this.buttonGetProductByNumber = new System.Windows.Forms.Button();
             this.numericUpDownPRoductNumber = new System.Windows.Forms.NumericUpDown();
-            this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.labelStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPRoductNumber)).BeginInit();
@@ -64,6 +65,27 @@
             this.dataGridForecastInfo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridForecastInfo_CellValidating);
             this.dataGridForecastInfo.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellValueChanged);
             this.dataGridForecastInfo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridForecastInfo_MouseClick);
+            // 
+            // ColumnVareNR
+            // 
+            this.ColumnVareNR.Frozen = true;
+            this.ColumnVareNR.HeaderText = "VareNr";
+            this.ColumnVareNR.Name = "ColumnVareNR";
+            this.ColumnVareNR.Width = 70;
+            // 
+            // ColumnProductName
+            // 
+            this.ColumnProductName.Frozen = true;
+            this.ColumnProductName.HeaderText = "Beskrivelse";
+            this.ColumnProductName.Name = "ColumnProductName";
+            this.ColumnProductName.Width = 270;
+            // 
+            // ColumnType
+            // 
+            this.ColumnType.Frozen = true;
+            this.ColumnType.HeaderText = "Type";
+            this.ColumnType.Name = "ColumnType";
+            this.ColumnType.Width = 250;
             // 
             // pictureBox1
             // 
@@ -156,26 +178,17 @@
             this.numericUpDownPRoductNumber.Size = new System.Drawing.Size(102, 22);
             this.numericUpDownPRoductNumber.TabIndex = 18;
             // 
-            // ColumnVareNR
+            // labelStatus
             // 
-            this.ColumnVareNR.Frozen = true;
-            this.ColumnVareNR.HeaderText = "VareNr";
-            this.ColumnVareNR.Name = "ColumnVareNR";
-            this.ColumnVareNR.Width = 70;
-            // 
-            // ColumnProductName
-            // 
-            this.ColumnProductName.Frozen = true;
-            this.ColumnProductName.HeaderText = "Beskrivelse";
-            this.ColumnProductName.Name = "ColumnProductName";
-            this.ColumnProductName.Width = 270;
-            // 
-            // ColumnType
-            // 
-            this.ColumnType.Frozen = true;
-            this.ColumnType.HeaderText = "Type";
-            this.ColumnType.Name = "ColumnType";
-            this.ColumnType.Width = 250;
+            this.labelStatus.AutoSize = true;
+            this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelStatus.Location = new System.Drawing.Point(704, 128);
+            this.labelStatus.Name = "labelStatus";
+            this.labelStatus.Size = new System.Drawing.Size(181, 25);
+            this.labelStatus.TabIndex = 20;
+            this.labelStatus.Text = "Loading Numbers";
+            this.labelStatus.Visible = false;
+            this.labelStatus.Click += new System.EventHandler(this.labelStatus_Click);
             // 
             // Form1
             // 
@@ -183,6 +196,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.buttonGetProductByNumber);
             this.Controls.Add(this.numericUpDownPRoductNumber);
             this.Controls.Add(this.labelYear);
@@ -219,6 +233,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnVareNR;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnProductName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
+        private System.Windows.Forms.Label labelStatus;
     }
 }
 
