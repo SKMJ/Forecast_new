@@ -23,7 +23,7 @@ namespace WindowsFormsForecastLactalis
         public string PrepLocation = "";
         public bool ShowLastYear = false;
 
-        int[] weekPartPercentage = new int[8];
+        int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
 
 
         public int ProductNumber = 0;

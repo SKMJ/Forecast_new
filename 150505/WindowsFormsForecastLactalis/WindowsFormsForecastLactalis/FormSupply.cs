@@ -636,8 +636,10 @@ namespace WindowsFormsForecastLactalis
         {
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
-            if (columnIndex == 0 & rowIndex == 0)
+
+            if ((columnIndex == 0 && rowIndex == 0) || SupplierProducts.Count < 1)
             {
+                Console.WriteLine("Validation while loading data skipped");
                 return;
             }
 
@@ -664,8 +666,7 @@ namespace WindowsFormsForecastLactalis
                     {
                         int ammountToKop = Convert.ToInt32(e.FormattedValue) - SupplierProducts[productNumber].Kopsbudget_ThisYear[week];
                         SetKöpsbudget1102(week, productNumber.ToString(), Convert.ToInt32(e.FormattedValue));
-                        //Todo write to database
-                        NavSQLExecute conn = new NavSQLExecute();
+
 
                         //string startDato = "datum";
                         string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString();
@@ -684,7 +685,14 @@ namespace WindowsFormsForecastLactalis
                         DateTime answer = tempDate.AddDays((week - 1) * 7);
                         string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
 
-                        conn.InsertKöpsbudgetLine(productNumber.ToString(), answer.ToString(format), ammountToKop);
+
+                        System.Threading.ThreadPool.QueueUserWorkItem(delegate
+                        {
+                            //Todo write to database
+                            NavSQLExecute conn = new NavSQLExecute();
+                            conn.InsertKöpsbudgetLine(productNumber.ToString(), answer.ToString(format), ammountToKop);
+                        }, null); 
+
                         //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
 
                     }
@@ -721,12 +729,15 @@ namespace WindowsFormsForecastLactalis
 
                                 int sBudget = Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - 2].Cells[columnIndex].Value);
                                 int regSbudget = Convert.ToInt32(e.FormattedValue);
-                                dataGridForecastInfo.Rows[rowIndex + 2].Cells[columnIndex].Value = sBudget + regSbudget;
+                                if ((GetValueFromGridAsString(rowIndex+1, 2).Contains("Salgsbudget_Summeret")))
+                                {
+                                    dataGridForecastInfo.Rows[rowIndex + 1].Cells[columnIndex].Value = sBudget + regSbudget;
+                                }
                                 //TODO: Write to database
 
                                 //here a new budget_line post should be added to the database
                                 
-                                NavSQLExecute conn = new NavSQLExecute();
+                                
                                
                                 //string startDato = "datum";
                                 string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString(); 
@@ -744,8 +755,12 @@ namespace WindowsFormsForecastLactalis
                                 DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
                                 DateTime answer = tempDate.AddDays((week - 1) * 7);
                                 string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
-
-                                conn.InsertReguleretBudgetLine(productNumber.ToString(), answer.ToString(format), ammount, comment);
+                                System.Threading.ThreadPool.QueueUserWorkItem(delegate
+                                {
+                                    NavSQLExecute conn = new NavSQLExecute();
+                                    conn.InsertReguleretBudgetLine(productNumber.ToString(), answer.ToString(format), ammount, comment);
+                                }, null);
+                                
                                 //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
 
                                 dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value = "";
@@ -900,9 +915,119 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
+        private void buttonCreateFile_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CreateLinesForOneProduct(Dictionary<int, int> kopesBudgetFormNextWeek_TY, int[] weekPartPercentage, int lactalisProdNBR)
+        {
+            int dayFromNow = 0;
+            List<string> dayOrderStrings = new List<string>();
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string fullName = System.IO.Path.Combine(desktopPath, "testOutput.txt");
+            for (int i = 0; i < kopesBudgetFormNextWeek_TY.Count; i++)
+            {
+                int numberPerWeek = kopesBudgetFormNextWeek_TY[i];
+                int weekDay = 1;
+                int thisWeekday = 1;
+                while (thisWeekday != 0 && weekDay < 8)
+                {
+                    dayFromNow++;
+                    DateTime today = DateTime.Now;
+                    DateTime answer = today.AddDays(dayFromNow);
+
+                    Console.WriteLine("day nmbr: " + (int)answer.DayOfWeek + " is: {0:dddd}", answer);
+                    thisWeekday = (int)answer.DayOfWeek;
+
+                    // this code is (monday = 1, teuseday = 2,.... sunday=7
+                    // answer from day of week code is (sunday=7 = 0, monday = 1, teuseday = 2,.... 
+                    if (thisWeekday > 0) //if not sunday
+                    {
+                        weekDay = thisWeekday;
+                    }
+                    else
+                    {
+                        weekDay = 7; //sunday
+                    }
+                    double part = Convert.ToDouble(weekPartPercentage[weekDay]) / 100.0;
+
+                    double numberThisDate = part * Convert.ToDouble(numberPerWeek);
+
+
+                    //weekDay++;
+                    dayOrderStrings.Add(CreateLine(lactalisProdNBR, answer, Convert.ToInt32(numberThisDate)));
+                }
+
+            }
+
+            dayOrderStrings.Add(CreateLine(123, DateTime.Now, 525));
+            dayOrderStrings.Add(CreateLine(666666, DateTime.Now, 0));
+
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fullName.Replace("_log.txt", "_post_adresses.txt")))
+            {
+                foreach (string line in dayOrderStrings)
+                {
+                    file.WriteLine(line);
+                }
+            }
+        }
+
+
+        private string CreateLine(int numberLact, DateTime date, int numberToBuy)
+        {
+            string temp = "";
+
+            string tempNBR = numberLact.ToString();
+
+
+            while (tempNBR.Length < 6)
+            {
+                tempNBR = " " + tempNBR;
+            }
+            temp = "\"" + tempNBR + "\"";
+            temp = temp + ",\"" + "I2DEL" + "\",";
+            temp = temp + "\"" + "\",";
+            temp = temp + date.Year + ",";
+
+
+            if (date.Month < 10)
+            {
+                temp = temp + "0";
+            }
+            temp = temp + date.Month + ",";
+            if (date.Day < 10)
+            {
+                temp = temp + "0";
+            }
+
+            temp = temp + date.Day + ",";
+            temp = temp + numberToBuy;
+
+            Console.WriteLine(temp);
+
+            return temp;
+
+
+        }
+
         private void checkBoxLastYear_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void buttonCreateLactalisFile_Click(object sender, EventArgs e)
+        {
+            int[] weekPartPercentage = new int[] { 24, 50, 0, 0, 50, 0, 0, 0 };
+            Dictionary<int, int> kopesBudgetTY = new Dictionary<int, int>();// sqlSupplyCalls.GetKopesBudget_TY();
+            for (int i = 0; i <= weekPartPercentage[0]; i++)
+            {
+                kopesBudgetTY.Add(i, i * 10);
+            }
+            int lactalisProdNBR = 2345;
+
+            CreateLinesForOneProduct(kopesBudgetTY, weekPartPercentage, lactalisProdNBR);
         }
     }
 }

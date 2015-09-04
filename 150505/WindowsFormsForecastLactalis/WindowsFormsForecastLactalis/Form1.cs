@@ -116,8 +116,12 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToDeleteRows = false;
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
+            Dictionary<int,int> weekToLock = new Dictionary<int,int>();
+            int weekProdNBR =0;
             foreach (PrognosInfoSales item in Products)
             {
+                weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 2); //+ 2 is offset from cell number to week number
+                weekProdNBR++;
                 List<object> tempList = new List<object>();
                 tempList.Add(item.ProductNumber.ToString());
                 tempList.Add(item.ProductName);
@@ -199,7 +203,8 @@ namespace WindowsFormsForecastLactalis
                 AddRowFromList(tempList);
             }
             //Thread.Sleep(2000);
-
+           
+                weekProdNBR = 0;
             //After all is filled set colors and reaqdonly properties
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
             {
@@ -226,11 +231,22 @@ namespace WindowsFormsForecastLactalis
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
-                    row.DefaultCellStyle.ForeColor = Color.Red;
-                    row.ReadOnly = false;
+                    
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
-
-
+                    for (int i = 0; i < row.Cells.Count; i++)
+                    {
+                        if(weekToLock[weekProdNBR] < i)
+                        {
+                            row.Cells[i].ReadOnly = false;
+                            row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Violet };
+                        }
+                        else
+                        {
+                            row.Cells[i].ReadOnly = true;
+                            row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
+                        }
+                    }
+                    weekProdNBR++;
                 }
                 else if (Convert.ToString(row.Cells[2].Value).Contains("Commen"))
                 {
@@ -240,7 +256,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.ReadOnly = true;
                 }
-
+                
             }
             int colNBR = 0;
             foreach (DataGridViewColumn col in dataGridForecastInfo.Columns)
@@ -303,9 +319,7 @@ namespace WindowsFormsForecastLactalis
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //sender.ToString();
 
-            //e.ToString();
         }
 
 
@@ -514,7 +528,7 @@ namespace WindowsFormsForecastLactalis
                                 int ammount = Convert.ToInt32(e.FormattedValue) - item.Salgsbudget_ThisYear[week];
                                 if (ammount != 0)
                                 {
-                                    NavSQLExecute conn = new NavSQLExecute();
+                                   
                                     string tempCustNumber = custDictionary[comboBoxAssortment.Text];
                                     //string startDato = "datum";
 
@@ -531,9 +545,13 @@ namespace WindowsFormsForecastLactalis
                                     DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
                                     DateTime answer = tempDate.AddDays((week - 1) * 7);
                                     string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
-
-
-                                    conn.InsertBudgetLine(tempCustNumber, comboBoxAssortment.Text, productNumber, answer.ToString(format), ammount);
+                                    string tempAssortment = comboBoxAssortment.Text;
+                                    System.Threading.ThreadPool.QueueUserWorkItem(delegate
+                                    {
+                                        NavSQLExecute conn = new NavSQLExecute();
+                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount);
+                                    }, null);
+                                    
                                 }
                             }
                         }

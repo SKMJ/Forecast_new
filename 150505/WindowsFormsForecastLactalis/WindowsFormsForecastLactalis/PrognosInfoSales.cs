@@ -20,6 +20,8 @@ namespace WindowsFormsForecastLactalis
         public string ProductName = "";
         public int ProductNumber = 0;
         public string CustomerNumber = "";
+        public int WeekToLockFrom = 0;
+
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> RealiseretSalgs_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();
@@ -29,7 +31,7 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
         public Dictionary<int, int> RealiseratSalg_ThisYear = new Dictionary<int, int>();
 
-        int[] weekPartPercentage = new int[8];
+        int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
 
 
 
@@ -43,6 +45,11 @@ namespace WindowsFormsForecastLactalis
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             sqlSupplyCalls.UpdateVareKort();
             weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+            int weektemp = sqlSupplyCalls.GetCurrentWeekNBR();
+
+            WeekToLockFrom = weekPartPercentage[0] + weektemp;
+
+            Console.WriteLine("Produkt " + ProductNumber + " Varukort,  Vecka nu: " + weektemp + " Weektolock from: " + WeekToLockFrom + " Antal att låsa: " + weekPartPercentage[0]);
 
             if (ProductName.Length < 2 || ProductName == "Name Unknown")
             {

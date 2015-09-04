@@ -7,6 +7,7 @@ using System.Data.Odbc;
 using System.Data;
 using System.Diagnostics;
 using System.Data.SqlClient;
+using System.ComponentModel;
 
 namespace WindowsFormsForecastLactalis
 {
@@ -19,6 +20,8 @@ namespace WindowsFormsForecastLactalis
         //private OdbcDataAdapter dataAddapter;
         private SqlDataAdapter dataAddapter;
         private DataTable dataTable;
+        private BackgroundWorker bw = new BackgroundWorker();
+
 
 
         public NavSQLExecute()
@@ -26,6 +29,8 @@ namespace WindowsFormsForecastLactalis
             //Navision SQL
             try
             {
+
+
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 conn = new SqlConnection("Data Source=210.2.250.9,1433;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
                 //conn = new SqlConnection("Data Source=210.2.250.9,1433;Network Library=DBMSSOCN;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
@@ -84,6 +89,8 @@ namespace WindowsFormsForecastLactalis
 
         public void InsertBudgetLine(string custNumber, string custName, string prodNumber, string startdato, int ammount)
         {
+            bw.WorkerReportsProgress = true;
+            bw.WorkerSupportsCancellation = true;
 
             using (SqlCommand command = new SqlCommand())
             {

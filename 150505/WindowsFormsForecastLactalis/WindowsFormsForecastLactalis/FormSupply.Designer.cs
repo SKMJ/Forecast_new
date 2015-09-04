@@ -48,6 +48,7 @@
             this.buttonCreateM3LactalisOrders = new System.Windows.Forms.Button();
             this.checkBoxLastYear = new System.Windows.Forms.CheckBox();
             this.labelStatus = new System.Windows.Forms.Label();
+            this.buttonCreateLactalisFile = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).BeginInit();
@@ -253,12 +254,23 @@
             this.labelStatus.Text = "Loading Numbers";
             this.labelStatus.Visible = false;
             // 
+            // buttonCreateLactalisFile
+            // 
+            this.buttonCreateLactalisFile.Location = new System.Drawing.Point(1000, 75);
+            this.buttonCreateLactalisFile.Name = "buttonCreateLactalisFile";
+            this.buttonCreateLactalisFile.Size = new System.Drawing.Size(138, 23);
+            this.buttonCreateLactalisFile.TabIndex = 22;
+            this.buttonCreateLactalisFile.Text = "create Lacatlis File";
+            this.buttonCreateLactalisFile.UseVisualStyleBackColor = true;
+            this.buttonCreateLactalisFile.Click += new System.EventHandler(this.buttonCreateLactalisFile_Click);
+            // 
             // FormSupply
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaGreen;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.buttonCreateLactalisFile);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.checkBoxLastYear);
             this.Controls.Add(this.buttonCreateM3LactalisOrders);
@@ -310,5 +322,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
         private System.Windows.Forms.CheckBox checkBoxLastYear;
         private System.Windows.Forms.Label labelStatus;
+        private System.Windows.Forms.Button buttonCreateLactalisFile;
     }
 }

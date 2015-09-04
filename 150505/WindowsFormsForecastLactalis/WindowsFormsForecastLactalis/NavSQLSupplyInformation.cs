@@ -768,7 +768,21 @@ namespace WindowsFormsForecastLactalis
 
         internal int[] GetPercentageWeekArray()
         {
+            if (weekPartPercentage == null)
+            {
+                weekPartPercentage = new int[] { 0, 100, 0, 0, 0, 0, 0, 0 };
+            }
             return weekPartPercentage;
+        }
+
+        internal int GetCurrentWeekNBR()
+        {
+            DateTime tempDate = DateTime.Now;
+            double week1 = (tempDate - startDate[currentSelectedYear]).TotalDays;
+            double weekNBR = week1 / 7.0;
+            int weekInt = (int)Math.Floor(weekNBR);
+            weekInt = weekInt + 1;
+            return weekInt;
         }
     }
 }
