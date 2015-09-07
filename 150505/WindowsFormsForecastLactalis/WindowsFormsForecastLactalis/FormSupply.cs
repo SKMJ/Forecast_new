@@ -14,6 +14,8 @@ namespace WindowsFormsForecastLactalis
 {
     public partial class FormSupply : Form
     {
+        List<string> dayOrderStrings = new List<string>();
+
         public static Dictionary<int, PrognosInfoForSupply> SupplierProducts = new Dictionary<int, PrognosInfoForSupply>();
         Form1 form1Instance = new Form1();
         //private List<string> supplier = new List<string>();
@@ -218,7 +220,7 @@ namespace WindowsFormsForecastLactalis
                     for (int i = 1; i < 54; i++)
                     {
                         tempList.Add(item.RealiseretSalg_LastYear[i]);
-                    }                    
+                    }
                 }
                 AddRowFromList(tempList);
                 tempList = new List<object>();
@@ -691,7 +693,7 @@ namespace WindowsFormsForecastLactalis
                             //Todo write to database
                             NavSQLExecute conn = new NavSQLExecute();
                             conn.InsertKöpsbudgetLine(productNumber.ToString(), answer.ToString(format), ammountToKop);
-                        }, null); 
+                        }, null);
 
                         //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
 
@@ -729,18 +731,18 @@ namespace WindowsFormsForecastLactalis
 
                                 int sBudget = Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - 2].Cells[columnIndex].Value);
                                 int regSbudget = Convert.ToInt32(e.FormattedValue);
-                                if ((GetValueFromGridAsString(rowIndex+1, 2).Contains("Salgsbudget_Summeret")))
+                                if ((GetValueFromGridAsString(rowIndex + 1, 2).Contains("Salgsbudget_Summeret")))
                                 {
                                     dataGridForecastInfo.Rows[rowIndex + 1].Cells[columnIndex].Value = sBudget + regSbudget;
                                 }
                                 //TODO: Write to database
 
                                 //here a new budget_line post should be added to the database
-                                
-                                
-                               
+
+
+
                                 //string startDato = "datum";
-                                string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString(); 
+                                string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString();
 
                                 Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
                                 string st = "12/29/2014";
@@ -760,11 +762,11 @@ namespace WindowsFormsForecastLactalis
                                     NavSQLExecute conn = new NavSQLExecute();
                                     conn.InsertReguleretBudgetLine(productNumber.ToString(), answer.ToString(format), ammount, comment);
                                 }, null);
-                                
+
                                 //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
 
                                 dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value = "";
-                            
+
 
                             }
                             else
@@ -774,9 +776,9 @@ namespace WindowsFormsForecastLactalis
 
                             }
 
-                            
+
                         }
-                       
+
 
                     }
                 }
@@ -870,7 +872,7 @@ namespace WindowsFormsForecastLactalis
         private void buttonGetProductByNumber_Click(object sender, EventArgs e)
         {
             dataGridForecastInfo.Visible = false;
-            SetStatus("Loading Products");  
+            SetStatus("Loading Products");
             dataGridForecastInfo.ClearSelection();
             SetupColumns();
 
@@ -921,15 +923,14 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-        private void CreateLinesForOneProduct(Dictionary<int, int> kopesBudgetFormNextWeek_TY, int[] weekPartPercentage, int lactalisProdNBR)
+        private void CreateLinesForOneProduct(Dictionary<int, int> kopesBudgetFormNextWeek_TY, int[] weekPartPercentage, int lactalisProdNBR, int lactaNBRPerKolli)
         {
             int dayFromNow = 0;
-            List<string> dayOrderStrings = new List<string>();
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string fullName = System.IO.Path.Combine(desktopPath, "testOutput.txt");
-            for (int i = 0; i < kopesBudgetFormNextWeek_TY.Count; i++)
+
+
+            for (int i = 1; i < kopesBudgetFormNextWeek_TY.Count; i++)
             {
-                int numberPerWeek = kopesBudgetFormNextWeek_TY[i];
+                int numberPerWeek = kopesBudgetFormNextWeek_TY[i] / lactaNBRPerKolli;
                 int weekDay = 1;
                 int thisWeekday = 1;
                 while (thisWeekday != 0 && weekDay < 8)
@@ -938,7 +939,7 @@ namespace WindowsFormsForecastLactalis
                     DateTime today = DateTime.Now;
                     DateTime answer = today.AddDays(dayFromNow);
 
-                    Console.WriteLine("day nmbr: " + (int)answer.DayOfWeek + " is: {0:dddd}", answer);
+                    //Console.WriteLine("day nmbr: " + (int)answer.DayOfWeek + " is: {0:dddd}", answer);
                     thisWeekday = (int)answer.DayOfWeek;
 
                     // this code is (monday = 1, teuseday = 2,.... sunday=7
@@ -955,6 +956,11 @@ namespace WindowsFormsForecastLactalis
 
                     double numberThisDate = part * Convert.ToDouble(numberPerWeek);
 
+                    if(numberPerWeek>0)
+                    {
+                        Console.WriteLine("LActanbr: " + lactalisProdNBR + " number per week: " + numberPerWeek);
+                    }
+
 
                     //weekDay++;
                     dayOrderStrings.Add(CreateLine(lactalisProdNBR, answer, Convert.ToInt32(numberThisDate)));
@@ -962,16 +968,10 @@ namespace WindowsFormsForecastLactalis
 
             }
 
-            dayOrderStrings.Add(CreateLine(123, DateTime.Now, 525));
-            dayOrderStrings.Add(CreateLine(666666, DateTime.Now, 0));
+            //dayOrderStrings.Add(CreateLine(123, DateTime.Now, 525));
+            //dayOrderStrings.Add(CreateLine(666666, DateTime.Now, 0));
 
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fullName.Replace("_log.txt", "_post_adresses.txt")))
-            {
-                foreach (string line in dayOrderStrings)
-                {
-                    file.WriteLine(line);
-                }
-            }
+           
         }
 
 
@@ -1005,7 +1005,7 @@ namespace WindowsFormsForecastLactalis
             temp = temp + date.Day + ",";
             temp = temp + numberToBuy;
 
-            Console.WriteLine(temp);
+            //Console.WriteLine(temp);
 
             return temp;
 
@@ -1019,15 +1019,91 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonCreateLactalisFile_Click(object sender, EventArgs e)
         {
-            int[] weekPartPercentage = new int[] { 24, 50, 0, 0, 50, 0, 0, 0 };
-            Dictionary<int, int> kopesBudgetTY = new Dictionary<int, int>();// sqlSupplyCalls.GetKopesBudget_TY();
-            for (int i = 0; i <= weekPartPercentage[0]; i++)
-            {
-                kopesBudgetTY.Add(i, i * 10);
-            }
-            int lactalisProdNBR = 2345;
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            dayOrderStrings = new List<string>();
 
-            CreateLinesForOneProduct(kopesBudgetTY, weekPartPercentage, lactalisProdNBR);
+            List<int> productsToSendKopbudget = new List<int>();
+
+
+
+            productsToSendKopbudget = GetListOfProductsTOSendKopbudget();
+
+
+            foreach (int item in productsToSendKopbudget)
+            {
+                FileToSendInfoForPoduct currentProdFileInfo = new FileToSendInfoForPoduct(item, 0);
+                currentProdFileInfo.FillNumbers();
+
+                int[] weekPartPercentage = currentProdFileInfo.weekPartPercentage;
+                Dictionary<int, int> kopesBudgetTY = currentProdFileInfo.Kopsbudget_ThisYear;// sqlSupplyCalls.GetKopesBudget_TY();
+
+                int lactalisProdNBR = currentProdFileInfo.LactalisFranceProductNumber;
+
+                CreateLinesForOneProduct(kopesBudgetTY, weekPartPercentage, lactalisProdNBR, currentProdFileInfo.Antal_pr_kolli);
+            }
+
+            stopwatch.Stop();
+
+
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string fullName = System.IO.Path.Combine(desktopPath, "testOutput.txt");
+
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fullName))
+            {
+                foreach (string line in dayOrderStrings)
+                {
+                    file.WriteLine(line);
+                }
+            }
+
+            double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
+            Console.WriteLine("Create France File! Time (s): " + timeConnectSeconds);
         }
+
+        private List<int> GetListOfProductsTOSendKopbudget()
+        {
+            List<int> returnList = new List<int>();
+
+            // Todo write this query Here
+
+            string queryText = @"select ForeCast_Startdato, Nummer,Leverandørnr,Leverandørs_varenr, lactalis_varenr, Beskrivelse, Antal_Forecast_uger, Forecast_fordelingsC_Mandag as FC_man, ";
+            queryText = queryText + "Forecast_fordelingsC_Tirsdag as FC_tis, Forecast_fordelingsC_Onsdag as FC_ons, Forecast_fordelingsC_Torsdag as FC_tor, Forecast_fordelingsC_Fredag as FC_fre, ";
+
+            queryText = queryText + "Forecast_fordelingsC_Lørdag as FC_lor, Forecast_fordelingsC_Søndag as FC_son   , Spærret, Undertryk_i_Købsbudget ";
+            queryText = queryText + "from vare ";
+            queryText = queryText + "where (Leverandørnr = '1102' or  Leverandørnr = '1100' or  Leverandørnr = '4016' ) and lactalis_varenr > 1 and Undertryk_i_Købsbudget='false'  and Spærret ='false' and ";
+            queryText = queryText + "Antal_Forecast_uger > 0 and ForeCast_Startdato >= '1980-04-01' and Nummer NOT LIKE '%T%' and Nummer NOT LIKE '%U%' ";
+            queryText = queryText + "order by lactalis_varenr ";
+
+            NavSQLExecute conn = new NavSQLExecute();
+
+            Console.WriteLine("LoadList of LActaFrance  Query: ");
+            DataTable tempTable = conn.QueryExWithTableReturn(queryText);
+
+
+            DataRow[] currentRows =  tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Kopsorder Line Found 3");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string prodNBR = row["Nummer"].ToString();
+                    int NBR = Convert.ToInt32(prodNBR);
+
+                    returnList.Add(NBR);
+                }
+            }
+
+
+            conn.Close();
+            return returnList;
+        }
+
+
     }
 }

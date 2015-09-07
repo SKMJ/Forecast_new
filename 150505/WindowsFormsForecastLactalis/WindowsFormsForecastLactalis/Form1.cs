@@ -40,7 +40,7 @@ namespace WindowsFormsForecastLactalis
             //test with Coop and test customer
             FixCustomerChoices();
 
-            m3Info.TestM3Connection();
+            //m3Info.TestM3Connection();
             SetupColumns();
 
             LoadAllProductDict();

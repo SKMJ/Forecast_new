@@ -14,11 +14,17 @@ namespace WindowsFormsForecastLactalis
         DataTable latestQueryTable2; //Holds latest loaded Query output if 2 needed
 
         string Beskrivelse = "A";
+
+        int LactalisVareNummer = 0;
+        int Lactalis_NBRPer_colli = 0;
+
         NavSQLExecute conn;
         Dictionary<string, int> infoDict = new Dictionary<string, int>();
         Dictionary<int, int> salesBudget_TY = new Dictionary<int, int>();
         Dictionary<int, int> salesBudgetREG_TY = new Dictionary<int, int>();
         Dictionary<int, int> kopesBudget_TY = new Dictionary<int, int>();
+
+        Dictionary<int, int> kopesBudget_ForFile = new Dictionary<int, int>();
 
         public Dictionary<int, string> SalgsbudgetReg_Comment = new Dictionary<int, string>();
 
@@ -93,6 +99,7 @@ namespace WindowsFormsForecastLactalis
                 relSalg_TY.Add(k, 0);
                 kopsOrderTY.Add(k, 0);
                 SalgsbudgetReg_Comment.Add(k, " ");
+                kopesBudget_ForFile.Add(k, 0);
             }
         }
 
@@ -705,6 +712,28 @@ namespace WindowsFormsForecastLactalis
 
         }
 
+        public int GetLactaVareNR()
+        {
+            if (Beskrivelse.Length > 1)
+            {
+                return LactalisVareNummer;
+            }
+            return 0;
+
+        }
+
+
+
+
+        public int GetLactalis_NBRPer_colli()
+        {
+            if (Beskrivelse.Length > 1)
+            {
+                return Lactalis_NBRPer_colli;
+            }
+            return 1;
+        }
+
 
         public void UpdateVareKort()
         {
@@ -734,6 +763,20 @@ namespace WindowsFormsForecastLactalis
                     int FCFre = Convert.ToInt32(row["FC_fre"].ToString());
                     int FCLor = Convert.ToInt32(row["FC_lor"].ToString());
                     int FCSon = Convert.ToInt32(row["FC_son"].ToString());
+                    LactalisVareNummer = Convert.ToInt32(row["lactalis_varenr"].ToString());
+                    Lactalis_NBRPer_colli = Convert.ToInt32(row["Antal_pr_kolli"].ToString());
+
+                    if (FCMan + FCTis + FCOns + FCTors + FCFre + FCLor +FCSon != 100)
+                    {
+                        FCMan = 100;
+                        FCTis = 0;
+                        FCOns = 0;
+                        FCTors = 0;
+                        FCFre = 0;
+                        FCLor = 0;
+                        FCSon = 0;
+                    }
+                    
                     weekPartPercentage = new int[] { Antal, FCMan, FCTis, FCOns, FCTors, FCFre, FCLor, FCSon };
                     Console.WriteLine("VareKort: beskriv: " + beskrivelse + " Antal Forecast Veckor:  " + Antal + " , Procent: " + FCMan +
                         ", " + FCTis + ", " + FCOns + ", " + FCTors + ", " + FCFre + ", " + FCLor + ", " + FCSon);
@@ -745,7 +788,7 @@ namespace WindowsFormsForecastLactalis
 
         private void loadVareKortTable()
         {
-            string queryString = @"select Nummer, Beskrivelse, Antal_Forecast_uger, Forecast_fordelingsC_Mandag as FC_man, Forecast_fordelingsC_Tirsdag as FC_tis, Forecast_fordelingsC_Onsdag as FC_ons, Forecast_fordelingsC_Torsdag as FC_tor, Forecast_fordelingsC_Fredag as FC_fre, Forecast_fordelingsC_Lørdag as FC_lor, Forecast_fordelingsC_Søndag as FC_son   from vare where nummer = 'XXXX' ";
+            string queryString = @"select Antal_pr_kolli, Nummer, Beskrivelse, Antal_Forecast_uger, Forecast_fordelingsC_Mandag as FC_man, Forecast_fordelingsC_Tirsdag as FC_tis, Forecast_fordelingsC_Onsdag as FC_ons, Forecast_fordelingsC_Torsdag as FC_tor, Forecast_fordelingsC_Fredag as FC_fre, Forecast_fordelingsC_Lørdag as FC_lor, Forecast_fordelingsC_Søndag as FC_son, lactalis_varenr   from vare where nummer = 'XXXX' ";
 
             conn = new NavSQLExecute();
 
@@ -756,6 +799,86 @@ namespace WindowsFormsForecastLactalis
 
 
             conn.Close();
+        }
+
+        //Load the sales budget numbers from SQL Database
+        private void LoadKopesBudgetForFileFromSQL()
+        {
+            conn = new NavSQLExecute();
+            Dictionary<int, string> dateKopesBudget = new Dictionary<int, string>();
+            dateKopesBudget.Add(1, @"2015/09/07");
+            dateKopesBudget.Add(2, @"2019/09/07");
+            string queryString = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from Debitor_Budgetlinjepost where Type = '6' and Varenr='XXXX' and startdato >= '" + dateKopesBudget[1] + "' and startdato < '" + dateKopesBudget[2] + "' order by startdato";
+            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            Console.WriteLine("Load Sales Budget Query: ");
+            latestQueryTable = conn.QueryExWithTableReturn(queryString);
+            conn.Close();
+        }
+
+
+        private void PrepareLoadedKopesBudgetForFile()
+        {
+            DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Supplier Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string stringType = row["Type"].ToString();
+                    int intType = Convert.ToInt32(stringType);
+                    string levAntal = row["Antal"].ToString();
+                    int Antal = Convert.ToInt32(levAntal);
+                    int Antal2 = Convert.ToInt32(row["Antal"]);
+                    string comment = row["Kommentar"].ToString();
+
+                    string levKedja = row["Navn_DebBogfGr"].ToString();
+
+                    int dayFromNow = 0;
+                    int thisWeekday = 100;
+
+                    DateTime today = DateTime.Now;
+                    while (thisWeekday != 0 && dayFromNow < 10)
+                    {
+                                                
+                        DateTime answer = today.AddDays(dayFromNow);
+
+                        //Console.WriteLine("day nmbr: " + (int)answer.DayOfWeek + " is: {0:dddd}", answer);
+                        thisWeekday = (int)answer.DayOfWeek;
+                        dayFromNow++;
+                    }
+                    DateTime dateNextMonday = today.AddDays(dayFromNow);
+                    thisWeekday = (int)dateNextMonday.DayOfWeek;
+                    if (dayFromNow > 0 && dayFromNow < 8 && thisWeekday == 1)
+                    {
+
+
+                        DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                        double week = (tempDate - dateNextMonday).TotalDays;
+                        double weekNBR = week / 7.0;
+                        int weekNBRfromNowInt = (int)Math.Floor(weekNBR);
+                        weekNBRfromNowInt = weekNBRfromNowInt + 2; //Next week is week 1
+
+                        if (weekNBRfromNowInt >=0  && weekNBRfromNowInt < 54)
+                        {
+                            if (intType == (int)TypeEnum.KøbsBudget)
+                            {
+                                kopesBudget_ForFile[weekNBRfromNowInt] = kopesBudget_ForFile[weekNBRfromNowInt] + Antal;
+                                //Console.WriteLine("KopesBudget week: " + weekInt + " Antal: " + Antal);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error day is not monday!! this day: " + thisWeekday + "  days fromNow to next monday: " + dayFromNow);
+                    }
+                }
+
+            }
         }
 
 
@@ -783,6 +906,13 @@ namespace WindowsFormsForecastLactalis
             int weekInt = (int)Math.Floor(weekNBR);
             weekInt = weekInt + 1;
             return weekInt;
+        }
+
+        internal Dictionary<int, int> GetKopesBudgetForFile()
+        {
+            LoadKopesBudgetForFileFromSQL();
+            PrepareLoadedKopesBudgetForFile();
+            return kopesBudget_ForFile;
         }
     }
 }

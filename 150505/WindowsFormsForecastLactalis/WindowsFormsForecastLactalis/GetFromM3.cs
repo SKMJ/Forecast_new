@@ -65,7 +65,7 @@ namespace WindowsFormsForecastLactalis
             if (rc != 0)
             {
                 MessageBox.Show("M3 Communication Fail! ");
-                //MvxSock.ShowLastError(ref sid, "M3 Communication Fail! " + "\n");
+                MvxSock.ShowLastError(ref sid, "M3 Communication Fail! " + "\n");
                 MvxSock.Close(ref sid);
                 Console.WriteLine("M3 communication: FAIL!!");
                 return false;
