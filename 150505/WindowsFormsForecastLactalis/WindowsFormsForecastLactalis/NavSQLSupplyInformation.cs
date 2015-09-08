@@ -64,7 +64,7 @@ namespace WindowsFormsForecastLactalis
             InitiateProperties();
             currentProdNumber = prodNumberForInfo;
             currentSelectedYear = yearForInfo;
-            
+
 
         }
 
@@ -160,7 +160,7 @@ namespace WindowsFormsForecastLactalis
                         {
                             salesBudgetREG_TY[weekInt] = salesBudgetREG_TY[weekInt] + Antal;
                             SalgsbudgetReg_Comment[weekInt] = SalgsbudgetReg_Comment[weekInt] + " \n " + Antal + "  " + comment;
-                            
+
                             //Console.WriteLine("SalesBudgetREg week: " + weekInt + " Antal: " + Antal);
                         }
                         else if (intType == (int)TypeEnum.KøbsBudget)
@@ -234,7 +234,7 @@ namespace WindowsFormsForecastLactalis
                 foreach (KeyValuePair<string, int> kvp in infoDict)
                 {
                     string temp = kvp.Key;
-                    if(temp.Length >0)
+                    if (temp.Length > 0)
                     {
                         while (!Char.IsLetter(temp, 0))
                         {
@@ -763,10 +763,16 @@ namespace WindowsFormsForecastLactalis
                     int FCFre = Convert.ToInt32(row["FC_fre"].ToString());
                     int FCLor = Convert.ToInt32(row["FC_lor"].ToString());
                     int FCSon = Convert.ToInt32(row["FC_son"].ToString());
-                    LactalisVareNummer = Convert.ToInt32(row["lactalis_varenr"].ToString());
+                    string temp = row["lactalis_varenr"].ToString();
+
+                    if (temp.Length > 0)
+                    {
+                        LactalisVareNummer = Convert.ToInt32(temp);
+                    }
+
                     Lactalis_NBRPer_colli = Convert.ToInt32(row["Antal_pr_kolli"].ToString());
 
-                    if (FCMan + FCTis + FCOns + FCTors + FCFre + FCLor +FCSon != 100)
+                    if (FCMan + FCTis + FCOns + FCTors + FCFre + FCLor + FCSon != 100)
                     {
                         FCMan = 100;
                         FCTis = 0;
@@ -776,13 +782,13 @@ namespace WindowsFormsForecastLactalis
                         FCLor = 0;
                         FCSon = 0;
                     }
-                    
+
                     weekPartPercentage = new int[] { Antal, FCMan, FCTis, FCOns, FCTors, FCFre, FCLor, FCSon };
                     Console.WriteLine("VareKort: beskriv: " + beskrivelse + " Antal Forecast Veckor:  " + Antal + " , Procent: " + FCMan +
                         ", " + FCTis + ", " + FCOns + ", " + FCTors + ", " + FCFre + ", " + FCLor + ", " + FCSon);
                     Beskrivelse = beskrivelse;
                 }
-                
+
             }
         }
 
@@ -792,7 +798,7 @@ namespace WindowsFormsForecastLactalis
 
             conn = new NavSQLExecute();
 
-            
+
             queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
             Console.WriteLine("LoadVarekort Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
@@ -844,7 +850,7 @@ namespace WindowsFormsForecastLactalis
                     DateTime today = DateTime.Now;
                     while (thisWeekday != 0 && dayFromNow < 10)
                     {
-                                                
+
                         DateTime answer = today.AddDays(dayFromNow);
 
                         //Console.WriteLine("day nmbr: " + (int)answer.DayOfWeek + " is: {0:dddd}", answer);
@@ -863,7 +869,7 @@ namespace WindowsFormsForecastLactalis
                         int weekNBRfromNowInt = (int)Math.Floor(weekNBR);
                         weekNBRfromNowInt = weekNBRfromNowInt + 2; //Next week is week 1
 
-                        if (weekNBRfromNowInt >=0  && weekNBRfromNowInt < 54)
+                        if (weekNBRfromNowInt >= 0 && weekNBRfromNowInt < 54)
                         {
                             if (intType == (int)TypeEnum.KøbsBudget)
                             {

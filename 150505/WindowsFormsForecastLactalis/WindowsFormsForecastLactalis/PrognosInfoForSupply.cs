@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace WindowsFormsForecastLactalis
 {
     //this is the supply prognos info not connected to any customer
-    public class PrognosInfoForSupply
+    public class PrognosInfoForSupply : IComparable
     {
         public PrognosInfoForSupply(string name, int number, bool showLastYear)
         {
@@ -41,7 +41,23 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, int> Kopsorder_ThisYear = new Dictionary<int, int>();
         //private PrognosInfo item;
 
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
 
+            PrognosInfoSales otherPrognosInfo = obj as PrognosInfoSales;
+            if (otherPrognosInfo != null)
+            {
+                return this.ProductNumber.CompareTo(otherPrognosInfo.ProductNumber);
+            }
+            else
+            {
+                throw new ArgumentException("Object is not a PrognosInfo");
+            }
+        }
 
 
         public void FillNumbers(int selectedYear)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsForecastLactalis
 {
-    class PrognosInfoSales
+    class PrognosInfoSales : IComparable 
     {
          public PrognosInfoSales(string name, int number, string customerNumber)
         {
@@ -35,6 +35,23 @@ namespace WindowsFormsForecastLactalis
 
 
 
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            PrognosInfoSales otherPrognosInfo = obj as PrognosInfoSales;
+            if (otherPrognosInfo != null)
+            {
+                return this.ProductNumber.CompareTo(otherPrognosInfo.ProductNumber);
+            }                
+            else
+            { 
+                throw new ArgumentException("Object is not a PrognosInfo");
+            }
+        }
 
 
         public void FillNumbers(int selectedYear)

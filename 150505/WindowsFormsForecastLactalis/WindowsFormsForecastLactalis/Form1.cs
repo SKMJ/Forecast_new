@@ -118,6 +118,7 @@ namespace WindowsFormsForecastLactalis
 
             Dictionary<int,int> weekToLock = new Dictionary<int,int>();
             int weekProdNBR =0;
+            Products.Sort();
             foreach (PrognosInfoSales item in Products)
             {
                 weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 2); //+ 2 is offset from cell number to week number
@@ -229,6 +230,12 @@ namespace WindowsFormsForecastLactalis
                     row.DefaultCellStyle.ForeColor = Color.DarkRed;
                     row.ReadOnly = true;
                 }
+                else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ChangeHistory")
+                {
+                    row.DefaultCellStyle.ForeColor = Color.DarkRed;
+                    row.ReadOnly = true;
+                }
+                    
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
                     
@@ -311,6 +318,8 @@ namespace WindowsFormsForecastLactalis
         private void SetStatus(string status)
         {
             labelStatus.Text = status;
+            buttonSupplyView.Enabled = false;
+            comboBoxYear.Enabled = false;
             labelStatus.Invalidate();
             labelStatus.Update();
             labelStatus.Refresh();
@@ -362,6 +371,8 @@ namespace WindowsFormsForecastLactalis
         //Load products by customer
         private void button1_Click(object sender, EventArgs e)
         {
+            selectedYear = (int) comboBoxYear.SelectedItem;
+            
             labelStatus.Visible = true;
             dataGridForecastInfo.Visible = false;
             SetStatus("Loading Products");
@@ -416,9 +427,7 @@ namespace WindowsFormsForecastLactalis
             stopwatch.Stop();
             double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Load all Customers Sales! Time (s): " + timeConnectSeconds);
-            loadingNewProductsOngoing = false;
-            dataGridForecastInfo.Visible = true;
-            labelStatus.Visible = false;
+            LoadingReady();
         }
 
 
@@ -600,6 +609,9 @@ namespace WindowsFormsForecastLactalis
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
 
+            selectedYear = (int)comboBoxYear.SelectedItem;
+            
+
             latestMouseClick = System.Windows.Forms.Cursor.Position;
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
             if (columnIndex > 2)
@@ -659,6 +671,7 @@ namespace WindowsFormsForecastLactalis
                         string temp = "";
 
                         SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
+                        sqlConnection.SetYear(selectedYear);
                         string tempCustNumber = custDictionary[comboBoxAssortment.Text];
                         temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, productNumber, tempCustNumber);
 
@@ -832,9 +845,16 @@ namespace WindowsFormsForecastLactalis
             product1.FillNumbers(selectedYear);
             Products.Add(product1);
             FillSalesGUIInfo();
+            LoadingReady();
+        }
+
+        private void LoadingReady()
+        {
             loadingNewProductsOngoing = false;
             dataGridForecastInfo.Visible = true;
             labelStatus.Visible = false;
+            buttonSupplyView.Enabled = true;
+            comboBoxYear.Enabled = true;
         }
 
         public void LoadAllProductDict()

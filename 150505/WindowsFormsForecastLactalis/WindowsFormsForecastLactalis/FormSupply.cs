@@ -148,27 +148,38 @@ namespace WindowsFormsForecastLactalis
             {
                 numericSupplyNBR.Value = 1102;
                 //This will later load all numbers from databases
-                foreach (int supplNBR in MotherSupplierWithChilds[1102])
+                //foreach (int supplNBR in MotherSupplierWithChilds[1102])
+                //{
+                //List<string> tempList = m3Info.GetListOfProductsBySupplier(supplNBR.ToString());
+                List<int> tempList = GetListOfProductsTOSendKopbudget();
+                int numberOfProducts = tempList.Count;
+                tempList.Sort();
+
+                int i = 0;
+                foreach (int item in tempList)
                 {
-                    List<string> tempList = m3Info.GetListOfProductsBySupplier(supplNBR.ToString());
+                    i++;
+                    SetStatus("Products loading " + i.ToString() + "/" + numberOfProducts.ToString());
+                    string tempName = m3Info.GetItemNameByItemNumber(item.ToString());
+                    PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
 
-                    foreach (string item in tempList)
+                    product1.FillNumbers(selectedYear);
+                    if (!SupplierProducts.ContainsKey(Convert.ToInt32(item)))
                     {
-                        string tempName = m3Info.GetItemNameByItemNumber(item);
-                        PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
-
-                        product1.FillNumbers(selectedYear);
                         SupplierProducts.Add(Convert.ToInt32(item), product1);
-                        //SupplierProductsFromM3.Add(product1);
-                        Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
                     }
+                    //SupplierProductsFromM3.Add(product1);
+                    Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
                 }
+
 
             }
             else if (comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 2000"))
             {
                 numericSupplyNBR.Value = 2000;
                 List<string> tempList = m3Info.GetListOfProductsBySupplier("2000");
+
+                tempList.Sort();
 
                 foreach (string item in tempList)
                 {
@@ -191,9 +202,16 @@ namespace WindowsFormsForecastLactalis
         {
             Random randomNumber = new Random();
 
-            foreach (PrognosInfoForSupply item in SupplierProducts.Values)
+            var list = SupplierProducts.Keys.ToList();
+            list.Sort();
+
+            // Loop through keys.
+            foreach (var key in list)
             {
+
                 List<object> tempList;
+
+                PrognosInfoForSupply item = SupplierProducts[key];
 
                 tempList = new List<object>();
                 tempList.Add(item.ProductNumber.ToString());
@@ -322,6 +340,11 @@ namespace WindowsFormsForecastLactalis
                     row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "RealiseratSalg_ThisYear")
+                {
+                    row.DefaultCellStyle.ForeColor = Color.Black;
+                    row.ReadOnly = true;
+                }
+                else if (Convert.ToString(row.Cells[2].Value).Length < 1)
                 {
                     row.DefaultCellStyle.ForeColor = Color.Black;
                     row.ReadOnly = true;
@@ -461,9 +484,14 @@ namespace WindowsFormsForecastLactalis
         private void buttonGetProductsBySupplier_Click(object sender, EventArgs e)
         {
             dataGridForecastInfo.Visible = false;
+            buttonGetProductByNumber.Enabled = false;
+            buttonGetProductsBySupplier.Enabled = false;
+            buttonGetSupplierFromNBR.Enabled = false;
+
             SetStatus("Load Products");
             dataGridForecastInfo.ClearSelection();
             SetupColumns();
+
             if (!infoboxSupply.Visible)
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
@@ -477,20 +505,46 @@ namespace WindowsFormsForecastLactalis
                 MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before changing Supplier!");
             }
             dataGridForecastInfo.Visible = true;
-            labelStatus.Visible = false;
+            LoadReadyStatus();
         }
+
+
 
 
         private void SetStatus(string status)
         {
             labelStatus.Text = status;
             labelStatus.Visible = true;
+            dataGridForecastInfo.Visible = false;
+            buttonGetProductByNumber.Enabled = false;
+            buttonGetProductsBySupplier.Enabled = false;
+            buttonGetSupplierFromNBR.Enabled = false;
+            buttonSalesView.Enabled = false;
+            comboBoxYear.Enabled = false;
+            numericSupplyNBR.Enabled = false;
+            numericUpDownPRoductNumber.Enabled = false;
+
             labelStatus.Invalidate();
             labelStatus.Update();
             labelStatus.Refresh();
             Application.DoEvents();
         }
 
+        private void LoadReadyStatus()
+        {
+
+            labelStatus.Visible = false;
+            dataGridForecastInfo.Visible = true;
+            buttonGetProductByNumber.Enabled = true;
+            buttonGetProductsBySupplier.Enabled = true;
+            buttonGetSupplierFromNBR.Enabled = true;
+            buttonSalesView.Enabled = true;
+            comboBoxYear.Enabled = true;
+            numericSupplyNBR.Enabled = true;
+            numericUpDownPRoductNumber.Enabled = true;
+
+            Application.DoEvents();
+        }
 
         private void buttonTestSupplItems_Click(object sender, EventArgs e)
         {
@@ -576,23 +630,26 @@ namespace WindowsFormsForecastLactalis
                     latestRow = rowIndex;
                     latestWeek = columnIndex - 2;
                     latestProductNumber = GetProductNumberFromRow(rowIndex);
-
-                    temp = SupplierProducts[Convert.ToInt32(latestProductNumber)].SalgsbudgetReguleret_Comment[latestWeek];
-
-                    infoboxSupply.SetInfoText(this, tempNewComment, "Reguleret Product: " + latestProductNumber + " Week: " + latestWeek);
-                    infoboxSupply.SetOldInfo(temp);
-                    infoboxSupply.TopMost = true;
-
-                    if (infoboxSupply.desiredStartLocationX == 0 && infoboxSupply.desiredStartLocationY == 0)
+                    if (latestWeek > 0)
                     {
-                        infoboxSupply.SetNextLocation(latestMouseClick);
+                        temp = SupplierProducts[Convert.ToInt32(latestProductNumber)].SalgsbudgetReguleret_Comment[latestWeek];
+
+                        infoboxSupply.SetInfoText(this, tempNewComment, "Reguleret Product: " + latestProductNumber + " Week: " + latestWeek);
+                        infoboxSupply.SetOldInfo(temp);
+                        infoboxSupply.TopMost = true;
+
+
+                        if (infoboxSupply.desiredStartLocationX == 0 && infoboxSupply.desiredStartLocationY == 0)
+                        {
+                            infoboxSupply.SetNextLocation(latestMouseClick);
+                        }
+                        else
+                        {
+                            infoboxSupply.Location = latestMouseClick;
+                        }
+                        infoboxSupply.Show();
+                        infoboxSupply.FocusTextBox();
                     }
-                    else
-                    {
-                        infoboxSupply.Location = latestMouseClick;
-                    }
-                    infoboxSupply.Show();
-                    infoboxSupply.FocusTextBox();
                 }
                 else
                 {
@@ -860,7 +917,7 @@ namespace WindowsFormsForecastLactalis
                 MessageBox.Show(new Form() { TopMost = true }, "No supplier with that number");
             }
             dataGridForecastInfo.Visible = true;
-            labelStatus.Visible = false;
+            LoadReadyStatus();
 
         }
 
@@ -889,7 +946,7 @@ namespace WindowsFormsForecastLactalis
             AddProductByNumber(prodNMBR);
             PrepareGUI();
             dataGridForecastInfo.Visible = true;
-            labelStatus.Visible = false;
+            LoadReadyStatus();
         }
 
         private void buttonCreateM3LactalisOrders_Click(object sender, EventArgs e)
@@ -956,7 +1013,7 @@ namespace WindowsFormsForecastLactalis
 
                     double numberThisDate = part * Convert.ToDouble(numberPerWeek);
 
-                    if(numberPerWeek>0)
+                    if (numberPerWeek > 0)
                     {
                         Console.WriteLine("LActanbr: " + lactalisProdNBR + " number per week: " + numberPerWeek);
                     }
@@ -971,7 +1028,7 @@ namespace WindowsFormsForecastLactalis
             //dayOrderStrings.Add(CreateLine(123, DateTime.Now, 525));
             //dayOrderStrings.Add(CreateLine(666666, DateTime.Now, 0));
 
-           
+
         }
 
 
@@ -1081,7 +1138,7 @@ namespace WindowsFormsForecastLactalis
             DataTable tempTable = conn.QueryExWithTableReturn(queryText);
 
 
-            DataRow[] currentRows =  tempTable.Select(null, null, DataViewRowState.CurrentRows);
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
 
             if (currentRows.Length < 1)
             {
