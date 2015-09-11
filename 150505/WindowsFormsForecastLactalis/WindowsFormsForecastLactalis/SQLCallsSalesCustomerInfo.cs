@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,14 +52,35 @@ namespace WindowsFormsForecastLactalis
 
         private void InitiateProperties()
         {
-            string st = "12/29/2014";
-            startDate.Add(2015, DateTime.Parse(st));
-            st = "12/30/2013";
-            startDate.Add(2014, DateTime.Parse(st));
-            st = "01/04/2016";
-            startDate.Add(2016, DateTime.Parse(st));
-            st = "01/02/2017";
-            startDate.Add(2017, DateTime.Parse(st));
+            string s = "2014-12-29 00:01";
+
+            DateTime dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            startDate.Add(2015, dt);
+            //MessageBox.Show("after");
+
+            s = "2013-12-30 00:01";
+
+            dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            startDate.Add(2014, dt);
+
+            //st = "01/04/2016";
+            s = "2016-01-04 00:01";
+
+            dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            startDate.Add(2016, dt);
+
+            //startDate.Add(2016, DateTime.Parse(st));
+            //st = "01/02/2017";
+            s = "2017-01-02 00:01";
+
+            dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            startDate.Add(2017, dt);
+            
+
 
             startDateStrings.Add(2014, @"2013/12/30");
             endDateStrings.Add(2014, @"2014/12/30");

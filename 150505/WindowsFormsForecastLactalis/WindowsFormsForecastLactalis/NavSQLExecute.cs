@@ -126,6 +126,11 @@ namespace WindowsFormsForecastLactalis
                 string cleanComment = System.Text.RegularExpressions.Regex.Replace(comment, "[áàäâãåÁÀÄÂÃÅ]", "a");
                 cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
 
+                DateTime tempDate = DateTime.Now;
+                
+                string format = "yyyy-MM-dd HH:MM:ss";
+                string thisDate = tempDate.ToString(format);
+
                 command.Connection = conn;            // <== lacking
                 command.CommandType = CommandType.Text;
                 command.CommandText = "INSERT into Debitor_Budgetlinjepost (Varenr, Type, Startdato, Antal, Tastedato, Kommentar) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato, @Kommentar)";
@@ -133,10 +138,9 @@ namespace WindowsFormsForecastLactalis
                 command.Parameters.AddWithValue("@Type", "5");
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
-                command.Parameters.AddWithValue("@Kommentar", cleanComment);
-                DateTime time = DateTime.Now;              // Use current time
-                string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
-                command.Parameters.AddWithValue("@Tastedato", time.ToString(format));
+                command.Parameters.AddWithValue("@Kommentar", thisDate + " Comment: " + cleanComment);
+
+                command.Parameters.AddWithValue("@Tastedato", thisDate);
                 try
                 {
                     int recordsAffected = command.ExecuteNonQuery();

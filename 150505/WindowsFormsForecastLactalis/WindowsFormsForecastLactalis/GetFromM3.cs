@@ -28,62 +28,33 @@ namespace WindowsFormsForecastLactalis
         {
             //List<int> productList = new List<int>();
 
-            SERVER_ID sid = new SERVER_ID();
-
-            uint rc = 0;
-            var watch = Stopwatch.StartNew();       
-            try
+            string returnString = "";
             {
-                rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS105MI", null);
-                //Console.WriteLine("After Connect to M3 Interface: " + M3Interface);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("fail M3 communication Connect!");
-                Console.WriteLine("Eception in M3: " + ex.Message);
-                return false;
-            }
-            if (rc != 0)
-            {
-                MvxSock.ShowLastError(ref sid, "Error in M3 communication: " + rc + "\n");
-                MessageBox.Show("fail M3 communication Connect!");
-                return false;
-            }            
-            watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
-            Console.WriteLine("time M3 connect (ms): " + elapsedMs);
-            if (rc != 0)
-            {
-                Console.WriteLine("M3 communication: FAIL!!");
-                return false;
-            }
-
-            //Set the field without need to know position Start from this customer 00752
-            MvxSock.SetField(ref sid, "ASCD", "COOP");
-            MvxSock.SetField(ref sid, "CONO", "001");
-            rc = MvxSock.Access(ref sid, "LstAssmItem");
-            if (rc != 0)
-            {
-                MessageBox.Show("M3 Communication Fail! ");
-                MvxSock.ShowLastError(ref sid, "M3 Communication Fail! " + "\n");
+                int itemNbr = 1075;
+                SERVER_ID sid = new SERVER_ID();
+                uint rc;
+                rc = ConnectToM3Interface(ref sid, "MMS200MI");
+                if (rc != 0)
+                {
+                    return false;
+                }
+                //Set the field without need to know position Start from this customer 00752
+                MvxSock.SetField(ref sid, "ITNO", itemNbr.ToString());
+                MvxSock.SetField(ref sid, "CONO", "001");
+                rc = MvxSock.Access(ref sid, "GetItmBasic");
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return false;
+                }
+                returnString = MvxSock.GetField(ref sid, "ITDS");
+                Console.WriteLine("Test M3 works ProductNBR: " + itemNbr + " Name: " + returnString);
                 MvxSock.Close(ref sid);
-                Console.WriteLine("M3 communication: FAIL!!");
-                return false;
+                return true;
             }
 
-            bool once = true;
-            while (MvxSock.More(ref sid) && once)
-            {
-                string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
-                Console.Write("Item nr: " + tempItemNbr);
-                Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-                //Mooves to next row
-                MvxSock.Access(ref sid, null);
-                once = false;
-            }
-            MvxSock.Close(ref sid);
-            Console.WriteLine("M3 communication: SUCCESS!!");
-            return true;
+            
         }
 
 
@@ -307,6 +278,7 @@ namespace WindowsFormsForecastLactalis
             }
             if (rc != 0)
             {
+                MessageBox.Show("Not Connected to M3!! communication Fail! Application will not work!");
                 MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
             }
             return rc;

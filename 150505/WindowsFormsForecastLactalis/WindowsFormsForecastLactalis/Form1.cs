@@ -40,7 +40,7 @@ namespace WindowsFormsForecastLactalis
             //test with Coop and test customer
             FixCustomerChoices();
 
-            //m3Info.TestM3Connection();
+            m3Info.TestM3Connection();
             SetupColumns();
 
             LoadAllProductDict();
@@ -240,18 +240,21 @@ namespace WindowsFormsForecastLactalis
                 {
                     
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
-                    for (int i = 0; i < row.Cells.Count; i++)
+                    row.Cells[2].ReadOnly = true;
+                    row.Cells[2].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
+                    for (int i = 3; i < row.Cells.Count; i++)
                     {
                         if(weekToLock[weekProdNBR] < i)
                         {
                             row.Cells[i].ReadOnly = false;
-                            row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Violet };
+                            row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };
                         }
                         else
                         {
                             row.Cells[i].ReadOnly = true;
                             row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                         }
+
                     }
                     weekProdNBR++;
                 }
@@ -295,7 +298,9 @@ namespace WindowsFormsForecastLactalis
             PrognosInfoSales product5 = new PrognosInfoSales(allProductsDict[2735], 2735, tempCustNumber);
 
             SetStatus("Products loading 1/5");
+           // MessageBox.Show("Place 1");
             product1.FillNumbers(selectedYear);
+           // MessageBox.Show("Place 2");
             SetStatus("Products loading 2/5");
             product2.FillNumbers(selectedYear);
             SetStatus("Products loading 3/5");
@@ -398,9 +403,10 @@ namespace WindowsFormsForecastLactalis
                     Console.WriteLine("COOP vald");
                     Products = new List<PrognosInfoSales>();
                     List<int> productList = m3Info.GetListOfProductsNbrByAssortment("COOP");
-                    int nbrItems = productList.Count;
+                    
                     if (productList != null)
                     {
+                        int nbrItems = productList.Count;
                         int i = 0;
                         foreach (int item in productList)
                         {
@@ -506,6 +512,8 @@ namespace WindowsFormsForecastLactalis
         {
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
+
+
 
             //Do not validate while new products is loading
             if (!loadingNewProductsOngoing && GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2)//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
@@ -652,7 +660,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     if (!infoboxSales.Visible)
                     {
-                        MessageBox.Show(GetProductNumberFromRow(rowIndex) + "\n\nKampagnen innefattar kund 1 och kund 2.");
+                        //MessageBox.Show(GetProductNumberFromRow(rowIndex) + "\n\nKampagnen innefattar kund 1 och kund 2.");
                     }
                 }
                 else if (GetValueFromGridAsString(rowIndex, 2).Contains("History"))

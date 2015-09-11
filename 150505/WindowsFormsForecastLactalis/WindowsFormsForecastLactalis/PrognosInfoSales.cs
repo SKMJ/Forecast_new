@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//using System.Windows.Forms;
+
 
 namespace WindowsFormsForecastLactalis
 {
@@ -59,10 +61,15 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
 
+            //MessageBox.Show("Place 3");
+            
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
+            //MessageBox.Show("Place AA");
             sqlSupplyCalls.UpdateVareKort();
+            //MessageBox.Show("Place BB");
             weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
             int weektemp = sqlSupplyCalls.GetCurrentWeekNBR();
+            
 
             WeekToLockFrom = weekPartPercentage[0] + weektemp;
 
@@ -72,7 +79,7 @@ namespace WindowsFormsForecastLactalis
             {
                 ProductName = sqlSupplyCalls.GetBeskrivelse();
             }
-
+            //MessageBox.Show("Place 6");
 
             SQLCallsSalesCustomerInfo  sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             sqlSalesCalls.SetYear(selectedYear);
@@ -81,6 +88,7 @@ namespace WindowsFormsForecastLactalis
             Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerNumber);
+           // MessageBox.Show("Place 7");
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerNumber);
@@ -88,7 +96,7 @@ namespace WindowsFormsForecastLactalis
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerNumber);
-
+           // MessageBox.Show("Place 8");
 
 
 
@@ -103,6 +111,8 @@ namespace WindowsFormsForecastLactalis
             {
                 ProductName = sqlSalesCalls.GetBeskrivelse();
             }
+
+           // MessageBox.Show("Place 9");
 
             //Todo add the code for the otther fileds.
 
@@ -119,9 +129,12 @@ namespace WindowsFormsForecastLactalis
                 Salgsbudget_ChangeHistory[i] = "";
             }
 
+           // MessageBox.Show("Place AA");
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
+
+            //MessageBox.Show("Place BB");
         }
     }
 }

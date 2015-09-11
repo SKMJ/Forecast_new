@@ -151,7 +151,7 @@ namespace WindowsFormsForecastLactalis
                 //foreach (int supplNBR in MotherSupplierWithChilds[1102])
                 //{
                 //List<string> tempList = m3Info.GetListOfProductsBySupplier(supplNBR.ToString());
-                List<int> tempList = GetListOfProductsTOSendKopbudget();
+                List<int> tempList = GetListOfProductsWithSupplierLactaFrance();
                 int numberOfProducts = tempList.Count;
                 tempList.Sort();
 
@@ -160,6 +160,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     i++;
                     SetStatus("Products loading " + i.ToString() + "/" + numberOfProducts.ToString());
+
                     string tempName = m3Info.GetItemNameByItemNumber(item.ToString());
                     PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
 
@@ -193,6 +194,7 @@ namespace WindowsFormsForecastLactalis
                 }
             }
 
+            SetStatus("Products Preparing for USer interface. Will soon be ready to view.");
             PrepareGUI();
         }
 
@@ -519,6 +521,7 @@ namespace WindowsFormsForecastLactalis
             buttonGetProductByNumber.Enabled = false;
             buttonGetProductsBySupplier.Enabled = false;
             buttonGetSupplierFromNBR.Enabled = false;
+            buttonCreateLactalisFile.Enabled = false;
             buttonSalesView.Enabled = false;
             comboBoxYear.Enabled = false;
             numericSupplyNBR.Enabled = false;
@@ -538,6 +541,7 @@ namespace WindowsFormsForecastLactalis
             buttonGetProductByNumber.Enabled = true;
             buttonGetProductsBySupplier.Enabled = true;
             buttonGetSupplierFromNBR.Enabled = true;
+            buttonCreateLactalisFile.Enabled = true;
             buttonSalesView.Enabled = true;
             comboBoxYear.Enabled = true;
             numericSupplyNBR.Enabled = true;
@@ -1076,6 +1080,7 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonCreateLactalisFile_Click(object sender, EventArgs e)
         {
+            SetStatus("Products to Forecast France Creating File");
             Stopwatch stopwatch = Stopwatch.StartNew();
             dayOrderStrings = new List<string>();
 
@@ -1083,11 +1088,15 @@ namespace WindowsFormsForecastLactalis
 
 
 
-            productsToSendKopbudget = GetListOfProductsTOSendKopbudget();
+            productsToSendKopbudget = GetListOfProductsWithSupplierLactaFrance();
 
+            int i = 0;
+            int numberOfProducts = productsToSendKopbudget.Count;
 
             foreach (int item in productsToSendKopbudget)
             {
+                i++;
+                SetStatus("Products to Forecast France Creating File Info for product " + i.ToString() + "/" + numberOfProducts.ToString());
                 FileToSendInfoForPoduct currentProdFileInfo = new FileToSendInfoForPoduct(item, 0);
                 currentProdFileInfo.FillNumbers();
 
@@ -1115,9 +1124,13 @@ namespace WindowsFormsForecastLactalis
 
             double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Create France File! Time (s): " + timeConnectSeconds);
+            SetStatus("File Created");
+            System.Threading.Thread.Sleep(2000);
+            LoadReadyStatus();
+        
         }
 
-        private List<int> GetListOfProductsTOSendKopbudget()
+        private List<int> GetListOfProductsWithSupplierLactaFrance()
         {
             List<int> returnList = new List<int>();
 

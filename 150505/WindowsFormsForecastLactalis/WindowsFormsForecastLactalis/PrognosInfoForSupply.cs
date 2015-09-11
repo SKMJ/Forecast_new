@@ -70,9 +70,16 @@ namespace WindowsFormsForecastLactalis
             sqlSupplyCalls.UpdateVareKort();
             weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
 
-            if (ProductName.Length <2 ||ProductName == "Unknown Name")
+
+            string ProductNameTemp = sqlSupplyCalls.GetBeskrivelse();
+            if (ProductName.Length > 2 && ProductName != "Unknown Name")
             {
-                ProductName = sqlSupplyCalls.GetBeskrivelse();
+                Console.WriteLine("Fill info For Product Number: " + ProductNumber + " LactaNAme: " + ProductNameTemp + " SKMJNAme: " + ProductName);
+            }
+            if (ProductNameTemp.Length > 2)
+            {
+
+                ProductName = ProductNameTemp;
             }
 
             Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget();
