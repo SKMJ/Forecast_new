@@ -24,7 +24,12 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, List<int>> MotherSupplierWithChilds = new Dictionary<int, List<int>>();
 
         public Dictionary<string, string> OrderCodes = new Dictionary<string, string>();
-        public Dictionary<int, string> AllProductsDict = new Dictionary<int, string>();
+        public Dictionary<int, string> AllProductsDict_Supply = new Dictionary<int, string>();
+
+        public Dictionary<string, string> AllProductsM3Dict_Supply = new Dictionary<string, string>();
+        Dictionary<string, List<string>> AllSupplierM3Dict_Supply = new Dictionary<string, List<string>>();
+
+
         int desiredStartLocationX;
         int desiredStartLocationY;
         int latestWeek;
@@ -38,7 +43,7 @@ namespace WindowsFormsForecastLactalis
         {
             InitializeComponent();
             Console.WriteLine("Start FormSupply!");
-            FixSupplierChoices();
+
             FixMotherChildList();
 
             SetupColumns();
@@ -66,10 +71,16 @@ namespace WindowsFormsForecastLactalis
         private void FixSupplierChoices()
         {
             List<string> supplier = new List<string>();
-            supplier.Add("SUPPLIER 1");
-            supplier.Add("SUPPLIER 2");
-            supplier.Add("SUPPLIER 1102");
-            supplier.Add("SUPPLIER 2000");
+
+            foreach (KeyValuePair<string, List<string>> item in AllSupplierM3Dict_Supply)
+            {
+                supplier.Add(item.Key);
+            }
+
+
+            supplier.Sort();
+
+
             comboBoxSupplier.DataSource = supplier;
             comboBoxSupplier.DropDownStyle = ComboBoxStyle.DropDownList;
 
@@ -86,7 +97,7 @@ namespace WindowsFormsForecastLactalis
         {
             foreach (KeyValuePair<int, string> item in allProd)
             {
-                AllProductsDict.Add(item.Key, item.Value);
+                AllProductsDict_Supply.Add(item.Key, item.Value);
             }
         }
 
@@ -137,32 +148,29 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToDeleteRows = false;
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
-            //bool even = true;
-            if (comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 1") || comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 2"))
+            if (comboBoxSupplier.SelectedItem.ToString().Equals("3272"))
             {
-                //This is just testcode to show something
-                bool suppl1 = comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 1");
-                CreateSupplyProducts(suppl1);
-            }
-            else if (comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 1102"))
-            {
-                numericSupplyNBR.Value = 1102;
+                numericSupplyNBR.Value = 3272;
                 //This will later load all numbers from databases
                 //foreach (int supplNBR in MotherSupplierWithChilds[1102])
                 //{
                 //List<string> tempList = m3Info.GetListOfProductsBySupplier(supplNBR.ToString());
-                List<int> tempList = GetListOfProductsWithSupplierLactaFrance();
-                int numberOfProducts = tempList.Count;
-                tempList.Sort();
+                List<int> tempList2 = GetListOfProductsWithSupplierLactaFrance();
+                int numberOfProducts = tempList2.Count;
+                tempList2.Sort();
 
                 int i = 0;
-                foreach (int item in tempList)
+                foreach (int item in tempList2)
                 {
                     i++;
                     SetStatus("Products loading " + i.ToString() + "/" + numberOfProducts.ToString());
 
-                    string tempName = m3Info.GetItemNameByItemNumber(item.ToString());
-                    PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
+                    string tempName = "";
+                    if (AllProductsDict_Supply.ContainsKey(item))
+                    {
+                        tempName = AllProductsDict_Supply[item];
+                    }
+                    PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, item, checkBoxLastYear.Checked);
 
                     product1.FillNumbers(selectedYear);
                     if (!SupplierProducts.ContainsKey(Convert.ToInt32(item)))
@@ -175,22 +183,46 @@ namespace WindowsFormsForecastLactalis
 
 
             }
-            else if (comboBoxSupplier.SelectedItem.ToString().Equals("SUPPLIER 2000"))
+            else
             {
-                numericSupplyNBR.Value = 2000;
-                List<string> tempList = m3Info.GetListOfProductsBySupplier("2000");
+                string suppliernumberM3 = comboBoxSupplier.SelectedItem.ToString();
+                numericSupplyNBR.Value = Convert.ToDecimal(suppliernumberM3);
+                List<string> tempList = AllSupplierM3Dict_Supply[suppliernumberM3];
 
+                // List<int> tempList2 = GetListOfProductsWithSupplierLactaFrance();
+
+
+
+                int numberOfProducts = tempList.Count;
                 tempList.Sort();
 
+                int i = 0;
                 foreach (string item in tempList)
                 {
-                    string tempName = m3Info.GetItemNameByItemNumber(item);
-                    PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
+                    i++;
 
-                    product1.FillNumbers(selectedYear);
-                    SupplierProducts.Add(Convert.ToInt32(item), product1);
+                    int tempInt = 0;
+                    bool result = int.TryParse(item, out tempInt); //i now = 108
+                    if (result)
+                    {
+                        SetStatus("Products loading " + i.ToString() + "/" + numberOfProducts.ToString());
+                        string tempName = AllProductsM3Dict_Supply[item];//m3Info.GetItemNameByItemNumber(item.ToString());
+                        PrognosInfoForSupply product1 = new PrognosInfoForSupply(tempName, Convert.ToInt32(item), checkBoxLastYear.Checked);
+
+                        product1.FillNumbers(selectedYear);
+
+                        //int test = 0;
+
+                        //bool result = int.TryParse(item, out test); 
+
+                        if (!SupplierProducts.ContainsKey(Convert.ToInt32(item)))
+                        {
+                            SupplierProducts.Add(Convert.ToInt32(item), product1);
+                        }
+                        
+                    }
                     //SupplierProductsFromM3.Add(product1);
-                    Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
+                    //Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
                 }
             }
 
@@ -444,9 +476,9 @@ namespace WindowsFormsForecastLactalis
         private void AddProductByNumber(int number)
         {
             string prodName = "Unknown Name";
-            if (AllProductsDict.ContainsKey(number))
+            if (AllProductsDict_Supply.ContainsKey(number))
             {
-                prodName = AllProductsDict[number];
+                prodName = AllProductsDict_Supply[number];
             }
             PrognosInfoForSupply product1 = new PrognosInfoForSupply(prodName, number, checkBoxLastYear.Checked);
             product1.FillNumbers(selectedYear);
@@ -552,12 +584,12 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonTestSupplItems_Click(object sender, EventArgs e)
         {
-            List<string> tempList = m3Info.GetListOfProductsBySupplier("1102001");
-            foreach (string item in tempList)
-            {
-                string tempName = m3Info.GetItemNameByItemNumber(item);
-                Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
-            }
+            //List<string> tempList = m3Info.GetListOfProductsBySupplier("1102001");
+            //foreach (string item in tempList)
+            //{
+            //    string tempName = m3Info.GetItemNameByItemNumber(item);
+            //    Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
+            //}
         }
 
         private void dataGridForecastInfo_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -900,28 +932,45 @@ namespace WindowsFormsForecastLactalis
 
         private void buttonGetSupplierFromNBR_Click(object sender, EventArgs e)
         {
-            dataGridForecastInfo.Visible = false;
-            SetStatus("Loading products");
-            dataGridForecastInfo.ClearSelection();
-            SetupColumns();
-            if (numericSupplyNBR.Value == 1102)
+            //dataGridForecastInfo.Visible = false;
+            //SetStatus("Loading products");
+            //dataGridForecastInfo.ClearSelection();
+            //SetupColumns();
+
+
+            if(AllSupplierM3Dict_Supply.ContainsKey(numericSupplyNBR.Value.ToString()))
             {
-                comboBoxSupplier.SelectedItem = "SUPPLIER 1102";
+                comboBoxSupplier.SelectedItem = numericSupplyNBR.Value.ToString();
+                dataGridForecastInfo.Visible = false;
+                buttonGetProductByNumber.Enabled = false;
+                buttonGetProductsBySupplier.Enabled = false;
+                buttonGetSupplierFromNBR.Enabled = false;
+
+                SetStatus("Load Products");
+                dataGridForecastInfo.ClearSelection();
+                SetupColumns();
+
                 if (!infoboxSupply.Visible)
                 {
+                    Stopwatch stopwatch = Stopwatch.StartNew();
                     FillInfo();
+                    stopwatch.Stop();
+                    double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
+                    Console.WriteLine("Load all Customers Supply! Time (s): " + timeConnectSeconds);
                 }
                 else
                 {
                     MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before changing Supplier!");
                 }
+                dataGridForecastInfo.Visible = true;
+                LoadReadyStatus();
             }
             else
             {
                 MessageBox.Show(new Form() { TopMost = true }, "No supplier with that number");
             }
-            dataGridForecastInfo.Visible = true;
-            LoadReadyStatus();
+            //dataGridForecastInfo.Visible = true;
+            //LoadReadyStatus();
 
         }
 
@@ -1127,7 +1176,7 @@ namespace WindowsFormsForecastLactalis
             SetStatus("File Created");
             System.Threading.Thread.Sleep(2000);
             LoadReadyStatus();
-        
+
         }
 
         private List<int> GetListOfProductsWithSupplierLactaFrance()
@@ -1175,5 +1224,30 @@ namespace WindowsFormsForecastLactalis
         }
 
 
+
+        internal void SetAllProdM3Dict(Dictionary<string, string> allProductsM3Dict)
+        {
+            foreach (KeyValuePair<string, string> item in allProductsM3Dict)
+            {
+                if (!AllProductsM3Dict_Supply.ContainsKey(item.Key))
+                {
+                    AllProductsM3Dict_Supply.Add(item.Key, item.Value);
+                }
+            }
+        }
+
+        internal void SetAllSupplDict(Dictionary<string, List<string>> allSuppliersM3)
+        {
+            foreach (KeyValuePair<string, List<string>> item in allSuppliersM3)
+            {
+                if (!AllSupplierM3Dict_Supply.ContainsKey(item.Key))
+                {
+
+                    AllSupplierM3Dict_Supply.Add(item.Key, item.Value);
+                }
+            }
+
+            FixSupplierChoices();
+        }
     }
 }

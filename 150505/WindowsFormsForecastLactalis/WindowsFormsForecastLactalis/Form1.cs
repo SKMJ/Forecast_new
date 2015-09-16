@@ -30,6 +30,9 @@ namespace WindowsFormsForecastLactalis
 
         public Dictionary<int, string> allProductsDict = new Dictionary<int, string>();
 
+        public Dictionary<string, string> allProductsM3Dict = new Dictionary<string, string>();
+        Dictionary<string, List<string>> allSuppliersM3 = new Dictionary<string, List<string>>();
+
 
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
         public Form1()
@@ -42,6 +45,9 @@ namespace WindowsFormsForecastLactalis
 
             m3Info.TestM3Connection();
             SetupColumns();
+
+            allProductsM3Dict = m3Info.GetAllSkaevingeProductsDict();
+            allSuppliersM3 = m3Info.GetSupplierWithItemsDict();
 
             LoadAllProductDict();
 
@@ -359,6 +365,8 @@ namespace WindowsFormsForecastLactalis
                 supplyViewInstance.BringToFront();
                 supplyViewInstance.Show();
                 supplyViewInstance.SetAllProdDict(allProductsDict);
+                supplyViewInstance.SetAllProdM3Dict(allProductsM3Dict);
+                supplyViewInstance.SetAllSupplDict(allSuppliersM3);
             }
             else
             {
@@ -389,7 +397,7 @@ namespace WindowsFormsForecastLactalis
 
             if (!infoboxSales.Visible)
             {
-                if (comboBoxAssortment.SelectedItem.ToString() != "COOP")
+                if (true)//comboBoxAssortment.SelectedItem.ToString() != "COOP")
                 {
                     Console.WriteLine("Hittepåkund vald");
                     Products = new List<PrognosInfoSales>();
@@ -400,9 +408,12 @@ namespace WindowsFormsForecastLactalis
                 else
                 {
 
-                    Console.WriteLine("COOP vald");
+                    //Console.WriteLine("");
+
+                    KeyValuePair<string, string> tempPair = (KeyValuePair<string, string>)comboBoxAssortment.SelectedItem;
+                    string tempString = tempPair.Key;
                     Products = new List<PrognosInfoSales>();
-                    List<int> productList = m3Info.GetListOfProductsNbrByAssortment("COOP");
+                    List<int> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
                     
                     if (productList != null)
                     {
@@ -411,8 +422,8 @@ namespace WindowsFormsForecastLactalis
                         foreach (int item in productList)
                         {
                             i++;
-                            string temp = m3Info.GetItemNameByItemNumber(item.ToString());
-                            PrognosInfoSales product1 = new PrognosInfoSales(temp, item, "COOP");
+                            string temp = allProductsM3Dict[item.ToString()];
+                            PrognosInfoSales product1 = new PrognosInfoSales(temp, item, tempString);
                             product1.FillNumbers(selectedYear);
                             Products.Add(product1);
                             SetStatus("Products Loading " + i + "/" + nbrItems);

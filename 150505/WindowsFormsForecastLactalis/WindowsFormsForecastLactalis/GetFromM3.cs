@@ -20,6 +20,8 @@ namespace WindowsFormsForecastLactalis
         String userName = "mi310";
         String userPsw = "MIPGM99";
 
+        Dictionary<string, List<string>> dictSupplier;
+
         /// <summary>
         /// This function is just to test M3 Connection
         /// </summary>
@@ -102,127 +104,127 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        public string GetItemNameByItemNumber(string itemNbr)
-        {
-            string returnString = "";
-            {
-                SERVER_ID sid = new SERVER_ID();
-                uint rc;
-                rc = ConnectToM3Interface(ref sid, "MMS200MI");
-                if (rc != 0)
-                {
-                    return returnString;
-                }
-                //Set the field without need to know position Start from this customer 00752
-                MvxSock.SetField(ref sid, "ITNO", itemNbr);
-                MvxSock.SetField(ref sid, "CONO", "001");
-                rc = MvxSock.Access(ref sid, "GetItmBasic");
-                if (rc != 0)
-                {
-                    //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
-                    MvxSock.Close(ref sid);
-                    return returnString;
-                }
-                returnString = MvxSock.GetField(ref sid, "ITDS");
-                Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
-                MvxSock.Close(ref sid);
-                return returnString;
-            }
-        }
+        //public string GetItemNameByItemNumber(string itemNbr)
+        //{
+        //    string returnString = "";
+        //    {
+        //        SERVER_ID sid = new SERVER_ID();
+        //        uint rc;
+        //        rc = ConnectToM3Interface(ref sid, "MMS200MI");
+        //        if (rc != 0)
+        //        {
+        //            return returnString;
+        //        }
+        //        //Set the field without need to know position Start from this customer 00752
+        //        MvxSock.SetField(ref sid, "ITNO", itemNbr);
+        //        MvxSock.SetField(ref sid, "CONO", "001");
+        //        rc = MvxSock.Access(ref sid, "GetItmBasic");
+        //        if (rc != 0)
+        //        {
+        //            //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
+        //            MvxSock.Close(ref sid);
+        //            return returnString;
+        //        }
+        //        returnString = MvxSock.GetField(ref sid, "ITDS");
+        //        Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
+        //        MvxSock.Close(ref sid);
+        //        return returnString;
+        //    }
+        //}
 
 
-        public List<int> GetListOfSuppliers()
-        {
-            List<int> supplierList = new List<int>();
-            {
-                SERVER_ID sid = new SERVER_ID();
-                uint rc;
-                rc = ConnectToM3Interface(ref sid, "CRS111MI");
-                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
-                if (rc != 0)
-                {
-                    //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
-                    return null;
-                }
-                SetMaxList(sid, 299);
-                //Set the field without need to know position Start from this customer 00752
-                //MvxSock.SetField(ref sid, "ASCD", Assortment);
-                MvxSock.SetField(ref sid, "CONO", "001");
-                rc = MvxSock.Access(ref sid, "LstSuppliers");
-                if (rc != 0)
-                {
-                    MvxSock.ShowLastError(ref sid, "Error in get suppliers no " + rc + "\n");
-                    MvxSock.Close(ref sid);
-                    return null;
-                }
+        //public List<int> GetListOfSuppliers()
+        //{
+        //    List<int> supplierList = new List<int>();
+        //    {
+        //        SERVER_ID sid = new SERVER_ID();
+        //        uint rc;
+        //        rc = ConnectToM3Interface(ref sid, "CRS111MI");
+        //        //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
+        //        if (rc != 0)
+        //        {
+        //            //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+        //            return null;
+        //        }
+        //        SetMaxList(sid, 299);
+        //        //Set the field without need to know position Start from this customer 00752
+        //        //MvxSock.SetField(ref sid, "ASCD", Assortment);
+        //        MvxSock.SetField(ref sid, "CONO", "001");
+        //        rc = MvxSock.Access(ref sid, "LstSuppliers");
+        //        if (rc != 0)
+        //        {
+        //            MvxSock.ShowLastError(ref sid, "Error in get suppliers no " + rc + "\n");
+        //            MvxSock.Close(ref sid);
+        //            return null;
+        //        }
 
-                while (MvxSock.More(ref sid))
-                {
-                    string tempSupplierNbr = MvxSock.GetField(ref sid, "SUNO") + "\t\t";
-                    if (Convert.ToInt32(tempSupplierNbr) > 99)
-                    {
-                        //Console.Write("Supplier nr: " + tempSupplierNBR);
-                        //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-                        supplierList.Add(Convert.ToInt32(tempSupplierNbr));
-                    }
-                    //Mooves to next row
-                    MvxSock.Access(ref sid, null);
-                }
+        //        while (MvxSock.More(ref sid))
+        //        {
+        //            string tempSupplierNbr = MvxSock.GetField(ref sid, "SUNO") + "\t\t";
+        //            if (Convert.ToInt32(tempSupplierNbr) > 99)
+        //            {
+        //                //Console.Write("Supplier nr: " + tempSupplierNBR);
+        //                //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
+        //                supplierList.Add(Convert.ToInt32(tempSupplierNbr));
+        //            }
+        //            //Mooves to next row
+        //            MvxSock.Access(ref sid, null);
+        //        }
 
-                MvxSock.Close(ref sid);
-                return supplierList;
-            }
-        }
+        //        MvxSock.Close(ref sid);
+        //        return supplierList;
+        //    }
+        //}
 
 
-        public List<string> GetListOfProductsBySupplier(string supplNbr)
-        {
-            List<string> itemList = new List<string>();
-            //Dictionary<string, string> itemDict = new Dictionary<string, string>();
-            {
+        //public List<string> GetListOfProductsBySupplier(string supplNbr)
+        //{
+        //    List<string> itemList = new List<string>();
+        //    //Dictionary<string, string> itemDict = new Dictionary<string, string>();
+        //    {
 
-                SERVER_ID sid = new SERVER_ID();
+        //        SERVER_ID sid = new SERVER_ID();
 
-                uint rc;
-                rc = ConnectToM3Interface(ref sid, "MDBREADMI");
-                if (rc != 0)
-                {
-                    //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
-                    return null;
-                }
+        //        uint rc;
+        //        rc = ConnectToM3Interface(ref sid, "MDBREADMI");
+        //        if (rc != 0)
+        //        {
+        //            //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+        //            return null;
+        //        }
 
-                SetMaxList(sid, 299);
+        //        SetMaxList(sid, 299);
 
-                //Set the field without need to know position Start from this customer 00752
-                MvxSock.SetField(ref sid, "SUNO", supplNbr);
-                rc = MvxSock.Access(ref sid, "LstMITVEN10");
-                if (rc != 0)
-                {
-                    MvxSock.ShowLastError(ref sid, "Error in get suppliers items " + rc + "\n");
-                    MvxSock.Close(ref sid);
-                    return null;
-                }
+        //        //Set the field without need to know position Start from this customer 00752
+        //        MvxSock.SetField(ref sid, "SUNO", supplNbr);
+        //        rc = MvxSock.Access(ref sid, "LstMITVEN10");
+        //        if (rc != 0)
+        //        {
+        //            MvxSock.ShowLastError(ref sid, "Error in get suppliers items " + rc + "\n");
+        //            MvxSock.Close(ref sid);
+        //            return null;
+        //        }
 
-                while (MvxSock.More(ref sid))
-                {
-                    string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") ;
-                    string tempSuno = MvxSock.GetField(ref sid, "SUNO") ;
-                    //Console.WriteLine("XX Supplyer item Nbr: " + tempItemNbr + " YY Supplyer item Nbr: " + tempSuno + "Suppl NBR: " + supplNbr);
-                    if (tempItemNbr.Length > 1 && tempSuno.Equals(supplNbr))
-                    {
-                        //Console.Write("Supplier nr: " + tempSupplierNBR);
-                        //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-                        Console.WriteLine("M3 Listed Supplyer item Nbr: " + tempItemNbr + " Suppl NBR: " + supplNbr);
-                        itemList.Add(tempItemNbr);
-                    }
-                    //Mooves to next row
-                    MvxSock.Access(ref sid, null);
-                }
+        //        while (MvxSock.More(ref sid))
+        //        {
+        //            string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") ;
+        //            string tempSuno = MvxSock.GetField(ref sid, "SUNO") ;
+        //            //Console.WriteLine("XX Supplyer item Nbr: " + tempItemNbr + " YY Supplyer item Nbr: " + tempSuno + "Suppl NBR: " + supplNbr);
+        //            if (tempItemNbr.Length > 1 && tempSuno.Equals(supplNbr))
+        //            {
+        //                //Console.Write("Supplier nr: " + tempSupplierNBR);
+        //                //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
+        //                Console.WriteLine("M3 Listed Supplyer item Nbr: " + tempItemNbr + " Suppl NBR: " + supplNbr);
+        //                itemList.Add(tempItemNbr);
+        //            }
+        //            //Mooves to next row
+        //            MvxSock.Access(ref sid, null);
+        //        }
 
-                MvxSock.Close(ref sid);
-                return itemList;
-            }
-        }
+        //        MvxSock.Close(ref sid);
+        //        return itemList;
+        //    }
+        //}
 
 
         public string GetSupplierNameByNumber(int supplierNbr)
@@ -337,6 +339,7 @@ namespace WindowsFormsForecastLactalis
             return returnString;
         }
 
+
         //Creates order purposal line.
         //Added line to ol order if same MSGN
         internal string CreateNewOrderProposal(string MSGN, string ITNO, int ordQuant, string SUNO, string Date)
@@ -377,6 +380,71 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Order Number: " + orderNumber + " Order Number: " + returnString);
             MvxSock.Close(ref sid);
             return returnString;
+        }
+
+        internal Dictionary<string, string> GetAllSkaevingeProductsDict()
+        {
+            //Catrin helps to get this new code
+            Dictionary<string, string> dictItems = new Dictionary<string, string>();
+            dictSupplier = new Dictionary<string, List<string>>();
+            {
+                SERVER_ID sid = new SERVER_ID();
+                uint rc;
+                rc = ConnectToM3Interface(ref sid, "MMS200MI");
+                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                    return null;
+                }
+                SetMaxList(sid, 2000);
+                //Set the field without need to know position Start from this customer 00752
+                //MvxSock.SetField(ref sid, "ASCD", Assortment);
+                MvxSock.SetField(ref sid, "CONO", "001");
+                MvxSock.SetField(ref sid, "WHLO", "LSK");
+                rc = MvxSock.Access(ref sid, "LstItmWhsByWhs");
+                if (rc != 0)
+                {
+                    MvxSock.ShowLastError(ref sid, "Error in get suppliers no " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return null;
+                }
+
+                while (MvxSock.More(ref sid))
+                {
+                    string itemNBR = MvxSock.GetField(ref sid, "ITNO");// + "\t\t";
+                    string itemName = MvxSock.GetField(ref sid, "ITDS");// + "\t\t";
+                    string itemSupplier = MvxSock.GetField(ref sid, "SUNO");// + "\t\t";
+                    if (itemSupplier.Length > 0 && Convert.ToInt32(itemSupplier) > 99)
+                    {
+                        //Console.Write("Supplier nr: " + tempSupplierNBR);
+                        //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
+                        //supplierList.Add(Convert.ToInt32(tempSupplierNbr));
+                        dictItems.Add(itemNBR, itemName);
+                        if (!dictSupplier.ContainsKey(itemSupplier))
+                        {
+                            List<string> tempList = new List<string>();
+                            tempList.Add(itemNBR);
+                            dictSupplier.Add(itemSupplier, tempList);
+                        }
+                        else
+                        {
+                            dictSupplier[itemSupplier].Add(itemNBR);
+                        }
+                    }
+                    //Mooves to next row
+                    MvxSock.Access(ref sid, null);
+
+                }
+
+                MvxSock.Close(ref sid);
+                return dictItems;
+            }
+        }
+
+        internal Dictionary <string, List<string>> GetSupplierWithItemsDict()
+        {
+            return dictSupplier;
         }
     }
 }
