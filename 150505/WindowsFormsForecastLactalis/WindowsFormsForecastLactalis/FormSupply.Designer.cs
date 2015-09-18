@@ -44,15 +44,14 @@
             this.labelYear = new System.Windows.Forms.Label();
             this.comboBoxYear = new System.Windows.Forms.ComboBox();
             this.buttonGetProductByNumber = new System.Windows.Forms.Button();
-            this.numericUpDownPRoductNumber = new System.Windows.Forms.NumericUpDown();
             this.buttonCreateM3LactalisOrders = new System.Windows.Forms.Button();
             this.checkBoxLastYear = new System.Windows.Forms.CheckBox();
             this.labelStatus = new System.Windows.Forms.Label();
             this.buttonCreateLactalisFile = new System.Windows.Forms.Button();
+            this.textBoxProdNBR = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPRoductNumber)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -202,25 +201,13 @@
             // 
             // buttonGetProductByNumber
             // 
-            this.buttonGetProductByNumber.Location = new System.Drawing.Point(13, 146);
+            this.buttonGetProductByNumber.Location = new System.Drawing.Point(14, 145);
             this.buttonGetProductByNumber.Name = "buttonGetProductByNumber";
             this.buttonGetProductByNumber.Size = new System.Drawing.Size(102, 27);
             this.buttonGetProductByNumber.TabIndex = 17;
             this.buttonGetProductByNumber.Text = "Get Product";
             this.buttonGetProductByNumber.UseVisualStyleBackColor = true;
             this.buttonGetProductByNumber.Click += new System.EventHandler(this.buttonGetProductByNumber_Click);
-            // 
-            // numericUpDownPRoductNumber
-            // 
-            this.numericUpDownPRoductNumber.Location = new System.Drawing.Point(13, 123);
-            this.numericUpDownPRoductNumber.Maximum = new decimal(new int[] {
-            10000000,
-            0,
-            0,
-            0});
-            this.numericUpDownPRoductNumber.Name = "numericUpDownPRoductNumber";
-            this.numericUpDownPRoductNumber.Size = new System.Drawing.Size(102, 22);
-            this.numericUpDownPRoductNumber.TabIndex = 16;
             // 
             // buttonCreateM3LactalisOrders
             // 
@@ -265,18 +252,25 @@
             this.buttonCreateLactalisFile.UseVisualStyleBackColor = true;
             this.buttonCreateLactalisFile.Click += new System.EventHandler(this.buttonCreateLactalisFile_Click);
             // 
+            // textBoxProdNBR
+            // 
+            this.textBoxProdNBR.Location = new System.Drawing.Point(14, 122);
+            this.textBoxProdNBR.Name = "textBoxProdNBR";
+            this.textBoxProdNBR.Size = new System.Drawing.Size(100, 22);
+            this.textBoxProdNBR.TabIndex = 23;
+            // 
             // FormSupply
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaGreen;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.textBoxProdNBR);
             this.Controls.Add(this.buttonCreateLactalisFile);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.checkBoxLastYear);
             this.Controls.Add(this.buttonCreateM3LactalisOrders);
             this.Controls.Add(this.buttonGetProductByNumber);
-            this.Controls.Add(this.numericUpDownPRoductNumber);
             this.Controls.Add(this.labelYear);
             this.Controls.Add(this.comboBoxYear);
             this.Controls.Add(this.labelSupplierFreeText);
@@ -295,7 +289,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPRoductNumber)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -316,7 +309,6 @@
         private System.Windows.Forms.Label labelYear;
         private System.Windows.Forms.ComboBox comboBoxYear;
         private System.Windows.Forms.Button buttonGetProductByNumber;
-        private System.Windows.Forms.NumericUpDown numericUpDownPRoductNumber;
         private System.Windows.Forms.Button buttonCreateM3LactalisOrders;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnVareNR;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnProductName;
@@ -324,5 +316,6 @@
         private System.Windows.Forms.CheckBox checkBoxLastYear;
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.Button buttonCreateLactalisFile;
+        private System.Windows.Forms.TextBox textBoxProdNBR;
     }
 }

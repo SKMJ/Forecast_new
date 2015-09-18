@@ -40,11 +40,10 @@
             this.labelYear = new System.Windows.Forms.Label();
             this.comboBoxYear = new System.Windows.Forms.ComboBox();
             this.buttonGetProductByNumber = new System.Windows.Forms.Button();
-            this.numericUpDownPRoductNumber = new System.Windows.Forms.NumericUpDown();
             this.labelStatus = new System.Windows.Forms.Label();
+            this.textBoxProdNBR = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPRoductNumber)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridForecastInfo
@@ -64,6 +63,8 @@
             this.dataGridForecastInfo.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridForecastInfo_CellMouseClick);
             this.dataGridForecastInfo.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dataGridForecastInfo_CellValidating);
             this.dataGridForecastInfo.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridForecastInfo_CellValueChanged);
+            this.dataGridForecastInfo.ColumnDividerWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dataGridForecastInfo_ColumnDividerWidthChanged);
+            this.dataGridForecastInfo.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dataGridForecastInfo_ColumnWidthChanged);
             this.dataGridForecastInfo.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridForecastInfo_MouseClick);
             // 
             // ColumnVareNR
@@ -158,25 +159,13 @@
             // 
             // buttonGetProductByNumber
             // 
-            this.buttonGetProductByNumber.Location = new System.Drawing.Point(51, 146);
+            this.buttonGetProductByNumber.Location = new System.Drawing.Point(14, 145);
             this.buttonGetProductByNumber.Name = "buttonGetProductByNumber";
             this.buttonGetProductByNumber.Size = new System.Drawing.Size(102, 27);
             this.buttonGetProductByNumber.TabIndex = 19;
             this.buttonGetProductByNumber.Text = "Get Product";
             this.buttonGetProductByNumber.UseVisualStyleBackColor = true;
             this.buttonGetProductByNumber.Click += new System.EventHandler(this.buttonGetProductByNumber_Click);
-            // 
-            // numericUpDownPRoductNumber
-            // 
-            this.numericUpDownPRoductNumber.Location = new System.Drawing.Point(51, 123);
-            this.numericUpDownPRoductNumber.Maximum = new decimal(new int[] {
-            10000000,
-            0,
-            0,
-            0});
-            this.numericUpDownPRoductNumber.Name = "numericUpDownPRoductNumber";
-            this.numericUpDownPRoductNumber.Size = new System.Drawing.Size(102, 22);
-            this.numericUpDownPRoductNumber.TabIndex = 18;
             // 
             // labelStatus
             // 
@@ -190,15 +179,23 @@
             this.labelStatus.Visible = false;
             this.labelStatus.Click += new System.EventHandler(this.labelStatus_Click);
             // 
+            // textBoxProdNBR
+            // 
+            this.textBoxProdNBR.Location = new System.Drawing.Point(14, 122);
+            this.textBoxProdNBR.Name = "textBoxProdNBR";
+            this.textBoxProdNBR.Size = new System.Drawing.Size(100, 22);
+            this.textBoxProdNBR.TabIndex = 21;
+            this.textBoxProdNBR.TextChanged += new System.EventHandler(this.textBoxProdNBR_TextChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.ClientSize = new System.Drawing.Size(1482, 855);
+            this.Controls.Add(this.textBoxProdNBR);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.buttonGetProductByNumber);
-            this.Controls.Add(this.numericUpDownPRoductNumber);
             this.Controls.Add(this.labelYear);
             this.Controls.Add(this.comboBoxYear);
             this.Controls.Add(this.button1);
@@ -212,7 +209,6 @@
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPRoductNumber)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -229,11 +225,11 @@
         private System.Windows.Forms.Label labelYear;
         private System.Windows.Forms.ComboBox comboBoxYear;
         private System.Windows.Forms.Button buttonGetProductByNumber;
-        private System.Windows.Forms.NumericUpDown numericUpDownPRoductNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnVareNR;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnProductName;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnType;
         private System.Windows.Forms.Label labelStatus;
+        private System.Windows.Forms.TextBox textBoxProdNBR;
     }
 }
 

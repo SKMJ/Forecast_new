@@ -11,7 +11,7 @@ namespace WindowsFormsForecastLactalis
 {
     class PrognosInfoSales : IComparable 
     {
-         public PrognosInfoSales(string name, int number, string customerNumber)
+         public PrognosInfoSales(string name, string number, string customerNumber)
         {
             ProductName = name;
             ProductNumber = number;
@@ -20,7 +20,7 @@ namespace WindowsFormsForecastLactalis
 
         
         public string ProductName = "";
-        public int ProductNumber = 0;
+        public string ProductNumber = "0";
         public string CustomerNumber = "";
         public int WeekToLockFrom = 0;
 

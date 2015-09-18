@@ -150,7 +150,7 @@ namespace WindowsFormsForecastLactalis
        
 
         //Get sales buget data as dictionary
-        public Dictionary<int, int> GetSalesBudgetTY(int prodNumber, string customerName)
+        public Dictionary<int, int> GetSalesBudgetTY(string prodNumber, string customerName)
         {
             LoadSalesBudgetForProductFromSQL(prodNumber, customerName, currentSelectedYear);
             PrepareLoadedSalesBudgetForGUI(currentSelectedYear);
@@ -158,7 +158,7 @@ namespace WindowsFormsForecastLactalis
         }
 
         //Load the sales budget numbers from SQL Database
-        private void LoadSalesBudgetForProductFromSQL(int prodNumber, string customerName, int year)
+        private void LoadSalesBudgetForProductFromSQL(string prodNumber, string customerName, int year)
         {
             conn = new NavSQLExecute();
             string queryString = "";
@@ -167,7 +167,7 @@ namespace WindowsFormsForecastLactalis
 
 
             
-            queryString = queryString.Replace("XXXX", prodNumber.ToString());
+            queryString = queryString.Replace("XXXX", prodNumber);
             queryString = queryString.Replace("YYYY", customerName);
             Console.WriteLine("Load Sales Budget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
@@ -232,7 +232,7 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        internal Dictionary<int, int> GetSalesBudget_LY(int ProductNumber, string CustomerNumber)
+        internal Dictionary<int, int> GetSalesBudget_LY(string ProductNumber, string CustomerNumber)
         {
             LoadSalesBudgetForProductFromSQL(ProductNumber, CustomerNumber, currentSelectedYear-1);
             PrepareLoadedSalesBudgetForGUI(currentSelectedYear - 1);
@@ -241,7 +241,7 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        public Dictionary<int, int> GetRealiseretKampagnLY(int prodNumber, string custNumber)
+        public Dictionary<int, int> GetRealiseretKampagnLY(string prodNumber, string custNumber)
         {
             LoadRealiseretKampagnLY_FromSQL(prodNumber, custNumber);
             PrepareRealiseretKampagnLY_ForGUI();
@@ -251,7 +251,7 @@ namespace WindowsFormsForecastLactalis
 
 
         //Load info for the RealiseretKampagnLY from SQL 
-        private void LoadRealiseretKampagnLY_FromSQL(int prodNumber, string custNumber)
+        private void LoadRealiseretKampagnLY_FromSQL(string prodNumber, string custNumber)
         {
             conn = new NavSQLExecute();
 
@@ -296,7 +296,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        internal Dictionary<int, int> GetKampagnTY(int prodNumber, string custNumber)
+        internal Dictionary<int, int> GetKampagnTY(string prodNumber, string custNumber)
         {
             LoadKampagnTY_FromSQL(prodNumber, custNumber);
             PrepareKampagnTY_ForGUI();
@@ -304,7 +304,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        private void LoadKampagnTY_FromSQL(int prodNumber, string custNumber)
+        private void LoadKampagnTY_FromSQL(string prodNumber, string custNumber)
         {
             conn = new NavSQLExecute();
 
@@ -384,7 +384,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        public string GetSalesBudgetWeekInfo(int week, int prodNumber, string customerName)
+        public string GetSalesBudgetWeekInfo(int week, string prodNumber, string customerName)
         {
             LoadSalesBudgetForProductFromSQL(prodNumber, customerName, currentSelectedYear);
              infoDict = new Dictionary<string, string>();
@@ -445,21 +445,21 @@ namespace WindowsFormsForecastLactalis
         }
         
 
-        internal Dictionary<int, int> GetRelSalg_LY(int prodNumber, string custNumber)
+        internal Dictionary<int, int> GetRelSalg_LY(string prodNumber, string custNumber)
         {
             LoadRelSalg_LY_FromSQL(prodNumber, currentSelectedYear-1, custNumber);
             PrepareRelSalg_LYorTYForGUI(currentSelectedYear - 1, custNumber, prodNumber);
             return relSalg_LY;
         }
 
-        internal Dictionary<int, int> GetRelSalg_TY(int prodNumber, string custNumber)
+        internal Dictionary<int, int> GetRelSalg_TY(string prodNumber, string custNumber)
         {
             LoadRelSalg_LY_FromSQL(prodNumber, currentSelectedYear, custNumber);
             PrepareRelSalg_LYorTYForGUI(currentSelectedYear, custNumber, prodNumber);
             return relSalg_TY;
         }
 
-        private void PrepareRelSalg_LYorTYForGUI(int year, string custNumber, int prodNumber)
+        private void PrepareRelSalg_LYorTYForGUI(int year, string custNumber, string prodNumber)
         {
 
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
@@ -563,7 +563,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        private void LoadRelSalg_LY_FromSQL(int prodNumber, int year, string custNumber)
+        private void LoadRelSalg_LY_FromSQL(string prodNumber, int year, string custNumber)
         {
             conn = new NavSQLExecute();
             string queryString = "";

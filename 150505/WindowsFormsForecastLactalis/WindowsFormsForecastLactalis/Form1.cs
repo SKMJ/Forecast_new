@@ -24,14 +24,15 @@ namespace WindowsFormsForecastLactalis
         private int latestWeek;
         Point latestMouseClick;
         int selectedYear;
-        Dictionary<string, string> custDictionary;
+        //Dictionary<string, string> custDictionary;
 
         private bool loadingNewProductsOngoing;
 
-        public Dictionary<int, string> allProductsDict = new Dictionary<int, string>();
+        public Dictionary<string, string> allProductsDict = new Dictionary<string, string>();
 
         public Dictionary<string, string> allProductsM3Dict = new Dictionary<string, string>();
         Dictionary<string, List<string>> allSuppliersM3 = new Dictionary<string, List<string>>();
+        public Dictionary<string, string> newNumberDict = new Dictionary<string, string>();
 
 
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
@@ -45,11 +46,12 @@ namespace WindowsFormsForecastLactalis
 
             m3Info.TestM3Connection();
             SetupColumns();
-
+            ClassStaticVaribles.SetNewNumberDict();
             allProductsM3Dict = m3Info.GetAllSkaevingeProductsDict();
             allSuppliersM3 = m3Info.GetSupplierWithItemsDict();
 
             LoadAllProductDict();
+            ClassStaticVaribles.SetAllProductsNavDict(allProductsDict);
 
         }
 
@@ -58,11 +60,12 @@ namespace WindowsFormsForecastLactalis
         private void FixCustomerChoices()
         {
             //Dictionary<string, string> cust = GetCustomers();
-            custDictionary = GetCustomersWitohutLoad();
+            ClassStaticVaribles.SetCustDictionary();
+            //GetCustomersWitohutLoad();
 
             comboBoxAssortment.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            comboBoxAssortment.DataSource = new BindingSource(custDictionary, null);
+            comboBoxAssortment.DataSource = new BindingSource(ClassStaticVaribles.CustDictionary, null);
             comboBoxAssortment.DisplayMember = "Key";
             comboBoxAssortment.ValueMember = "Key";
 
@@ -106,6 +109,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     string temp = i + "." + comboBoxYear.Text;
                     dataGridForecastInfo.Columns[i + 2].Name = temp;
+                    //dataGridForecastInfo.Columns[i + 2].Width = 45;
                 }
             }
         }
@@ -130,7 +134,14 @@ namespace WindowsFormsForecastLactalis
                 weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 2); //+ 2 is offset from cell number to week number
                 weekProdNBR++;
                 List<object> tempList = new List<object>();
-                tempList.Add(item.ProductNumber.ToString());
+                if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(item.ProductNumber.ToString()))
+                {
+                    tempList.Add(ClassStaticVaribles.NewNumberDictNavKey[item.ProductNumber.ToString()]);
+                }
+                else
+                {
+                    tempList.Add(item.ProductNumber.ToString());
+                }
                 tempList.Add(item.ProductName);
                 tempList.Add("RealiseretKampagn_LastYear");
                 for (int i = 1; i < 54; i++)
@@ -296,12 +307,12 @@ namespace WindowsFormsForecastLactalis
         //Add testinfo Products
         private void CreateProducts()
         {
-            string tempCustNumber = custDictionary[comboBoxAssortment.Text];
-            PrognosInfoSales product1 = new PrognosInfoSales(allProductsDict[2432], 2432, tempCustNumber);
-            PrognosInfoSales product2 = new PrognosInfoSales(allProductsDict[1442], 1442, tempCustNumber);
-            PrognosInfoSales product3 = new PrognosInfoSales(allProductsDict[1238], 1238, tempCustNumber);
-            PrognosInfoSales product4 = new PrognosInfoSales(allProductsDict[2442], 2442, tempCustNumber);
-            PrognosInfoSales product5 = new PrognosInfoSales(allProductsDict[2735], 2735, tempCustNumber);
+            string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
+            PrognosInfoSales product1 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["2432"], "2432", tempCustNumber);
+            PrognosInfoSales product2 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["1442"], "1442", tempCustNumber);
+            PrognosInfoSales product3 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["1238"], "1238", tempCustNumber);
+            PrognosInfoSales product4 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["2442"], "2442", tempCustNumber);
+            PrognosInfoSales product5 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["2735"], "2735", tempCustNumber);
 
             SetStatus("Products loading 1/5");
            // MessageBox.Show("Place 1");
@@ -364,9 +375,9 @@ namespace WindowsFormsForecastLactalis
                 supplyViewInstance.SetForm1Instanse(this);
                 supplyViewInstance.BringToFront();
                 supplyViewInstance.Show();
-                supplyViewInstance.SetAllProdDict(allProductsDict);
-                supplyViewInstance.SetAllProdM3Dict(allProductsM3Dict);
-                supplyViewInstance.SetAllSupplDict(allSuppliersM3);
+                //supplyViewInstance.SetAllProdDict(allProductsDict);
+                //supplyViewInstance.SetAllProdM3Dict(allProductsM3Dict);
+                //supplyViewInstance.SetAllSupplDict(allSuppliersM3);
             }
             else
             {
@@ -413,13 +424,13 @@ namespace WindowsFormsForecastLactalis
                     KeyValuePair<string, string> tempPair = (KeyValuePair<string, string>)comboBoxAssortment.SelectedItem;
                     string tempString = tempPair.Key;
                     Products = new List<PrognosInfoSales>();
-                    List<int> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
+                    List<string> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
                     
                     if (productList != null)
                     {
                         int nbrItems = productList.Count;
                         int i = 0;
-                        foreach (int item in productList)
+                        foreach (string item in productList)
                         {
                             i++;
                             string temp = allProductsM3Dict[item.ToString()];
@@ -557,7 +568,7 @@ namespace WindowsFormsForecastLactalis
                                 if (ammount != 0)
                                 {
                                    
-                                    string tempCustNumber = custDictionary[comboBoxAssortment.Text];
+                                    string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
                                     //string startDato = "datum";
 
                                     Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
@@ -616,6 +627,11 @@ namespace WindowsFormsForecastLactalis
                 row--;
             }
             returnString = GetValueFromGridAsString(row, 0);
+
+            if (ClassStaticVaribles.NewNumberDictM3Key.ContainsKey(returnString))
+            {
+                returnString = ClassStaticVaribles.NewNumberDictM3Key[returnString];
+            }
             return returnString;
         }
 
@@ -678,8 +694,13 @@ namespace WindowsFormsForecastLactalis
                 {
                     if (!infoboxSales.Visible)
                     {
-                        string temp2 = GetProductNumberFromRow(rowIndex);
-                        int productNumber = Convert.ToInt32(temp2);
+                        string prodNBRTemp = GetProductNumberFromRow(rowIndex);
+                        //int productNumber = Convert.ToInt32(prodNBRTemp);
+                        string tempNewName = prodNBRTemp;
+                        if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(prodNBRTemp))
+                        {
+                            tempNewName = tempNewName + " New Number (" + ClassStaticVaribles.NewNumberDictNavKey[prodNBRTemp] + ")";
+                        }
 
                         int latestWeek = columnIndex - 2;
                         //PrognosInfoForSupply tempInfo = GetProductInfoByNumber(productNumber);
@@ -691,10 +712,10 @@ namespace WindowsFormsForecastLactalis
 
                         SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
                         sqlConnection.SetYear(selectedYear);
-                        string tempCustNumber = custDictionary[comboBoxAssortment.Text];
-                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, productNumber, tempCustNumber);
+                        string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, tempCustNumber);
 
-                        temp = "Salgsbudget" + " Product: " + temp2 + " Week: " + latestWeek + "\n\n" + temp;
+                        temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
                         MessageBox.Show(temp);
                     }
                     else
@@ -758,78 +779,78 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        private Dictionary<string, string> GetCustomersWitohutLoad()
-        {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            Dictionary<string, string> allCustomers = new Dictionary<string, string>();
-            allCustomers.Add("0", " ");
-            allCustomers.Add("904", "914-KristianstadsOstföräd.EUR");
-            allCustomers.Add("981", "ArlaNorge");
-            allCustomers.Add("980", "ASKOLactalisNorge");
-            allCustomers.Add("975", "AxFood");
-            allCustomers.Add("986", "AxfooddirektebutiksLev.");
-            allCustomers.Add("976", "Bergendahls");
-            allCustomers.Add("60", "BESTWESTERN");
-            allCustomers.Add("56", "CHEVALBLANCKANTINER");
-            allCustomers.Add("67", "CHOISEHOTELS");
-            allCustomers.Add("977", "CityGross");
-            allCustomers.Add("52", "COOPCENTRALLAGER");
-            allCustomers.Add("984", "Coopdirekteleverancer");
-            allCustomers.Add("974", "COOPSverige");
-            allCustomers.Add("41", "COORKANTINER");
-            allCustomers.Add("47", "DANSKCATER");
-            allCustomers.Add("68", "DANSKKROFERIE");
-            allCustomers.Add("63", "DANSKEKONF.CENT.BOOK.SERVICE");
-            allCustomers.Add("90", "Div.Finland");
-            allCustomers.Add("51", "DIVERSE");
-            allCustomers.Add("15", "DSCENTRAL-LAGER");
-            allCustomers.Add("989", "Gekås");
-            allCustomers.Add("26", "GENNEMFAKTVIASUPERGROS");
-            allCustomers.Add("58", "grossist");
-            allCustomers.Add("19", "HKI(tidlS-engros)");
-            allCustomers.Add("65", "HOTELLER");
-            allCustomers.Add("45", "HØRKRAM");
-            allCustomers.Add("973", "ICA");
-            allCustomers.Add("983", "ICAbutikspakketCentraltLev.");
-            allCustomers.Add("982", "ICANorge");
-            allCustomers.Add("71", "INCOCaterKBHgennemfak");
-            allCustomers.Add("73", "INCOgennemfakMeyer");
-            allCustomers.Add("92", "INEXFinland");
-            allCustomers.Add("6", "Intervare");
-            allCustomers.Add("IRMA", "IRMA");
-            allCustomers.Add("101", "Island");
-            allCustomers.Add("44", "KANTINER");
-            allCustomers.Add("96", "KESKO");
-            allCustomers.Add("43", "KURSUSEJD.");
-            allCustomers.Add("34", "METRO");
-            allCustomers.Add("4", "NETTO");
-            allCustomers.Add("969", "NettoSverigeAB");
-            allCustomers.Add("42", "OSTEHANDEL");
-            allCustomers.Add("32", "OstehandlereSverige");
-            allCustomers.Add("103", "Polen");
-            allCustomers.Add("28", "REITAN");
-            allCustomers.Add("988", "RemaNorge");
-            allCustomers.Add("40", "RESTAURANTER");
-            allCustomers.Add("979", "SalgsbilskunderiSverige");
-            allCustomers.Add("10", "SALLING");
-            allCustomers.Add("69", "SASRADDISON");
-            allCustomers.Add("76", "Sodexo");
-            allCustomers.Add("23", "SUPERGROSCENTRALLAGER");
-            allCustomers.Add("967", "SvenskeKunde");
-            allCustomers.Add("102", "Tyskland");
-            allCustomers.Add("27", "ØVRIGEDANSKCATER-GENNEMFAK");
-            allCustomers.Add("94", "Øvrigeexport(grønland)");
-            allCustomers.Add("93", "ØvrigeFinland");
+        //private Dictionary<string, string> GetCustomersWitohutLoad()
+        //{
+        //    Stopwatch stopwatch = Stopwatch.StartNew();
+        //    Dictionary<string, string> allCustomers = new Dictionary<string, string>();
+        //    allCustomers.Add("0", " ");
+        //    allCustomers.Add("904", "914-KristianstadsOstföräd.EUR");
+        //    allCustomers.Add("981", "ArlaNorge");
+        //    allCustomers.Add("980", "ASKOLactalisNorge");
+        //    allCustomers.Add("975", "AxFood");
+        //    allCustomers.Add("986", "AxfooddirektebutiksLev.");
+        //    allCustomers.Add("976", "Bergendahls");
+        //    allCustomers.Add("60", "BESTWESTERN");
+        //    allCustomers.Add("56", "CHEVALBLANCKANTINER");
+        //    allCustomers.Add("67", "CHOISEHOTELS");
+        //    allCustomers.Add("977", "CityGross");
+        //    allCustomers.Add("52", "COOPCENTRALLAGER");
+        //    allCustomers.Add("984", "Coopdirekteleverancer");
+        //    allCustomers.Add("974", "COOPSverige");
+        //    allCustomers.Add("41", "COORKANTINER");
+        //    allCustomers.Add("47", "DANSKCATER");
+        //    allCustomers.Add("68", "DANSKKROFERIE");
+        //    allCustomers.Add("63", "DANSKEKONF.CENT.BOOK.SERVICE");
+        //    allCustomers.Add("90", "Div.Finland");
+        //    allCustomers.Add("51", "DIVERSE");
+        //    allCustomers.Add("15", "DSCENTRAL-LAGER");
+        //    allCustomers.Add("989", "Gekås");
+        //    allCustomers.Add("26", "GENNEMFAKTVIASUPERGROS");
+        //    allCustomers.Add("58", "grossist");
+        //    allCustomers.Add("19", "HKI(tidlS-engros)");
+        //    allCustomers.Add("65", "HOTELLER");
+        //    allCustomers.Add("45", "HØRKRAM");
+        //    allCustomers.Add("973", "ICA");
+        //    allCustomers.Add("983", "ICAbutikspakketCentraltLev.");
+        //    allCustomers.Add("982", "ICANorge");
+        //    allCustomers.Add("71", "INCOCaterKBHgennemfak");
+        //    allCustomers.Add("73", "INCOgennemfakMeyer");
+        //    allCustomers.Add("92", "INEXFinland");
+        //    allCustomers.Add("6", "Intervare");
+        //    allCustomers.Add("IRMA", "IRMA");
+        //    allCustomers.Add("101", "Island");
+        //    allCustomers.Add("44", "KANTINER");
+        //    allCustomers.Add("96", "KESKO");
+        //    allCustomers.Add("43", "KURSUSEJD.");
+        //    allCustomers.Add("34", "METRO");
+        //    allCustomers.Add("4", "NETTO");
+        //    allCustomers.Add("969", "NettoSverigeAB");
+        //    allCustomers.Add("42", "OSTEHANDEL");
+        //    allCustomers.Add("32", "OstehandlereSverige");
+        //    allCustomers.Add("103", "Polen");
+        //    allCustomers.Add("28", "REITAN");
+        //    allCustomers.Add("988", "RemaNorge");
+        //    allCustomers.Add("40", "RESTAURANTER");
+        //    allCustomers.Add("979", "SalgsbilskunderiSverige");
+        //    allCustomers.Add("10", "SALLING");
+        //    allCustomers.Add("69", "SASRADDISON");
+        //    allCustomers.Add("76", "Sodexo");
+        //    allCustomers.Add("23", "SUPERGROSCENTRALLAGER");
+        //    allCustomers.Add("967", "SvenskeKunde");
+        //    allCustomers.Add("102", "Tyskland");
+        //    allCustomers.Add("27", "ØVRIGEDANSKCATER-GENNEMFAK");
+        //    allCustomers.Add("94", "Øvrigeexport(grønland)");
+        //    allCustomers.Add("93", "ØvrigeFinland");
 
-            Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
-            foreach (KeyValuePair<string,string> item in allCustomers)
-            {
-                allCustomersSwitched.Add(item.Value, item.Key);
-            }
+        //    Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
+        //    foreach (KeyValuePair<string,string> item in allCustomers)
+        //    {
+        //        allCustomersSwitched.Add(item.Value, item.Key);
+        //    }
 
-
-            return allCustomersSwitched;
-        }
+        //    ClassStaticVaribles.SetCustDictionary();
+        //    return allCustomersSwitched;
+        //}
 
         private void comboBoxYear_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -852,12 +873,20 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
 
-            int prodNMBR = (int)numericUpDownPRoductNumber.Value;
-            string tempCustNumber = custDictionary[comboBoxAssortment.Text];
-            string temp = "Name Unknown";
-            if(allProductsDict.ContainsKey(prodNMBR))
+            string prodNMBR = textBoxProdNBR.Text;
+            if (ClassStaticVaribles.NewNumberDictM3Key.ContainsKey(prodNMBR))
             {
-                temp = allProductsDict[prodNMBR];
+                prodNMBR = ClassStaticVaribles.NewNumberDictM3Key[prodNMBR];
+            }
+            string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
+            string temp = "Name Unknown";
+            if (ClassStaticVaribles.AllProductsNavDict.ContainsKey(prodNMBR))
+            {
+                temp = ClassStaticVaribles.AllProductsNavDict[prodNMBR];
+            }
+            else if(allProductsM3Dict.ContainsKey(prodNMBR))
+            {
+                temp = allProductsM3Dict[prodNMBR];
             }
 
             PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber);
@@ -896,13 +925,13 @@ namespace WindowsFormsForecastLactalis
                 //loop trough all rows and write in tabs
                 foreach (DataRow row in currentRows)
                 {
-                    string prodNBR__ = row["Varenr"].ToString();
-                    int nbr = Convert.ToInt32(prodNBR__);
+                    string prodNBR_ = row["Varenr"].ToString();
+                    int nbr = Convert.ToInt32(prodNBR_);
 
                     string beskriv = row["Beskrivelse"].ToString();
-                    if (!allProductsDict.ContainsKey(nbr))
+                    if (!allProductsDict.ContainsKey(prodNBR_))
                     {
-                        allProductsDict.Add(nbr, beskriv);
+                        allProductsDict.Add(prodNBR_, beskriv);
                     }
                 }
                 Console.WriteLine(allProductsDict.ToString());
@@ -914,6 +943,36 @@ namespace WindowsFormsForecastLactalis
         {
 
         }
+
+        private void numericUpDownPRoductNumber_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxProdNBR_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridForecastInfo_ColumnDividerWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+           
+        }
+
+        private void dataGridForecastInfo_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (e.Column.Index > 2)
+            {
+                int temp = e.Column.Width;
+                for (int i = 3; i < dataGridForecastInfo.Columns.Count; i++)
+                {
+                    dataGridForecastInfo.Columns[i].Width = temp;
+                }
+            }
+        }
+
+
+
 
 
 

@@ -10,7 +10,7 @@ namespace WindowsFormsForecastLactalis
     //this is the supply prognos info not connected to any customer
     public class PrognosInfoForSupply : IComparable
     {
-        public PrognosInfoForSupply(string name, int number, bool showLastYear)
+        public PrognosInfoForSupply(string name, string number, bool showLastYear)
         {
             ProductName = name;
             ProductNumber = number;
@@ -26,7 +26,7 @@ namespace WindowsFormsForecastLactalis
         int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
 
 
-        public int ProductNumber = 0;
+        public string ProductNumber = "0";
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> RealiseretSalg_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();

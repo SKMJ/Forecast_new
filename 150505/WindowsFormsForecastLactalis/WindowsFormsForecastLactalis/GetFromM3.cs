@@ -60,9 +60,9 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        public List<int> GetListOfProductsNbrByAssortment(string assortment)
+        public List<string> GetListOfProductsNbrByAssortment(string assortment)
         {
-            List<int> productList = new List<int>();
+            List<string> productList = new List<string>();
             {
                 SERVER_ID sid = new SERVER_ID();
 
@@ -92,7 +92,7 @@ namespace WindowsFormsForecastLactalis
                     //Mooves to next row
                     MvxSock.Access(ref sid, null);
 
-                    productList.Add(Convert.ToInt32(tempItemNbr));
+                    productList.Add(tempItemNbr);
                 
                 }
                 
@@ -413,6 +413,13 @@ namespace WindowsFormsForecastLactalis
                 while (MvxSock.More(ref sid))
                 {
                     string itemNBR = MvxSock.GetField(ref sid, "ITNO");// + "\t\t";
+
+                    //Lägg alltid in nummer från gamla navision om det existerar för att hålla Nav databasen samma
+                    if(ClassStaticVaribles.NewNumberDictM3Key.ContainsKey(itemNBR))
+                    {
+                        itemNBR = ClassStaticVaribles.NewNumberDictM3Key[itemNBR];
+                    }
+
                     string itemName = MvxSock.GetField(ref sid, "ITDS");// + "\t\t";
                     string itemSupplier = MvxSock.GetField(ref sid, "SUNO");// + "\t\t";
                     if (itemSupplier.Length > 0 && Convert.ToInt32(itemSupplier) > 99)
@@ -438,12 +445,14 @@ namespace WindowsFormsForecastLactalis
                 }
 
                 MvxSock.Close(ref sid);
+                ClassStaticVaribles.SetAllProductsM3Dict(dictItems);
                 return dictItems;
             }
         }
 
         internal Dictionary <string, List<string>> GetSupplierWithItemsDict()
         {
+            ClassStaticVaribles.SetAllSuppliersM3(dictSupplier);
             return dictSupplier;
         }
     }

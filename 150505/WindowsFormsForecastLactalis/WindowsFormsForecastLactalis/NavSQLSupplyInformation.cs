@@ -50,7 +50,7 @@ namespace WindowsFormsForecastLactalis
         int debug3 = 0;
 
         int currentSelectedYear = 2015;
-        int currentProdNumber = 2015;
+        string currentProdNumber = "0";
 
         enum TypeEnum
         {
@@ -61,7 +61,7 @@ namespace WindowsFormsForecastLactalis
 
 
         //Constructor
-        public NavSQLSupplyInformation(int yearForInfo, int prodNumberForInfo)
+        public NavSQLSupplyInformation(int yearForInfo, string prodNumberForInfo)
         {
             //MessageBox.Show("a1");
             InitiateProperties();
@@ -136,7 +136,7 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
 
             string queryString = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from Debitor_Budgetlinjepost where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("Load Sales Budget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
             conn.Close();
@@ -282,7 +282,7 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
 
             string queryString = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear - 1] + "' and startdato < '" + endDateStrings[currentSelectedYear - 1] + "' order by startdato";
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadRealiseretKampagnLY Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
@@ -339,12 +339,12 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
 
             string queryString = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKampagnTY1 Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
             queryString = @"select Dato, Antal_Budget, Beskrivelse  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '" + startDateStrings[currentSelectedYear] + "' and Dato < '" + endDateStrings[currentSelectedYear] + "' order by Dato";
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKampagnTY2 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(queryString);
 
@@ -554,7 +554,7 @@ namespace WindowsFormsForecastLactalis
                                     if (lokKode.Equals("8"))
                                     {
                                         relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
-                                        if (currentProdNumber == 1442 && weekInt == 4)
+                                        if (currentProdNumber == "1442" && weekInt == 4)
                                         {
                                             debug1 = debug1 - Antal;
                                         }
@@ -564,7 +564,7 @@ namespace WindowsFormsForecastLactalis
                                     else if (lokKode.Equals("100"))
                                     {
                                         relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
-                                        if (currentProdNumber == 1442 && weekInt == 4)
+                                        if (currentProdNumber == "1442" && weekInt == 4)
                                         {
                                             Console.WriteLine(year + " Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postType + " bool: " + levEgetLager + " lokCode: " + lokKode);
                                             Console.WriteLine("antal Lokekod100: " + Antal);
@@ -581,7 +581,7 @@ namespace WindowsFormsForecastLactalis
                                 if (postType == 1)
                                 {
                                     relSalg_TY[weekInt] = relSalg_TY[weekInt] - Antal;
-                                    if (currentProdNumber == 1442 && weekInt == 4)
+                                    if (currentProdNumber == "1442" && weekInt == 4)
                                     {
                                         debug3 = debug3 + Antal;
                                     }
@@ -632,7 +632,7 @@ namespace WindowsFormsForecastLactalis
 
 
 
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadRelSalgsbudget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
             //throw new NotImplementedException();
@@ -651,12 +651,12 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
 
             string queryString = @"select Forventet_modtdato, Udestående_antal_basis  from Købslinie where Nummer='XXXX' and Forventet_modtdato >= '" + startDateStrings[currentSelectedYear] + "' and Forventet_modtdato < '" + endDateStrings[currentSelectedYear] + "' order by Forventet_modtdato";
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKopsorder1 Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
             queryString = @"select Forventet_modtdato, Antal_basis  from dbo.Købsleverancelinie where Nummer='XXXX' and Forventet_modtdato >= '" + startDateStrings[currentSelectedYear] + "' and Forventet_modtdato < '" + endDateStrings[currentSelectedYear] + "' order by Forventet_modtdato";
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKopsorder2 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(queryString);
 
@@ -826,7 +826,7 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
 
 
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadVarekort Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
 
@@ -842,7 +842,7 @@ namespace WindowsFormsForecastLactalis
             dateKopesBudget.Add(1, @"2015/09/07");
             dateKopesBudget.Add(2, @"2019/09/07");
             string queryString = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from Debitor_Budgetlinjepost where Type = '6' and Varenr='XXXX' and startdato >= '" + dateKopesBudget[1] + "' and startdato < '" + dateKopesBudget[2] + "' order by startdato";
-            queryString = queryString.Replace("XXXX", currentProdNumber.ToString());
+            queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("Load Sales Budget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);
             conn.Close();

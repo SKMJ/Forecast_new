@@ -8,7 +8,7 @@ namespace WindowsFormsForecastLactalis
 {
     class FileToSendInfoForPoduct
     {
-        public FileToSendInfoForPoduct(int prodNumber, int lactaFranceProdNumber)
+        public FileToSendInfoForPoduct(string prodNumber, int lactaFranceProdNumber)
         {
             ProductNumber = prodNumber;
             LactalisFranceProductNumber = lactaFranceProdNumber;
@@ -21,7 +21,7 @@ namespace WindowsFormsForecastLactalis
         public int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
 
 
-        public int ProductNumber = 0;
+        public string ProductNumber = "0";
         public int LactalisFranceProductNumber = 0;
 
         public int Antal_pr_kolli = 1;
