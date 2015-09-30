@@ -286,6 +286,7 @@
             this.Name = "FormSupply";
             this.Text = "Forecast Supply ";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormSupply_FormClosed);
+            this.SizeChanged += new System.EventHandler(this.FormSupply_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).EndInit();

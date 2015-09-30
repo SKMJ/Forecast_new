@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,6 +49,8 @@ namespace WindowsFormsForecastLactalis
 
             SetupColumns();
             FixSupplierChoices();
+            dataGridForecastInfo.Width = this.Width - 50;
+            dataGridForecastInfo.Height = this.Height - 250;
             //FillInfo();
         }
 
@@ -93,17 +96,6 @@ namespace WindowsFormsForecastLactalis
             comboBoxYear.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxYear.DataSource = new BindingSource(yearList, null);
         }
-
-        //public void SetAllProdDict(Dictionary<string, string> allProd)
-        //{
-        //    //foreach (KeyValuePair<string, string> item in allProd)
-        //    //{
-                
-        //    //    ClassStaticVaribles.AllProductsNavDict.Add(item.Key, item.Value);
-        //    //}
-        //}
-
-
 
         private void Form2_Load(object sender, System.EventArgs e)
         {
@@ -161,10 +153,7 @@ namespace WindowsFormsForecastLactalis
             if (comboBoxSupplier.SelectedItem.ToString().Equals("3272"))
             {
                 numericSupplyNBR.Value = 3272;
-                //This will later load all numbers from databases
-                //foreach (int supplNBR in MotherSupplierWithChilds[1102])
-                //{
-                //List<string> tempList = m3Info.GetListOfProductsBySupplier(supplNBR.ToString());
+
                 List<string> tempList2 = GetListOfProductsWithSupplierLactaFrance();
                 int numberOfProducts = tempList2.Count;
                 tempList2.Sort();
@@ -305,7 +294,8 @@ namespace WindowsFormsForecastLactalis
 
                 tempList = new List<object>();
                 tempList.Add("");
-                tempList.Add("På lager: " + number);
+                //tempList.Add("På lager: " + number);
+                tempList.Add(" ");
                 if (checkBoxLastYear.Checked)
                 {
                     tempList.Add("RealiseretSalg_LastYear");
@@ -827,28 +817,19 @@ namespace WindowsFormsForecastLactalis
                         //string startDato = "datum";
                         string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString();
 
-                        Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
-                        string st = "12/29/2014";
-                        startDate.Add(2015, DateTime.Parse(st));
-                        st = "12/30/2013";
-                        startDate.Add(2014, DateTime.Parse(st));
-                        st = "01/04/2016";
-                        startDate.Add(2016, DateTime.Parse(st));
-                        st = "01/02/2017";
-                        startDate.Add(2017, DateTime.Parse(st));
-
-                        DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
-                        DateTime answer = tempDate.AddDays((week - 1) * 7);
-                        string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+                        DateTime answer = ClassStaticVaribles.StartDate[selectedYear].AddDays((week - 1) * 7);
+                        string format = "yyyy-MM-dd HH:mm:ss";    // modify the format depending upon input required in the column in database 
 
 
                         System.Threading.ThreadPool.QueueUserWorkItem(delegate
                         {
                             //Todo write to database
+                            
                             NavSQLExecute conn = new NavSQLExecute();
                             conn.InsertKöpsbudgetLine(productNumber.ToString(), answer.ToString(format), ammountToKop);
+                            
                         }, null);
-
+                        
                         //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
 
                     }
@@ -898,19 +879,11 @@ namespace WindowsFormsForecastLactalis
                                 //string startDato = "datum";
                                 string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString();
 
-                                Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
-                                string st = "12/29/2014";
-                                startDate.Add(2015, DateTime.Parse(st));
-                                st = "12/30/2013";
-                                startDate.Add(2014, DateTime.Parse(st));
-                                st = "01/04/2016";
-                                startDate.Add(2016, DateTime.Parse(st));
-                                st = "01/02/2017";
-                                startDate.Add(2017, DateTime.Parse(st));
 
-                                DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
+
+                                DateTime tempDate = DateTime.Parse(ClassStaticVaribles.StartDate[selectedYear].ToString());
                                 DateTime answer = tempDate.AddDays((week - 1) * 7);
-                                string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+                                string format = "yyyy-MM-dd HH:mm:ss";    // modify the format depending upon input required in the column in database 
                                 System.Threading.ThreadPool.QueueUserWorkItem(delegate
                                 {
                                     NavSQLExecute conn = new NavSQLExecute();
@@ -1323,6 +1296,14 @@ namespace WindowsFormsForecastLactalis
 
         private void numericUpDownPRoductNumber_ValueChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void FormSupply_SizeChanged(object sender, EventArgs e)
+        {
+
+            dataGridForecastInfo.Width = this.Width-50;
+            dataGridForecastInfo.Height = this.Height - 250;
 
         }
     }

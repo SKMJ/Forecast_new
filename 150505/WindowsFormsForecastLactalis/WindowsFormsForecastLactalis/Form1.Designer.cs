@@ -206,6 +206,7 @@
             this.Controls.Add(this.dataGridForecastInfo);
             this.Name = "Form1";
             this.Text = "Forecast Sales";
+            this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

@@ -104,6 +104,49 @@ namespace WindowsFormsForecastLactalis
         }
 
 
+        public Dictionary<string, string> GetItemInfoByItemNumber(string itemNbr)
+        {
+            //string returnString = "";
+            Dictionary<string, string> returnStrings = new Dictionary<string, string>();
+            {
+                //SERVER_ID sid = new SERVER_ID();
+                //uint rc;
+                //rc = ConnectToM3Interface(ref sid, "MMS200MI");
+                //if (rc != 0)
+                //{
+                //    return returnStrings;
+                //}
+                ////Set the field without need to know position Start from this customer 00752
+                //MvxSock.SetField(ref sid, "ITNO", itemNbr);
+                //MvxSock.SetField(ref sid, "CONO", "001");
+                //rc = MvxSock.Access(ref sid, "GetItmBasic");
+                //if (rc != 0)
+                //{
+                //    //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
+                //    MvxSock.Close(ref sid);
+                //    return returnStrings;
+                //}
+                ////Division, Prep location och Whs location
+                //string div  = MvxSock.GetField(ref sid, "Division");
+                //string prepLocation = MvxSock.GetField(ref sid, "Prep Location");
+                //string whsLocation = MvxSock.GetField(ref sid, "Whs Location");
+
+                string div  = "hittepåDiv";
+                string prepLocation = "hittepåPrep";
+                string whsLocation = "hittepåWHS";
+
+                returnStrings.Add("div", div);
+                returnStrings.Add("prepLocation", prepLocation);
+                returnStrings.Add("whsLocation", whsLocation);
+
+ 
+                //Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
+                //MvxSock.Close(ref sid);
+                return returnStrings;
+            }
+        }
+
+
         //public string GetItemNameByItemNumber(string itemNbr)
         //{
         //    string returnString = "";

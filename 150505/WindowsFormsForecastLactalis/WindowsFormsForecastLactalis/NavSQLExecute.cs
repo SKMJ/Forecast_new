@@ -20,7 +20,7 @@ namespace WindowsFormsForecastLactalis
         //private OdbcDataAdapter dataAddapter;
         private SqlDataAdapter dataAddapter;
         private DataTable dataTable;
-        private BackgroundWorker bw = new BackgroundWorker();
+        //private BackgroundWorker bw = new BackgroundWorker();
 
 
 
@@ -87,10 +87,10 @@ namespace WindowsFormsForecastLactalis
             conn.Close();
         }
 
-        public void InsertBudgetLine(string custNumber, string custName, string prodNumber, string startdato, int ammount)
+        public void InsertBudgetLine(string custNumber, string custName, string prodNumber, string startdato, int ammount, string nowString)
         {
-            bw.WorkerReportsProgress = true;
-            bw.WorkerSupportsCancellation = true;
+            //bw.WorkerReportsProgress = true;
+            //bw.WorkerSupportsCancellation = true;
 
             using (SqlCommand command = new SqlCommand())
             {
@@ -103,9 +103,8 @@ namespace WindowsFormsForecastLactalis
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
                 command.Parameters.AddWithValue("@Navn_DebBogfGr", custName);
-                DateTime time = DateTime.Now;              // Use current time
-                string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
-                command.Parameters.AddWithValue("@Tastedato", time.ToString(format));
+
+                command.Parameters.AddWithValue("@Tastedato", nowString);
 
                 try
                 {
@@ -128,7 +127,7 @@ namespace WindowsFormsForecastLactalis
 
                 DateTime tempDate = DateTime.Now;
                 
-                string format = "yyyy-MM-dd HH:MM:ss";
+                string format = "yyyy-MM-dd HH:mm:ss";
                 string thisDate = tempDate.ToString(format);
 
                 command.Connection = conn;            // <== lacking
@@ -167,7 +166,8 @@ namespace WindowsFormsForecastLactalis
                     command.Parameters.AddWithValue("@Startdato", startdato);
                     command.Parameters.AddWithValue("@Antal", ammount);
                     DateTime time = DateTime.Now;              // Use current time
-                    string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+                    string format = "yyyy-MM-dd HH:mm:ss";    // modify the format depending upon input required in the column in database 
+                    
                     command.Parameters.AddWithValue("@Tastedato", time.ToString(format));
                     try
                     {

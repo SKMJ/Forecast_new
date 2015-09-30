@@ -65,6 +65,18 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
 
+            GetFromM3 m3Info = new GetFromM3();
+
+            string m3ProdNumber = GetM3ProdNumber();
+
+            Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
+            WareHouse = info["whsLocation"];
+            PrepLocation = info["prepLocation"];
+            Supplier = GetSupplierFromProduct();
+
+            Console.WriteLine("WareHouse: " + WareHouse + " PrepLocation: " + PrepLocation + " Supplier: " + Supplier);
+
+
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             sqlSupplyCalls.SetSelectedYear(selectedYear);
             sqlSupplyCalls.UpdateVareKort();
@@ -89,7 +101,7 @@ namespace WindowsFormsForecastLactalis
 
 
             Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY();
-            Dictionary<int, int> realiseretKampagnLY = new Dictionary<int,int>();
+            Dictionary<int, int> realiseretKampagnLY = new Dictionary<int, int>();
             Dictionary<int, int> relaiseratSalgsbudget_LY = new Dictionary<int, int>();
             if (ShowLastYear)
             {
@@ -121,6 +133,34 @@ namespace WindowsFormsForecastLactalis
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
+        }
+
+        private string GetM3ProdNumber()
+        {
+            string tempProdNBr = ProductNumber;
+
+            if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(ProductNumber))
+            {
+                tempProdNBr = ClassStaticVaribles.NewNumberDictNavKey[ProductNumber];
+
+                //Console.WriteLine("Search for pr");
+            }
+            return tempProdNBr;
+        }
+
+
+        private string GetSupplierFromProduct()
+        {
+            string returnSuppl = "";
+            string tempProdNBr = GetM3ProdNumber() ;
+
+            if (ClassStaticVaribles.ProdToSupplDict.ContainsKey(tempProdNBr))
+            {
+                returnSuppl = ClassStaticVaribles.ProdToSupplDict[tempProdNBr];
+            }
+
+
+            return returnSuppl;
         }
     }
 }

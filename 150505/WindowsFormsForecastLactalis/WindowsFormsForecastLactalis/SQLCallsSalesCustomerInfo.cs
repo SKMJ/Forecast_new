@@ -25,7 +25,7 @@ namespace WindowsFormsForecastLactalis
 
         Dictionary<int, string> startDateStrings = new Dictionary<int, string>();
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
-        Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
+        //Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
 
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
 
@@ -52,36 +52,8 @@ namespace WindowsFormsForecastLactalis
 
         private void InitiateProperties()
         {
-            string s = "2014-12-29 00:01";
 
-            DateTime dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            startDate.Add(2015, dt);
-            //MessageBox.Show("after");
-
-            s = "2013-12-30 00:01";
-
-            dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            startDate.Add(2014, dt);
-
-            //st = "01/04/2016";
-            s = "2016-01-04 00:01";
-
-            dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            startDate.Add(2016, dt);
-
-            //startDate.Add(2016, DateTime.Parse(st));
-            //st = "01/02/2017";
-            s = "2017-01-02 00:01";
-
-            dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            startDate.Add(2017, dt);
-            
-
-
+           
             startDateStrings.Add(2014, @"2013/12/30");
             endDateStrings.Add(2014, @"2014/12/30");
             startDateStrings.Add(2015, @"2014/12/29");
@@ -163,7 +135,7 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
             string queryString = "";
 
-            queryString = @"select Type, Antal, Debitorbogføringsruppe, Startdato, Navn_DebBogfGr, Tastedato, Kommentar from Debitor_Budgetlinjepost where Debitorbogføringsruppe='YYYY' and Varenr='XXXX' and startdato >= '" + startDateStrings[year] + "' and startdato < '" + endDateStrings[year] + "' order by startdato";
+            queryString = @"select Type, Antal, Debitorbogføringsruppe, Startdato, Navn_DebBogfGr, Tastedato, Kommentar from Debitor_Budgetlinjepost where Debitorbogføringsruppe='YYYY' and Varenr='XXXX' and startdato >= '" + startDateStrings[year] + "' and startdato < '" + endDateStrings[year] + "' order by Tastedato";
 
 
             
@@ -199,7 +171,7 @@ namespace WindowsFormsForecastLactalis
                     //string levKedja = row["Navn_DebBogfGr"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week = (tempDate - startDate[year]).TotalDays; 
+                    double week = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays; 
                     
 
                     
@@ -281,7 +253,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - startDate[currentSelectedYear-1]).TotalDays;
+                    double week = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear - 1]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
 
@@ -341,7 +313,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - startDate[currentSelectedYear]).TotalDays;
+                    double week = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
 
@@ -368,7 +340,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Dato"].ToString());
-                    double week = (tempDate - startDate[currentSelectedYear]).TotalDays;
+                    double week = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     Beskrivelse = row["Beskrivelse"].ToString();
@@ -410,7 +382,7 @@ namespace WindowsFormsForecastLactalis
                     string dateforNumber = row["Tastedato"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week1 = (tempDate - startDate[currentSelectedYear]).TotalDays;
+                    double week1 = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week1 / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
@@ -483,7 +455,7 @@ namespace WindowsFormsForecastLactalis
                     DateTime tempDate = DateTime.Parse(row["Bogføringsdato"].ToString());
                     double dayOFYear = 0;
 
-                    dayOFYear = (tempDate - startDate[year]).TotalDays;
+                    dayOFYear = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays;
 
                     double weekNBR = dayOFYear / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
@@ -605,7 +577,7 @@ namespace WindowsFormsForecastLactalis
         internal int GetCurrentWeekNBR()
         {
             DateTime tempDate = DateTime.Now;
-            double week1 = (tempDate - startDate[currentSelectedYear]).TotalDays;
+            double week1 = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
             double weekNBR = week1 / 7.0;
             int weekInt = (int)Math.Floor(weekNBR);
             weekInt = weekInt + 1;

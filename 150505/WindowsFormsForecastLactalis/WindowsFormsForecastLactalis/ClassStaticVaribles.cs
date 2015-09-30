@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +9,13 @@ namespace WindowsFormsForecastLactalis
 {
     public static class ClassStaticVaribles
     {
-        public static  Dictionary<string, string> CustDictionary;
+        public static Dictionary<string, string> CustDictionary;
 
-       // private bool loadingNewProductsOngoing;
+        // private bool loadingNewProductsOngoing;
 
         public static Dictionary<string, string> AllProductsNavDict = new Dictionary<string, string>();
+
+        public static Dictionary<string, string> ProdToSupplDict = new Dictionary<string, string>();
 
         public static Dictionary<string, string> AllProductsM3Dict = new Dictionary<string, string>();
         public static Dictionary<string, List<string>> AllSuppliersM3 = new Dictionary<string, List<string>>();
@@ -20,11 +23,13 @@ namespace WindowsFormsForecastLactalis
         public static Dictionary<string, string> NewNumberDictNavKey = new Dictionary<string, string>();
         public static Dictionary<string, string> NewNumberDictM3Key = new Dictionary<string, string>();
 
+        public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
+
         private static bool AllProductsNavFirst = true;
         private static bool AllProductsM3DictFirst = true;
         private static bool AllSuppliersM3First = true;
         private static bool NewNumberDictNavKeyFirst = true;
-        
+
         private static bool CustDictionaryFirst = true;
 
 
@@ -117,6 +122,39 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+        public static void InitiateDate()
+        {
+           // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
+
+            string s = "2014-12-29 00:01";
+
+            DateTime dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            StartDate.Add(2015, dt);
+            //MessageBox.Show("after");
+
+            s = "2013-12-30 00:01";
+
+            dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            StartDate.Add(2014, dt);
+
+            //st = "01/04/2016";
+            s = "2016-01-04 00:01";
+
+            dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            StartDate.Add(2016, dt);
+
+            //startDate.Add(2016, DateTime.Parse(st));
+            //st = "01/02/2017";
+            s = "2017-01-02 00:01";
+
+            dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            StartDate.Add(2017, dt);
+        }
+
         public static void SetAllSuppliersM3(Dictionary<string, List<string>> dict)
         {
             if (AllSuppliersM3First)
@@ -124,11 +162,30 @@ namespace WindowsFormsForecastLactalis
                 AllSuppliersM3First = false;
                 foreach (KeyValuePair<string, List<string>> item in dict)
                 {
-                    
+
                     AllSuppliersM3.Add(item.Key, item.Value);
+                }
+                CreateProdToSupplDict();
+            }
+        }
+
+        private static void CreateProdToSupplDict()
+        {
+
+            //string returnSuppl = "";
+            foreach (KeyValuePair<string, List<string>> item in ClassStaticVaribles.AllSuppliersM3)
+            {
+                foreach (string prodNBR in item.Value)
+                {
+                    //returnSuppl = item.Key;
+                    if (!ProdToSupplDict.ContainsKey(prodNBR))
+                    {
+                        ProdToSupplDict.Add(prodNBR, item.Key);
+                    }
                 }
             }
         }
+
 
         public static void SetAllProductsM3Dict(Dictionary<string, string> dict)
         {
@@ -207,6 +264,8 @@ namespace WindowsFormsForecastLactalis
                 NewNumberDictM3Key.Add("20031", "1098");
             }
         }
+
+
 
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -51,8 +52,21 @@ namespace WindowsFormsForecastLactalis
             allSuppliersM3 = m3Info.GetSupplierWithItemsDict();
 
             LoadAllProductDict();
-            ClassStaticVaribles.SetAllProductsNavDict(allProductsDict);
 
+            dataGridForecastInfo.Width = this.Width - 50;
+            dataGridForecastInfo.Height = this.Height - 250;
+            ClassStaticVaribles.SetAllProductsNavDict(allProductsDict);
+            ClassStaticVaribles.InitiateDate();
+            
+
+
+
+
+        }
+
+        private void frm_sizeChanged(object sender, EventArgs e)
+        {
+            
         }
 
 
@@ -303,16 +317,29 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+        public string GetNameFromLoadedProducts(string prodNBR)
+        {
+            string temp = "Name Unknown";
+            if (ClassStaticVaribles.AllProductsNavDict.ContainsKey(prodNBR))
+            {
+                temp = ClassStaticVaribles.AllProductsNavDict[prodNBR];
+            }
+            else if (ClassStaticVaribles.AllProductsM3Dict.ContainsKey(prodNBR))
+            {
+                temp = ClassStaticVaribles.AllProductsM3Dict[prodNBR];
+            }
+            return temp;
+        }
 
         //Add testinfo Products
         private void CreateProducts()
         {
             string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
-            PrognosInfoSales product1 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["2432"], "2432", tempCustNumber);
-            PrognosInfoSales product2 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["1442"], "1442", tempCustNumber);
-            PrognosInfoSales product3 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["1238"], "1238", tempCustNumber);
-            PrognosInfoSales product4 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["2442"], "2442", tempCustNumber);
-            PrognosInfoSales product5 = new PrognosInfoSales(ClassStaticVaribles.AllProductsNavDict["2735"], "2735", tempCustNumber);
+            PrognosInfoSales product1 = new PrognosInfoSales(GetNameFromLoadedProducts("2432"), "2432", tempCustNumber);
+            PrognosInfoSales product2 = new PrognosInfoSales(GetNameFromLoadedProducts("1442"), "1442", tempCustNumber);
+            PrognosInfoSales product3 = new PrognosInfoSales(GetNameFromLoadedProducts("1238"), "1238", tempCustNumber);
+            PrognosInfoSales product4 = new PrognosInfoSales(GetNameFromLoadedProducts("2442"), "2442", tempCustNumber);
+            PrognosInfoSales product5 = new PrognosInfoSales(GetNameFromLoadedProducts("2735"), "2735", tempCustNumber);
 
             SetStatus("Products loading 1/5");
            // MessageBox.Show("Place 1");
@@ -571,25 +598,23 @@ namespace WindowsFormsForecastLactalis
                                     string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
                                     //string startDato = "datum";
 
-                                    Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
-                                    string st = "12/29/2014";
-                                    startDate.Add(2015, DateTime.Parse(st));
-                                    st = "12/30/2013";
-                                    startDate.Add(2014, DateTime.Parse(st));
-                                    st = "01/04/2016";
-                                    startDate.Add(2016, DateTime.Parse(st));
-                                    st = "01/02/2017";
-                                    startDate.Add(2017, DateTime.Parse(st));
 
-                                    DateTime tempDate = DateTime.Parse(startDate[selectedYear].ToString());
+                                    DateTime tempDate = DateTime.Parse(ClassStaticVaribles.StartDate[selectedYear].ToString());
                                     DateTime answer = tempDate.AddDays((week - 1) * 7);
-                                    string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+                                    string format = "yyyy-MM-dd HH:mm:ss";    // modify the format depending upon input required in the column in database 
                                     string tempAssortment = comboBoxAssortment.Text;
+                                    DateTime time = DateTime.Now;              // Use current time
+                                    //string format = "yyyy-MM-dd HH:MM:ss";    // modify the format depending upon input required in the column in database 
+
+                                    Console.WriteLine("TasteDato: " + time.ToString(format));
+                                    string inputNow = time.ToString(format);
                                     System.Threading.ThreadPool.QueueUserWorkItem(delegate
                                     {
                                         NavSQLExecute conn = new NavSQLExecute();
-                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount);
+                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow);
                                     }, null);
+
+                                    SetKöpsbudget(week, productNumber, Convert.ToInt32(e.FormattedValue));
                                     
                                 }
                             }
@@ -879,15 +904,7 @@ namespace WindowsFormsForecastLactalis
                 prodNMBR = ClassStaticVaribles.NewNumberDictM3Key[prodNMBR];
             }
             string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
-            string temp = "Name Unknown";
-            if (ClassStaticVaribles.AllProductsNavDict.ContainsKey(prodNMBR))
-            {
-                temp = ClassStaticVaribles.AllProductsNavDict[prodNMBR];
-            }
-            else if(allProductsM3Dict.ContainsKey(prodNMBR))
-            {
-                temp = allProductsM3Dict[prodNMBR];
-            }
+            string temp = GetNameFromLoadedProducts(tempCustNumber);
 
             PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber);
             product1.FillNumbers(selectedYear);
@@ -969,6 +986,12 @@ namespace WindowsFormsForecastLactalis
                     dataGridForecastInfo.Columns[i].Width = temp;
                 }
             }
+        }
+
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            dataGridForecastInfo.Width = this.Width-50;
+            dataGridForecastInfo.Height = this.Height - 250;
         }
 
 
