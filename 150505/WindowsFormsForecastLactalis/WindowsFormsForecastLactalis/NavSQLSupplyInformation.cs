@@ -103,7 +103,7 @@ namespace WindowsFormsForecastLactalis
         {
             conn = new NavSQLExecute();
 
-            string queryString = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from Debitor_Budgetlinjepost where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
+            string queryString = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from Debitor_Budgetlinjepost where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by TasteDato";
             queryString = queryString.Replace("XXXX", currentProdNumber);
             Console.WriteLine("Load Sales Budget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(queryString);

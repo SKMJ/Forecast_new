@@ -25,6 +25,7 @@ namespace WindowsFormsForecastLactalis
         private int latestWeek;
         Point latestMouseClick;
         int selectedYear;
+        bool AssortmentFromM3 = true;
         //Dictionary<string, string> custDictionary;
 
         private bool loadingNewProductsOngoing;
@@ -39,6 +40,7 @@ namespace WindowsFormsForecastLactalis
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
         public Form1()
         {
+            AssortmentFromM3 = false;
             InitializeComponent();
             Console.WriteLine("Start Form1!");
             loadingNewProductsOngoing = false;
@@ -57,6 +59,9 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Height = this.Height - 250;
             ClassStaticVaribles.SetAllProductsNavDict(allProductsDict);
             ClassStaticVaribles.InitiateDate();
+            //this.dataGridForecastInfo.Columns["CustomerName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight; 
+
+
             
 
 
@@ -78,10 +83,18 @@ namespace WindowsFormsForecastLactalis
             //GetCustomersWitohutLoad();
 
             comboBoxAssortment.DropDownStyle = ComboBoxStyle.DropDownList;
+            if (!AssortmentFromM3)
+            {
+                comboBoxAssortment.DataSource = new BindingSource(ClassStaticVaribles.CustDictionary, null);
+                comboBoxAssortment.DisplayMember = "Key";
+                comboBoxAssortment.ValueMember = "Key";
+            }
+            else
+            {
+                comboBoxAssortment.DataSource = new BindingSource(m3Info.GetListOfAssortments(), null);
 
-            comboBoxAssortment.DataSource = new BindingSource(ClassStaticVaribles.CustDictionary, null);
-            comboBoxAssortment.DisplayMember = "Key";
-            comboBoxAssortment.ValueMember = "Key";
+            }
+
 
             List<int> yearList = new List<int>();
             yearList.Add(2015);
@@ -125,6 +138,12 @@ namespace WindowsFormsForecastLactalis
                     dataGridForecastInfo.Columns[i + 2].Name = temp;
                     //dataGridForecastInfo.Columns[i + 2].Width = 45;
                 }
+
+                foreach(DataGridViewColumn item in   dataGridForecastInfo.Columns)
+                {
+                    item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; 
+
+                }
             }
         }
 
@@ -157,20 +176,22 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add(item.ProductNumber.ToString());
                 }
                 tempList.Add(item.ProductName);
-                tempList.Add("RealiseretKampagn_LastYear");
+                
+
+                tempList.Add("RealiseretSalg_LastYear");
                 for (int i = 1; i < 54; i++)
                 {
-                    tempList.Add(item.RealiseretKampagn_LastYear[i]);
+                    tempList.Add(item.RealiseretSalgs_LastYear[i]);
                 }
                 AddRowFromList(tempList);
 
                 tempList = new List<object>();
                 tempList.Add("");
                 tempList.Add("");
-                tempList.Add("RealiseretSalg_LastYear");
+                tempList.Add("RealiseretKampagn_LastYear");
                 for (int i = 1; i < 54; i++)
                 {
-                    tempList.Add(item.RealiseretSalgs_LastYear[i]);
+                    tempList.Add(item.RealiseretKampagn_LastYear[i]);
                 }
                 AddRowFromList(tempList);
 
@@ -240,7 +261,7 @@ namespace WindowsFormsForecastLactalis
             //After all is filled set colors and reaqdonly properties
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
             {
-                row.Height = 35;
+                row.Height = 20;
                 if (Convert.ToString(row.Cells[2].Value) == "RealiseretKampagn_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
@@ -435,7 +456,7 @@ namespace WindowsFormsForecastLactalis
 
             if (!infoboxSales.Visible)
             {
-                if (true)//comboBoxAssortment.SelectedItem.ToString() != "COOP")
+                if (!AssortmentFromM3)//comboBoxAssortment.SelectedItem.ToString() != "COOP")
                 {
                     Console.WriteLine("Hittepåkund vald");
                     Products = new List<PrognosInfoSales>();
@@ -448,8 +469,8 @@ namespace WindowsFormsForecastLactalis
 
                     //Console.WriteLine("");
 
-                    KeyValuePair<string, string> tempPair = (KeyValuePair<string, string>)comboBoxAssortment.SelectedItem;
-                    string tempString = tempPair.Key;
+                   // KeyValuePair<string, string> tempPair = (KeyValuePair<string, string>)comboBoxAssortment.SelectedItem;
+                    string tempString = comboBoxAssortment.SelectedItem.ToString();
                     Products = new List<PrognosInfoSales>();
                     List<string> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
                     
@@ -460,7 +481,11 @@ namespace WindowsFormsForecastLactalis
                         foreach (string item in productList)
                         {
                             i++;
-                            string temp = allProductsM3Dict[item.ToString()];
+                            string temp = "";
+                            if (allProductsM3Dict.ContainsKey(item))
+                            {
+                                temp = allProductsM3Dict[item.ToString()];
+                            }
                             PrognosInfoSales product1 = new PrognosInfoSales(temp, item, tempString);
                             product1.FillNumbers(selectedYear);
                             Products.Add(product1);

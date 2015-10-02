@@ -17,8 +17,10 @@ namespace WindowsFormsForecastLactalis
     {
         List<string> dayOrderStrings = new List<string>();
 
+        string newRegCommentProdNBR = "";
+
         public static Dictionary<string, PrognosInfoForSupply> SupplierProducts = new Dictionary<string, PrognosInfoForSupply>();
-        Form1 form1Instance = new Form1();
+        Form1 form1Instance;// = new Form1();
         //private List<string> supplier = new List<string>();
         GetFromM3 m3Info = new GetFromM3();
         TextBoxForm infoboxSupply = new TextBoxForm();
@@ -45,7 +47,7 @@ namespace WindowsFormsForecastLactalis
             InitializeComponent();
             Console.WriteLine("Start FormSupply!");
 
-            FixMotherChildList();
+            //FixMotherChildList();
 
             SetupColumns();
             FixSupplierChoices();
@@ -78,7 +80,7 @@ namespace WindowsFormsForecastLactalis
 
             foreach (KeyValuePair<string, List<string>> item in ClassStaticVaribles.AllSuppliersM3)//AllSupplierM3Dict_Supply)
             {
-                supplier.Add(item.Key);
+                supplier.Add(item.Key + "  " + ClassStaticVaribles.AllSuppliersNameDict[item.Key] );
             }
 
 
@@ -136,6 +138,12 @@ namespace WindowsFormsForecastLactalis
                     }
                     dataGridForecastInfo.Columns[i + 2].Name = temp;
                 }
+
+                foreach (DataGridViewColumn item in dataGridForecastInfo.Columns)
+                {
+                    item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                }
             }
         }
 
@@ -150,7 +158,7 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToDeleteRows = false;
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
-            if (comboBoxSupplier.SelectedItem.ToString().Equals("3272"))
+            if (GetProdNBRFromSelectedItem(comboBoxSupplier.SelectedItem.ToString()).Equals("3272"))
             {
                 numericSupplyNBR.Value = 3272;
 
@@ -185,7 +193,8 @@ namespace WindowsFormsForecastLactalis
             }
             else
             {
-                string suppliernumberM3 = comboBoxSupplier.SelectedItem.ToString();
+
+                string suppliernumberM3 = GetProdNBRFromSelectedItem(GetProdNBRFromSelectedItem(comboBoxSupplier.SelectedItem.ToString()));
                 numericSupplyNBR.Value = Convert.ToDecimal(suppliernumberM3);
                 List<string> tempList = ClassStaticVaribles.AllSuppliersM3[suppliernumberM3];
 
@@ -229,6 +238,12 @@ namespace WindowsFormsForecastLactalis
 
             SetStatus("Products Preparing for USer interface. Will soon be ready to view.");
             PrepareGUI();
+        }
+
+        private string GetProdNBRFromSelectedItem(string p)
+        {
+            string [] temp = p.Split(' ');
+            return temp[0];
         }
 
 
@@ -281,10 +296,10 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add(item.ProductName);
                 if (checkBoxLastYear.Checked)
                 {
-                    tempList.Add("RealiseretKampagn_LastYear");
+                    tempList.Add("RealiseretSalg_LastYear");
                     for (int i = 1; i < 54; i++)
                     {
-                        tempList.Add(item.RealiseretKampagn_LastYear[i]);
+                        tempList.Add(item.RealiseretSalg_LastYear[i]);
                     }
                 }
                 AddRowFromList(tempList);
@@ -298,11 +313,12 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add(" ");
                 if (checkBoxLastYear.Checked)
                 {
-                    tempList.Add("RealiseretSalg_LastYear");
+                    tempList.Add("RealiseretKampagn_LastYear");
                     for (int i = 1; i < 54; i++)
                     {
-                        tempList.Add(item.RealiseretSalg_LastYear[i]);
+                        tempList.Add(item.RealiseretKampagn_LastYear[i]);
                     }
+
                 }
                 AddRowFromList(tempList);
                 tempList = new List<object>();
@@ -392,7 +408,7 @@ namespace WindowsFormsForecastLactalis
             //Thread.Sleep(2000);
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
             {
-                row.Height = 35;
+                row.Height = 20;
                 if (Convert.ToString(row.Cells[2].Value) == "RealiseretKampagn_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
@@ -902,14 +918,43 @@ namespace WindowsFormsForecastLactalis
                                 MessageBox.Show("Please Write comment before changing value. Then type the value again and press enter to save.");
 
                             }
-
-
+                            newRegCommentProdNBR = productNumber;
+                            
                         }
 
 
                     }
                 }
             }
+        }
+
+        private void LoadProductAgain(string prodNBR)
+        {
+            dataGridForecastInfo.Visible = false;
+            SetStatus("Loading Products");
+            dataGridForecastInfo.ClearSelection();
+            SetupColumns();
+
+            SupplierProducts = new Dictionary<string, PrognosInfoForSupply>();
+            this.dataGridForecastInfo.DataSource = null;
+
+            this.dataGridForecastInfo.Rows.Clear();
+            this.dataGridForecastInfo.AllowUserToAddRows = false;
+            this.dataGridForecastInfo.AllowUserToDeleteRows = false;
+            this.dataGridForecastInfo.AllowUserToOrderColumns = false;
+
+
+            //int prodNMBR = (int)numericUpDownPRoductNumber.Value;
+            string temp = prodNBR;
+
+            if (ClassStaticVaribles.NewNumberDictM3Key.ContainsKey(temp))
+            {
+                temp = ClassStaticVaribles.NewNumberDictM3Key[temp];
+            }
+            AddProductByNumber(temp);
+            PrepareGUI();
+            dataGridForecastInfo.Visible = true;
+            LoadReadyStatus();
         }
 
         private void FormSupply_FormClosed(object sender, FormClosedEventArgs e)
@@ -979,7 +1024,7 @@ namespace WindowsFormsForecastLactalis
 
             if (ClassStaticVaribles.AllSuppliersM3.ContainsKey(numericSupplyNBR.Value.ToString()))
             {
-                comboBoxSupplier.SelectedItem = numericSupplyNBR.Value.ToString();
+                comboBoxSupplier.SelectedItem = numericSupplyNBR.Value.ToString() + "  " + ClassStaticVaribles.AllSuppliersNameDict[numericSupplyNBR.Value.ToString()];
                 dataGridForecastInfo.Visible = false;
                 buttonGetProductByNumber.Enabled = false;
                 buttonGetProductsBySupplier.Enabled = false;
@@ -1302,9 +1347,31 @@ namespace WindowsFormsForecastLactalis
         private void FormSupply_SizeChanged(object sender, EventArgs e)
         {
 
-            dataGridForecastInfo.Width = this.Width-50;
+            dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
 
+        }
+
+        private void dataGridForecastInfo_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (e.Column.Index > 2)
+            {
+                int temp = e.Column.Width;
+                for (int i = 3; i < dataGridForecastInfo.Columns.Count; i++)
+                {
+                    dataGridForecastInfo.Columns[i].Width = temp;
+                }
+            }
+        }
+
+        private void dataGridForecastInfo_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (newRegCommentProdNBR.Length >0)
+            {
+
+                LoadProductAgain(newRegCommentProdNBR);
+                newRegCommentProdNBR = "";
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ namespace WindowsFormsForecastLactalis
 
         public static Dictionary<string, string> AllProductsM3Dict = new Dictionary<string, string>();
         public static Dictionary<string, List<string>> AllSuppliersM3 = new Dictionary<string, List<string>>();
+        public static Dictionary<string,string> AllSuppliersNameDict = new Dictionary<string, string>();
 
         public static Dictionary<string, string> NewNumberDictNavKey = new Dictionary<string, string>();
         public static Dictionary<string, string> NewNumberDictM3Key = new Dictionary<string, string>();
@@ -31,6 +32,7 @@ namespace WindowsFormsForecastLactalis
         private static bool NewNumberDictNavKeyFirst = true;
 
         private static bool CustDictionaryFirst = true;
+        private static bool StartDateFirst = true;
 
 
 
@@ -125,45 +127,50 @@ namespace WindowsFormsForecastLactalis
         public static void InitiateDate()
         {
            // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
+            if (StartDateFirst)
+            {
+                StartDateFirst = false;
+                string s = "2014-12-29 00:01";
 
-            string s = "2014-12-29 00:01";
+                DateTime dt =
+                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                StartDate.Add(2015, dt);
+                //MessageBox.Show("after");
 
-            DateTime dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            StartDate.Add(2015, dt);
-            //MessageBox.Show("after");
+                s = "2013-12-30 00:01";
 
-            s = "2013-12-30 00:01";
+                dt =
+                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                StartDate.Add(2014, dt);
 
-            dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            StartDate.Add(2014, dt);
+                //st = "01/04/2016";
+                s = "2016-01-04 00:01";
 
-            //st = "01/04/2016";
-            s = "2016-01-04 00:01";
+                dt =
+                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                StartDate.Add(2016, dt);
 
-            dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            StartDate.Add(2016, dt);
+                //startDate.Add(2016, DateTime.Parse(st));
+                //st = "01/02/2017";
+                s = "2017-01-02 00:01";
 
-            //startDate.Add(2016, DateTime.Parse(st));
-            //st = "01/02/2017";
-            s = "2017-01-02 00:01";
-
-            dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-            StartDate.Add(2017, dt);
+                dt =
+                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                StartDate.Add(2017, dt);
+            }
         }
 
         public static void SetAllSuppliersM3(Dictionary<string, List<string>> dict)
         {
             if (AllSuppliersM3First)
             {
+                
                 AllSuppliersM3First = false;
                 foreach (KeyValuePair<string, List<string>> item in dict)
                 {
 
                     AllSuppliersM3.Add(item.Key, item.Value);
+
                 }
                 CreateProdToSupplDict();
             }
@@ -267,5 +274,10 @@ namespace WindowsFormsForecastLactalis
 
 
 
+
+        internal static void SetAllSuppliersNameDict(Dictionary<string, string> AllSuppliersName)
+        {
+            AllSuppliersNameDict = AllSuppliersName;
+        }
     }
 }

@@ -86,7 +86,7 @@ namespace WindowsFormsForecastLactalis
 
                 while (MvxSock.More(ref sid))
                 {
-                    string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
+                    string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") ;
                     Console.Write("Item nr: " + tempItemNbr);
                     Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
                     //Mooves to next row
@@ -102,6 +102,52 @@ namespace WindowsFormsForecastLactalis
                 return productList;
             }
         }
+
+
+        public List<string> GetListOfAssortments()
+        {
+            List<string> assortmentList = new List<string>();
+            {
+                SERVER_ID sid = new SERVER_ID();
+
+                uint rc = 0;
+                rc = ConnectToM3Interface(ref sid, "CRS105MI");
+                if (rc != 0)
+                {
+                    return null;
+                }
+
+                //Set the field without need to know position Start from this customer 00752
+                //MvxSock.SetField(ref sid, "ASCD", assortment);
+                MvxSock.SetField(ref sid, "CONO", "001");
+                rc = MvxSock.Access(ref sid, "LstAssmHead");
+                if (rc != 0)
+                {
+                    MvxSock.ShowLastError(ref sid, "Error in get products no " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return null;
+                }
+
+                while (MvxSock.More(ref sid))
+                {
+                    string kedja = MvxSock.GetField(ref sid, "ASCD");
+                    string tx40 = MvxSock.GetField(ref sid, "TX40");
+                    string tx15 = MvxSock.GetField(ref sid, "TX15");
+                    Console.WriteLine("Kedja: " + kedja + " tx40: " + tx40 + " tx15: " + tx15);
+                    //Mooves to next row
+                    MvxSock.Access(ref sid, null);
+
+                    assortmentList.Add(kedja);
+
+                }
+
+                MvxSock.Close(ref sid);
+
+                Console.WriteLine("M3 communication: SUCCESS!!");
+                return assortmentList;
+            }
+        }
+
 
 
         public Dictionary<string, string> GetItemInfoByItemNumber(string itemNbr)
@@ -270,7 +316,7 @@ namespace WindowsFormsForecastLactalis
         //}
 
 
-        public string GetSupplierNameByNumber(int supplierNbr)
+        public string GetSupplierNameByNumber(string supplierNbr)
         {
             string returnString = "";
             {
@@ -286,7 +332,7 @@ namespace WindowsFormsForecastLactalis
                 }
 
                 //Set the field without need to know position Start from this customer 00752
-                MvxSock.SetField(ref sid, "SUNO", supplierNbr.ToString());
+                MvxSock.SetField(ref sid, "SUNO", supplierNbr);
                 MvxSock.SetField(ref sid, "CONO", "001");
                 rc = MvxSock.Access(ref sid, "GetBasicData");
                 if (rc != 0)
@@ -496,6 +542,16 @@ namespace WindowsFormsForecastLactalis
         internal Dictionary <string, List<string>> GetSupplierWithItemsDict()
         {
             ClassStaticVaribles.SetAllSuppliersM3(dictSupplier);
+            Dictionary<string, string> AllSuppliersNameDict = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, List<string>> item in dictSupplier)
+            {
+
+                
+
+                AllSuppliersNameDict.Add(item.Key, this.GetSupplierNameByNumber(item.Key));
+            }
+            ClassStaticVaribles.SetAllSuppliersNameDict(AllSuppliersNameDict);
+
             return dictSupplier;
         }
     }
