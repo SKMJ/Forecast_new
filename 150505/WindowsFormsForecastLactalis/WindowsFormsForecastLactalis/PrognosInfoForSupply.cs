@@ -21,6 +21,7 @@ namespace WindowsFormsForecastLactalis
         public string WareHouse = "";
         public string Supplier = "";
         public string PrepLocation = "";
+        public bool InLactaFranceFile = false;
         public bool ShowLastYear = false;
 
         int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
@@ -69,10 +70,7 @@ namespace WindowsFormsForecastLactalis
 
             string m3ProdNumber = GetM3ProdNumber();
 
-            Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
-            WareHouse = info["whsLocation"];
-            PrepLocation = info["prepLocation"];
-            Supplier = GetSupplierFromProduct();
+            
 
             Console.WriteLine("WareHouse: " + WareHouse + " PrepLocation: " + PrepLocation + " Supplier: " + Supplier);
 
@@ -80,19 +78,27 @@ namespace WindowsFormsForecastLactalis
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             sqlSupplyCalls.SetSelectedYear(selectedYear);
             sqlSupplyCalls.UpdateVareKort();
-            weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
-
-
-            string ProductNameTemp = sqlSupplyCalls.GetBeskrivelse();
-            if (ProductName.Length > 2 && ProductName != "Unknown Name")
+            Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
+            if (info.Count > 0 && info["prepLocation"].Length > 0)
             {
-                Console.WriteLine("Fill info For Product Number: " + ProductNumber + " LactaNAme: " + ProductNameTemp + " SKMJNAme: " + ProductName);
-            }
-            if (ProductNameTemp.Length > 2)
-            {
+                WareHouse = info["whsLocation"];
+                PrepLocation = info["prepLocation"];
 
-                ProductName = ProductNameTemp;
+                if (Convert.ToInt32(info["INLActaFranceFile"]) > 0)
+                {
+                    InLactaFranceFile = true;
+                }
+
+                weekPartPercentage = new int[] { Convert.ToInt32(info["forecastWeek"]), Convert.ToInt32(info["FCMO"]), Convert.ToInt32(info["FCTU"]), Convert.ToInt32(info["FCWE"]), Convert.ToInt32(info["FCTH"]), Convert.ToInt32(info["FCFR"]), Convert.ToInt32(info["FCSA"]), Convert.ToInt32(info["FCSU"]) };
             }
+            else
+            {                
+                weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+            }
+            Supplier = GetSupplierFromProduct();
+
+
+
 
             Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget();
             Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG_TY();
@@ -106,10 +112,10 @@ namespace WindowsFormsForecastLactalis
             if (ShowLastYear)
             {
                 realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY();
-                relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY();
+                relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY(false);
             }
 
-            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY();
+            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY(true);
             Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
 
             for (int i = 0; i < 54; i++)
@@ -130,6 +136,17 @@ namespace WindowsFormsForecastLactalis
                 SalgsbudgetReguleret_Comment[i] = Reguleret_CommentTY[i];
                 //Salgsbudget_ChangeHistory[i] = "";
             }
+
+            string ProductNameTemp = sqlSupplyCalls.GetBeskrivelse();
+            if (ProductName.Length > 2 && ProductName != "Unknown Name")
+            {
+                Console.WriteLine("Fill info For Product Number: " + ProductNumber + " LactaNAme: " + ProductNameTemp + " SKMJNAme: " + ProductName);
+            }
+            if (ProductNameTemp.Length > 2)
+            {
+
+                ProductName = ProductNameTemp;
+            }
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
@@ -142,8 +159,6 @@ namespace WindowsFormsForecastLactalis
             if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(ProductNumber))
             {
                 tempProdNBr = ClassStaticVaribles.NewNumberDictNavKey[ProductNumber];
-
-                //Console.WriteLine("Search for pr");
             }
             return tempProdNBr;
         }
@@ -158,8 +173,6 @@ namespace WindowsFormsForecastLactalis
             {
                 returnSuppl = ClassStaticVaribles.ProdToSupplDict[tempProdNBr];
             }
-
-
             return returnSuppl;
         }
     }

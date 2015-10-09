@@ -959,6 +959,7 @@ namespace WindowsFormsForecastLactalis
 
         private void FormSupply_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Console.WriteLine("Close supply form");
             form1Instance.Close();
         }
 

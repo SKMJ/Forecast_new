@@ -14,6 +14,7 @@ namespace WindowsFormsForecastLactalis
     {
         DataTable latestQueryTable; //Holds latest loaded Query output
         DataTable latestQueryTable2; //Holds latest loaded Query output if 2 needed
+        DataTable latestQueryQlickTable;
 
         string Beskrivelse = "A";
 
@@ -35,6 +36,9 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
         Dictionary<int, int> relSalg_LY = new Dictionary<int, int>();
         Dictionary<int, int> relSalg_TY = new Dictionary<int, int>();
+
+        Dictionary<int, int> relSalgQlick_LY = new Dictionary<int, int>();
+        Dictionary<int, int> relSalgQlick_TY = new Dictionary<int, int>();
 
         Dictionary<int, int> kopsOrderTY = new Dictionary<int, int>();
 
@@ -95,6 +99,8 @@ namespace WindowsFormsForecastLactalis
                 kopsOrderTY.Add(k, 0);
                 SalgsbudgetReg_Comment.Add(k, " ");
                 kopesBudget_ForFile.Add(k, 0);
+                relSalgQlick_LY.Add(k, 0);
+                relSalgQlick_TY.Add(k, 0);
             }
         }
 
@@ -461,25 +467,132 @@ namespace WindowsFormsForecastLactalis
             return kopesBudget_TY;
         }
 
-        internal Dictionary<int, int> GetRelSalg_LY()
+        internal Dictionary<int, int> GetRelSalg_LY(bool fromNewQlickview)
         {
-            LoadRelSalg_LY_FromSQL(currentSelectedYear - 1);
-            Console.WriteLine("Call 1 REl salg LY: " + currentSelectedYear + " prodNBR " + currentProdNumber);
-            PrepareRelSalg_LYForGUI(currentSelectedYear - 1);
+            if (currentSelectedYear < 2017)
+            {
+                LoadRelSalg_FromSQL(currentSelectedYear - 1);
+                Console.WriteLine("Call 1 REl salg LY: " + currentSelectedYear + " prodNBR " + currentProdNumber);
+                PrepareRelSalg_ForGUI(currentSelectedYear - 1);
+            }
+            if (currentSelectedYear > 2015)
+            {
+                //Get sales numbers from Qlickview
+                if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
+                {
+                    LoadRelSalg_FromQlick();
+                }
+                ComputeNumberPerWeekDict(currentSelectedYear - 1);
+                
+            }
             return relSalg_LY;
         }
 
-        internal Dictionary<int, int> GetRelSalg_TY()
+        internal Dictionary<int, int> GetRelSalg_TY(bool fromNewQlickview)
         {
-            LoadRelSalg_LY_FromSQL(currentSelectedYear);
-            Console.WriteLine("Call 2 REl salg LY: " + currentSelectedYear + " prodNBR " + currentProdNumber);
-            PrepareRelSalg_LYForGUI(currentSelectedYear);
-            int sum = debug2 - debug3;
-            //Console.WriteLine(" var1: " + debug1 + " var2: " + debug2 + " var3: " + debug3 + " sum: " + sum);
+            if ( currentSelectedYear < 2016)
+            {
+                LoadRelSalg_FromSQL(currentSelectedYear);
+                Console.WriteLine("Call 2 REl salg LY: " + currentSelectedYear + " prodNBR " + currentProdNumber);
+                PrepareRelSalg_ForGUI(currentSelectedYear);
+                int sum = debug2 - debug3;
+                //Console.WriteLine(" var1: " + debug1 + " var2: " + debug2 + " var3: " + debug3 + " sum: " + sum); 
+            }
+            if (currentSelectedYear > 2014)
+            {
+                //Get sales numbers from Qlickview
+                if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
+                {
+                    LoadRelSalg_FromQlick();
+                }
+                ComputeNumberPerWeekDict(currentSelectedYear);               
+            }
             return relSalg_TY;
         }
 
-        private void PrepareRelSalg_LYForGUI(int year)
+        public void LoadRelSalg_FromQlick()
+        {
+            ClassSQLQlickViewDataLayer conn = new ClassSQLQlickViewDataLayer();
+            string queryString2 = "";
+            queryString2 = queryString2 + @"SELECT ";
+            queryString2 = queryString2 + @"SKMJDWDataMarts.dbo.FactFörsäljning.Kvantitet, SKMJDWDataMarts.dbo.FactFörsäljning.artikelid, SKMJDWDataMarts.dbo.FactFörsäljning.kundid, SKMJDWDataMarts.dbo.FactFörsäljning.KalenderIDBekräftadLeveransDatum, SKMJDWDataMarts.dbo.FactFörsäljning.FörsäljningID, SKMJDWDataMarts.dbo.DimArtikel.ArtikelNr , SKMJDWDataMarts.dbo.DimArtikel.ArtikelNamn ";
+            queryString2 = queryString2 + @"FROM SKMJDWDataMarts.dbo.FactFörsäljning ";
+            queryString2 = queryString2 + @"Inner join SKMJDWDataMarts.dbo.DimArtikel ";
+            queryString2 = queryString2 + @"on SKMJDWDataMarts.dbo.DimArtikel.ArtikelId = SKMJDWDataMarts.dbo.FactFörsäljning.ArtikelId ";
+            queryString2 = queryString2 + @"WHERE FörsäljningID > '60000000' ";
+            queryString2 = queryString2 + @"AND SKMJDWDataMarts.dbo.DimArtikel.ArtikelNR =  'XXXXX' ";
+
+            queryString2 = queryString2.Replace("XXXXX", currentProdNumber);
+            //queryString = queryString.Replace("YYYYY", custNumber);
+            Console.WriteLine("LoadRealiseretKampagnLY Query Qlickview: " + queryString2);
+            latestQueryQlickTable = conn.QueryExWithTableReturn(queryString2);
+            //dataGridViewQlickviewData.DataSource = latestQueryTable;
+
+            conn.Close();
+        }
+
+        private void ComputeNumberPerWeekDict(int year)
+        {
+            DataRow[] currentRows = latestQueryQlickTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No prepare salg Rows Found" + year);
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string levAntal = row["Kvantitet"].ToString();
+                    double ant = Math.Floor(Convert.ToDouble(levAntal));
+                    int Antal = Convert.ToInt32(ant);
+
+                    //int postType = Convert.ToInt32(row["Posttype"].ToString());
+                    //string lokKode = row["Lokationskode"].ToString();
+                    //bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
+                    string dateString = row["KalenderIDBekräftadLeveransDatum"].ToString();
+                    DateTime tempDate = DateTime.ParseExact(dateString,
+                                                            "yyyyMMdd",
+                                                            CultureInfo.InvariantCulture,
+                                                            DateTimeStyles.None);
+
+                    string tempNameString = row["ArtikelNamn"].ToString();
+                    if(Beskrivelse.Length <2)
+                    {
+                        Beskrivelse = tempNameString; 
+                    }
+                    double dayOFYear = 0;
+
+                    dayOFYear = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays;
+
+                    double weekNBR = dayOFYear / 7.0;
+                    int weekInt = (int)Math.Floor(weekNBR);
+                    weekInt = weekInt + 1;
+
+                    if (weekInt > 0 && weekInt < 54)
+                    {
+                        if (currentSelectedYear == year)
+                        {
+                            if (Antal > 0)
+                            {
+                                relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
+                            }
+                        }
+                        else if (currentSelectedYear - 1 == year)
+                        {
+                            if (Antal > 0)
+                            {
+                                relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private void PrepareRelSalg_ForGUI(int year)
         {
             int weekInt;
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
@@ -590,7 +703,7 @@ namespace WindowsFormsForecastLactalis
 
         }
 
-        private void LoadRelSalg_LY_FromSQL(int year)
+        private void LoadRelSalg_FromSQL(int year)
         {
             conn = new NavSQLExecute();
             string queryString = "";

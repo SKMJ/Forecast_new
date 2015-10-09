@@ -16,6 +16,7 @@ namespace WindowsFormsForecastLactalis
         }
 
         public string ProductName = "No Name";
+        public bool InLactaFranceFile = false;
 
 
         public int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
@@ -39,7 +40,21 @@ namespace WindowsFormsForecastLactalis
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(2015, ProductNumber);
             sqlSupplyCalls.SetSelectedYear(2015);
             sqlSupplyCalls.UpdateVareKort();
-            weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+            GetFromM3 m3Info = new GetFromM3();
+            string m3ProdNumber = GetM3ProdNumber();
+            Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
+            if (info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
+            {
+
+                    InLactaFranceFile = true;
+                
+
+                weekPartPercentage = new int[] { Convert.ToInt32(info["forecastWeek"]), Convert.ToInt32(info["FCMO"]), Convert.ToInt32(info["FCTU"]), Convert.ToInt32(info["FCWE"]), Convert.ToInt32(info["FCTH"]), Convert.ToInt32(info["FCFR"]), Convert.ToInt32(info["FCSA"]), Convert.ToInt32(info["FCSU"]) };
+            }
+            else
+            {
+                weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+            }
             LactalisFranceProductNumber = sqlSupplyCalls.GetLactaVareNR();
             Antal_pr_kolli = sqlSupplyCalls.GetLactalis_NBRPer_colli();
 
@@ -49,14 +64,27 @@ namespace WindowsFormsForecastLactalis
                 ProductName = sqlSupplyCalls.GetBeskrivelse();
             }
 
-            
+
             Dictionary<int, int> kopesBudgetCurrent = sqlSupplyCalls.GetKopesBudgetForFile();
 
             for (int i = 0; i < 54; i++)
-            {                
+            {
 
                 Kopsbudget_ThisYear[i] = kopesBudgetCurrent[i];
             }
+        }
+
+        private string GetM3ProdNumber()
+        {
+            string tempProdNBr = ProductNumber;
+
+            if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(ProductNumber))
+            {
+                tempProdNBr = ClassStaticVaribles.NewNumberDictNavKey[ProductNumber];
+
+                //Console.WriteLine("Search for pr");
+            }
+            return tempProdNBr;
         }
     }
 }

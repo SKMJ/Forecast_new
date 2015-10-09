@@ -155,35 +155,57 @@ namespace WindowsFormsForecastLactalis
             //string returnString = "";
             Dictionary<string, string> returnStrings = new Dictionary<string, string>();
             {
-                //SERVER_ID sid = new SERVER_ID();
-                //uint rc;
-                //rc = ConnectToM3Interface(ref sid, "MMS200MI");
-                //if (rc != 0)
-                //{
-                //    return returnStrings;
-                //}
+                SERVER_ID sid = new SERVER_ID();
+                uint rc;
+                rc = ConnectToM3Interface(ref sid, "ZMM001MI");
+                if (rc != 0)
+                {
+                    return returnStrings;
+                }
                 ////Set the field without need to know position Start from this customer 00752
-                //MvxSock.SetField(ref sid, "ITNO", itemNbr);
+                MvxSock.SetField(ref sid, "ITNO", itemNbr);
                 //MvxSock.SetField(ref sid, "CONO", "001");
-                //rc = MvxSock.Access(ref sid, "GetItmBasic");
-                //if (rc != 0)
-                //{
-                //    //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
-                //    MvxSock.Close(ref sid);
-                //    return returnStrings;
-                //}
+                rc = MvxSock.Access(ref sid, "GetItemInfo");
+
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error in get ForeCast info by productsNbr: " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return returnStrings;
+                }
+
                 ////Division, Prep location och Whs location
-                //string div  = MvxSock.GetField(ref sid, "Division");
-                //string prepLocation = MvxSock.GetField(ref sid, "Prep Location");
-                //string whsLocation = MvxSock.GetField(ref sid, "Whs Location");
 
-                string div  = "hittepåDiv";
-                string prepLocation = "hittepåPrep";
-                string whsLocation = "hittepåWHS";
-
+                string div = MvxSock.GetField(ref sid, "LDIV");
                 returnStrings.Add("div", div);
+                string prepLocation = MvxSock.GetField(ref sid, "PRLO");
                 returnStrings.Add("prepLocation", prepLocation);
+                string whsLocation = MvxSock.GetField(ref sid, "WALO");
                 returnStrings.Add("whsLocation", whsLocation);
+                string forecastWeek = MvxSock.GetField(ref sid, "FCWK");
+                returnStrings.Add("forecastWeek", forecastWeek);
+                string FCMO = MvxSock.GetField(ref sid, "FCMO");
+                returnStrings.Add("FCMO", FCMO);
+                string FCTU = MvxSock.GetField(ref sid, "FCTU");
+                returnStrings.Add("FCTU", FCTU);
+                string FCWE = MvxSock.GetField(ref sid, "FCWE");
+                returnStrings.Add("FCWE", FCWE);
+                string FCTH = MvxSock.GetField(ref sid, "FCTH");
+                returnStrings.Add("FCTH", FCTH);
+                string FCFR = MvxSock.GetField(ref sid, "FCFR");
+                returnStrings.Add("FCFR", FCFR);
+                string FCSA = MvxSock.GetField(ref sid, "FCSA");
+                returnStrings.Add("FCSA", FCSA);
+                string FCSU = MvxSock.GetField(ref sid, "FCSU");
+                returnStrings.Add("FCSU", FCSU);
+                string INLActaFranceFile = MvxSock.GetField(ref sid, "INFC");
+                returnStrings.Add("INLActaFranceFile", INLActaFranceFile);
+                string FCLockSale = MvxSock.GetField(ref sid, "FCSL");
+                returnStrings.Add("FCLockSale", FCLockSale);
+
+                //string div  = "hittepåDiv";
+                //string prepLocation = "hittepåPrep";
+                //string whsLocation = "hittepåWHS";
 
  
                 //Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
@@ -344,7 +366,7 @@ namespace WindowsFormsForecastLactalis
 
                 //string tempItemNBR = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
                 returnString = MvxSock.GetField(ref sid, "SUNM");
-                Console.WriteLine("SupplierNBR: " + supplierNbr + " Name: " + returnString);
+                //Console.WriteLine("SupplierNBR: " + supplierNbr + " Name: " + returnString);
                 MvxSock.Close(ref sid);
                 return returnString;
 
@@ -545,9 +567,6 @@ namespace WindowsFormsForecastLactalis
             Dictionary<string, string> AllSuppliersNameDict = new Dictionary<string, string>();
             foreach (KeyValuePair<string, List<string>> item in dictSupplier)
             {
-
-                
-
                 AllSuppliersNameDict.Add(item.Key, this.GetSupplierNameByNumber(item.Key));
             }
             ClassStaticVaribles.SetAllSuppliersNameDict(AllSuppliersNameDict);

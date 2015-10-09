@@ -39,10 +39,11 @@ namespace WindowsFormsForecastLactalis
                 conn.Open();
                 stopwatch.Stop();
                 double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
-                Console.WriteLine("Connect to data base Correct! Time (s): " + timeConnectSeconds);
+                Console.WriteLine("Connect to Nav data base Correct! Time (s): " + timeConnectSeconds);
             }
             catch (Exception ex)
             {
+                System.Windows.Forms.MessageBox.Show(new System.Windows.Forms.Form() { TopMost = true }, "Error in Navision Database Connection!");
                 Console.WriteLine("Error NavDB Connection: " + ex.Message);
             }
         }

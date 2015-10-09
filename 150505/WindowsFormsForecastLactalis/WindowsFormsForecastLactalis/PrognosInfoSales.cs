@@ -60,6 +60,7 @@ namespace WindowsFormsForecastLactalis
         {
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
+            GetFromM3 m3Info = new GetFromM3();
 
             //MessageBox.Show("Place 3");
             
@@ -69,9 +70,21 @@ namespace WindowsFormsForecastLactalis
             //MessageBox.Show("Place BB");
             weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
             int weektemp = sqlSupplyCalls.GetCurrentWeekNBR();
-            
+            string m3ProdNumber = GetM3ProdNumber();
 
-            WeekToLockFrom = weekPartPercentage[0] + weektemp;
+            Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
+            if (info.Count > 0 && Convert.ToInt32(info["FCLockSale"]) > 0)
+            {
+                int tempDaysLock = Convert.ToInt32(info["FCLockSale"]);
+                int tempWeeksToLOCK = tempDaysLock / 7;
+                WeekToLockFrom = tempWeeksToLOCK + weektemp;
+            }
+            else
+            {
+                WeekToLockFrom = weektemp;
+            }
+
+            
 
             Console.WriteLine("Produkt " + ProductNumber + " Varukort,  Vecka nu: " + weektemp + " Weektolock from: " + WeekToLockFrom + " Antal att låsa: " + weekPartPercentage[0]);
 
@@ -135,6 +148,19 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
 
             //MessageBox.Show("Place BB");
+        }
+
+        private string GetM3ProdNumber()
+        {
+            string tempProdNBr = ProductNumber;
+
+            if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(ProductNumber))
+            {
+                tempProdNBr = ClassStaticVaribles.NewNumberDictNavKey[ProductNumber];
+
+                //Console.WriteLine("Search for pr");
+            }
+            return tempProdNBr;
         }
     }
 }
