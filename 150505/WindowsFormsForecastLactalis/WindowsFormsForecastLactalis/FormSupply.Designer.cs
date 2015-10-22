@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSupply));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.dataGridForecastInfo = new System.Windows.Forms.DataGridView();
             this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -57,7 +58,7 @@
             // pictureBox1
             // 
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.pictureBox1.Image = global::WindowsFormsForecastLactalis.Properties.Resources.lactalis;
+            this.pictureBox1.Image = global::WindowsFormsForecastLactalis.Properties.Resources.RESUND_1;
             this.pictureBox1.Location = new System.Drawing.Point(13, 13);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(289, 103);
@@ -67,6 +68,7 @@
             // 
             // dataGridForecastInfo
             // 
+            this.dataGridForecastInfo.BackgroundColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.dataGridForecastInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridForecastInfo.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ColumnVareNR,
@@ -106,22 +108,24 @@
             // 
             // buttonSalesView
             // 
+            this.buttonSalesView.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonSalesView.Location = new System.Drawing.Point(469, 39);
             this.buttonSalesView.Name = "buttonSalesView";
             this.buttonSalesView.Size = new System.Drawing.Size(200, 34);
             this.buttonSalesView.TabIndex = 4;
             this.buttonSalesView.Text = "Change to Sales View";
-            this.buttonSalesView.UseVisualStyleBackColor = true;
+            this.buttonSalesView.UseVisualStyleBackColor = false;
             this.buttonSalesView.Click += new System.EventHandler(this.buttonSalesView_Click);
             // 
             // buttonGetProductsBySupplier
             // 
+            this.buttonGetProductsBySupplier.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonGetProductsBySupplier.Location = new System.Drawing.Point(328, 146);
             this.buttonGetProductsBySupplier.Name = "buttonGetProductsBySupplier";
             this.buttonGetProductsBySupplier.Size = new System.Drawing.Size(102, 27);
             this.buttonGetProductsBySupplier.TabIndex = 9;
             this.buttonGetProductsBySupplier.Text = "Get Products";
-            this.buttonGetProductsBySupplier.UseVisualStyleBackColor = true;
+            this.buttonGetProductsBySupplier.UseVisualStyleBackColor = false;
             this.buttonGetProductsBySupplier.Click += new System.EventHandler(this.buttonGetProductsBySupplier_Click);
             // 
             // labelSupplier
@@ -143,12 +147,13 @@
             // 
             // buttonTestSupplItems
             // 
+            this.buttonTestSupplItems.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonTestSupplItems.Location = new System.Drawing.Point(882, 49);
             this.buttonTestSupplItems.Name = "buttonTestSupplItems";
             this.buttonTestSupplItems.Size = new System.Drawing.Size(112, 23);
             this.buttonTestSupplItems.TabIndex = 10;
             this.buttonTestSupplItems.Text = "buttonTestSupplItems";
-            this.buttonTestSupplItems.UseVisualStyleBackColor = true;
+            this.buttonTestSupplItems.UseVisualStyleBackColor = false;
             this.buttonTestSupplItems.Visible = false;
             this.buttonTestSupplItems.Click += new System.EventHandler(this.buttonTestSupplItems_Click);
             // 
@@ -166,12 +171,13 @@
             // 
             // buttonGetSupplierFromNBR
             // 
+            this.buttonGetSupplierFromNBR.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonGetSupplierFromNBR.Location = new System.Drawing.Point(605, 146);
             this.buttonGetSupplierFromNBR.Name = "buttonGetSupplierFromNBR";
             this.buttonGetSupplierFromNBR.Size = new System.Drawing.Size(102, 27);
             this.buttonGetSupplierFromNBR.TabIndex = 12;
             this.buttonGetSupplierFromNBR.Text = "Get Products";
-            this.buttonGetSupplierFromNBR.UseVisualStyleBackColor = true;
+            this.buttonGetSupplierFromNBR.UseVisualStyleBackColor = false;
             this.buttonGetSupplierFromNBR.Click += new System.EventHandler(this.buttonGetSupplierFromNBR_Click);
             // 
             // labelSupplierFreeText
@@ -203,12 +209,13 @@
             // 
             // buttonGetProductByNumber
             // 
+            this.buttonGetProductByNumber.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonGetProductByNumber.Location = new System.Drawing.Point(14, 145);
             this.buttonGetProductByNumber.Name = "buttonGetProductByNumber";
             this.buttonGetProductByNumber.Size = new System.Drawing.Size(102, 27);
             this.buttonGetProductByNumber.TabIndex = 17;
             this.buttonGetProductByNumber.Text = "Get Product";
-            this.buttonGetProductByNumber.UseVisualStyleBackColor = true;
+            this.buttonGetProductByNumber.UseVisualStyleBackColor = false;
             this.buttonGetProductByNumber.Click += new System.EventHandler(this.buttonGetProductByNumber_Click);
             // 
             // buttonCreateM3LactalisOrders
@@ -219,7 +226,6 @@
             this.buttonCreateM3LactalisOrders.TabIndex = 18;
             this.buttonCreateM3LactalisOrders.Text = "create orders";
             this.buttonCreateM3LactalisOrders.UseVisualStyleBackColor = true;
-            this.buttonCreateM3LactalisOrders.Visible = false;
             this.buttonCreateM3LactalisOrders.Click += new System.EventHandler(this.buttonCreateM3LactalisOrders_Click);
             // 
             // checkBoxLastYear
@@ -285,6 +291,7 @@
             this.Controls.Add(this.buttonSalesView);
             this.Controls.Add(this.dataGridForecastInfo);
             this.Controls.Add(this.pictureBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormSupply";
             this.Text = "Forecast Supply ";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormSupply_FormClosed);

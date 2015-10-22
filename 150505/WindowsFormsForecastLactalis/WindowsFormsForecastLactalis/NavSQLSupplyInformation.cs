@@ -1,4 +1,9 @@
-﻿using System;
+﻿///This file handles all loading of supply information
+///The file is some kind of layer between between the PrognosInfoForSupply.cs  and the actual SQL calls
+///handle in NavSQLExecute.cs 
+
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -20,6 +25,8 @@ namespace WindowsFormsForecastLactalis
 
         int LactalisVareNummer = 0;
         int Lactalis_NBRPer_colli = 0;
+
+
 
         NavSQLExecute conn;
         Dictionary<string, int> infoDict = new Dictionary<string, int>();
@@ -235,13 +242,12 @@ namespace WindowsFormsForecastLactalis
                 foreach (KeyValuePair<string, int> kvp in infoDict)
                 {
                     string temp = kvp.Key;
-                    if (temp.Length > 0)
-                    {
-                        while (!Char.IsLetter(temp, 0))
+
+                        while (temp.Length > 0 && !Char.IsLetter(temp, 0))
                         {
                             temp = temp.Substring(1, temp.Length - 1);
                         }
-                    }
+
                     infoString = infoString + "\n " + temp + "  " + kvp.Value;
                 }
                 returnString = infoString;
@@ -524,7 +530,7 @@ namespace WindowsFormsForecastLactalis
 
             queryString2 = queryString2.Replace("XXXXX", currentProdNumber);
             //queryString = queryString.Replace("YYYYY", custNumber);
-            Console.WriteLine("LoadRealiseretKampagnLY Query Qlickview: " + queryString2);
+            //Console.WriteLine("LoadRealiseretKampagnLY Query Qlickview: " + queryString2);
             latestQueryQlickTable = conn.QueryExWithTableReturn(queryString2);
             //dataGridViewQlickviewData.DataSource = latestQueryTable;
 
@@ -560,7 +566,8 @@ namespace WindowsFormsForecastLactalis
                     string tempNameString = row["ArtikelNamn"].ToString();
                     if(Beskrivelse.Length <2)
                     {
-                        Beskrivelse = tempNameString; 
+                        Beskrivelse = tempNameString;
+                        Console.WriteLine("Get Name from Qlickview: " + Beskrivelse);
                     }
                     double dayOFYear = 0;
 

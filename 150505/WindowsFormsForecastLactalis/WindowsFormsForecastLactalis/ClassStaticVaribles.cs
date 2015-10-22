@@ -1,4 +1,8 @@
-﻿using System;
+﻿///Thhis file is used for keeping all the numbers that is downloaded on startup
+///Keeps numbers as product_number, Customernumbers and so on so we don't have to load this every time.
+///One load on start up then it is saved locally in this file
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -17,6 +21,8 @@ namespace WindowsFormsForecastLactalis
 
         public static Dictionary<string, string> ProdToSupplDict = new Dictionary<string, string>();
 
+        public static List<string> AllCuttingProducts = new List<string>();
+
         public static Dictionary<string, string> AllProductsM3Dict = new Dictionary<string, string>();
         public static Dictionary<string, List<string>> AllSuppliersM3 = new Dictionary<string, List<string>>();
         public static Dictionary<string,string> AllSuppliersNameDict = new Dictionary<string, string>();
@@ -24,7 +30,7 @@ namespace WindowsFormsForecastLactalis
         public static Dictionary<string, string> NewNumberDictNavKey = new Dictionary<string, string>();
         public static Dictionary<string, string> NewNumberDictM3Key = new Dictionary<string, string>();
 
-        public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
+        public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>(); //Dict First Date of week 1 in Year
 
         private static bool AllProductsNavFirst = true;
         private static bool AllProductsM3DictFirst = true;
@@ -32,7 +38,7 @@ namespace WindowsFormsForecastLactalis
         private static bool NewNumberDictNavKeyFirst = true;
 
         private static bool CustDictionaryFirst = true;
-        private static bool StartDateFirst = true;
+        private static bool StartDateFirst = true; 
 
 
 
@@ -173,6 +179,15 @@ namespace WindowsFormsForecastLactalis
 
                 }
                 CreateProdToSupplDict();
+
+                AllSuppliersM3.Add("Cutting", AllCuttingProducts);
+
+                List<string> TestStockProducts = new List<string>();
+                TestStockProducts.Add("56170");
+                TestStockProducts.Add("60268");
+                TestStockProducts.Add("56108");
+
+                AllSuppliersM3.Add("TestStock", TestStockProducts);
             }
         }
 
@@ -203,6 +218,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     AllProductsM3Dict.Add(item.Key, item.Value);
                 }
+                Console.WriteLine("AllNumberProducts: " + AllProductsM3Dict.Count());
             }
         }
 

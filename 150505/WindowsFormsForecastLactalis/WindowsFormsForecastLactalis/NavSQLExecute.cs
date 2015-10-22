@@ -1,4 +1,7 @@
-﻿using System;
+﻿///This files handles all the sql calls to the SQL forecast Database
+///The database holds all the copied data from navision and saves all forecast numbers
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -88,22 +91,26 @@ namespace WindowsFormsForecastLactalis
             conn.Close();
         }
 
-        public void InsertBudgetLine(string custNumber, string custName, string prodNumber, string startdato, int ammount, string nowString)
+        public void InsertBudgetLine(string custNumber, string custName, string prodNumber, string startdato, int ammount, string nowString, string comment)
         {
             //bw.WorkerReportsProgress = true;
             //bw.WorkerSupportsCancellation = true;
 
             using (SqlCommand command = new SqlCommand())
             {
+                string cleanComment = System.Text.RegularExpressions.Regex.Replace(comment, "[áàäâãåÁÀÄÂÃÅ]", "a");
+                cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
+
                 command.Connection = conn;            // <== lacking
                 command.CommandType = CommandType.Text;
-                command.CommandText = "INSERT into Debitor_Budgetlinjepost (DebitorBogføringsruppe, Varenr, Type, Startdato, Antal, Navn_DebBogfGr, Tastedato) VALUES (@DebitorBogføringsruppe, @Varenr, @Type, @Startdato, @Antal, @Navn_DebBogfGr, @Tastedato)";
+                command.CommandText = "INSERT into Debitor_Budgetlinjepost (DebitorBogføringsruppe, Varenr, Type, Startdato, Antal, Navn_DebBogfGr, Tastedato, Kommentar) VALUES (@DebitorBogføringsruppe, @Varenr, @Type, @Startdato, @Antal, @Navn_DebBogfGr, @Tastedato, @Kommentar)";
                 command.Parameters.AddWithValue("@DebitorBogføringsruppe", custNumber);
                 command.Parameters.AddWithValue("@Varenr", prodNumber);
                 command.Parameters.AddWithValue("@Type", "4");
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
                 command.Parameters.AddWithValue("@Navn_DebBogfGr", custName);
+                command.Parameters.AddWithValue("@Kommentar", nowString + " Comment: " + cleanComment);
 
                 command.Parameters.AddWithValue("@Tastedato", nowString);
 

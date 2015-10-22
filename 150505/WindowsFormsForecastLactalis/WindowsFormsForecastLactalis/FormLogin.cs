@@ -1,4 +1,6 @@
-﻿using System;
+﻿///The login form first form to show starts Sales form when correct login is typed
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;

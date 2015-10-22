@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLogin));
             this.buttonLogIN = new System.Windows.Forms.Button();
             this.labelUserName = new System.Windows.Forms.Label();
             this.labelPwd = new System.Windows.Forms.Label();
@@ -40,13 +41,14 @@
             // 
             // buttonLogIN
             // 
+            this.buttonLogIN.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonLogIN.Location = new System.Drawing.Point(348, 324);
             this.buttonLogIN.Margin = new System.Windows.Forms.Padding(4);
             this.buttonLogIN.Name = "buttonLogIN";
             this.buttonLogIN.Size = new System.Drawing.Size(106, 37);
             this.buttonLogIN.TabIndex = 0;
             this.buttonLogIN.Text = "Log In";
-            this.buttonLogIN.UseVisualStyleBackColor = true;
+            this.buttonLogIN.UseVisualStyleBackColor = false;
             this.buttonLogIN.Click += new System.EventHandler(this.buttonLogIN_Click);
             // 
             // labelUserName
@@ -118,6 +120,7 @@
             this.Controls.Add(this.labelUserName);
             this.Controls.Add(this.buttonLogIN);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormLogin";
             this.Text = "Login Forecast";

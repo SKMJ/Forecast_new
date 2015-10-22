@@ -1,4 +1,8 @@
-﻿using System;
+﻿///This is the GUI File for the Sales view 
+///This GUI runs all action for Sales to focus on
+///Download numbers and save ForeCasts based on customers
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -22,6 +26,7 @@ namespace WindowsFormsForecastLactalis
         GetFromM3 m3Info = new GetFromM3();
         TextBoxForm infoboxSales = new TextBoxForm();
         private string latestProductNumber;
+        private string latestCustomerLoaded;
         private int latestWeek;
         Point latestMouseClick;
         int selectedYear;
@@ -42,7 +47,7 @@ namespace WindowsFormsForecastLactalis
         {
             var loginForm = new FormLogin();
 
-            AssortmentFromM3 = false;
+            AssortmentFromM3 = true;
             InitializeComponent();
             Console.WriteLine("Start Form1!");
             
@@ -91,7 +96,8 @@ namespace WindowsFormsForecastLactalis
             else
             {
                 comboBoxAssortment.DataSource = new BindingSource(m3Info.GetListOfAssortments(), null);
-
+                comboBoxAssortment.DisplayMember = "Value";
+                comboBoxAssortment.ValueMember = "Key";
             }
 
 
@@ -361,6 +367,7 @@ namespace WindowsFormsForecastLactalis
             PrognosInfoSales product4 = new PrognosInfoSales(GetNameFromLoadedProducts("2442"), "2442", tempCustNumber);
             PrognosInfoSales product5 = new PrognosInfoSales(GetNameFromLoadedProducts("2735"), "2735", tempCustNumber);
 
+            latestCustomerLoaded = tempCustNumber;
             SetStatus("Products loading 1/5");
            // MessageBox.Show("Place 1");
             product1.FillNumbers(selectedYear);
@@ -470,6 +477,9 @@ namespace WindowsFormsForecastLactalis
 
                    // KeyValuePair<string, string> tempPair = (KeyValuePair<string, string>)comboBoxAssortment.SelectedItem;
                     string tempString = comboBoxAssortment.SelectedItem.ToString();
+                    tempString = tempString.Substring(1);
+                    string[] firstPart = tempString.Split(',');
+                    tempString = firstPart[0];
                     Products = new List<PrognosInfoSales>();
                     List<string> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
                     
@@ -635,7 +645,7 @@ namespace WindowsFormsForecastLactalis
                                     System.Threading.ThreadPool.QueueUserWorkItem(delegate
                                     {
                                         NavSQLExecute conn = new NavSQLExecute();
-                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow);
+                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow, item.Salgsbudget_Comment[week]);
                                     }, null);
 
                                     SetKöpsbudget(week, productNumber, Convert.ToInt32(e.FormattedValue));
@@ -762,7 +772,7 @@ namespace WindowsFormsForecastLactalis
                         SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
                         sqlConnection.SetYear(selectedYear);
                         string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
-                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, tempCustNumber);
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, latestCustomerLoaded);
 
                         temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
                         MessageBox.Show(temp);
@@ -860,6 +870,7 @@ namespace WindowsFormsForecastLactalis
             string temp = GetNameFromLoadedProducts(tempCustNumber);
 
             PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber);
+            latestCustomerLoaded = tempCustNumber;
             product1.FillNumbers(selectedYear);
             Products.Add(product1);
             FillSalesGUIInfo();

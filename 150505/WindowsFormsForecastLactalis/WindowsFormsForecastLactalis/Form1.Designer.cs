@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.dataGridForecastInfo = new System.Windows.Forms.DataGridView();
             this.ColumnVareNR = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,6 +49,7 @@
             // 
             // dataGridForecastInfo
             // 
+            this.dataGridForecastInfo.BackgroundColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.dataGridForecastInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridForecastInfo.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ColumnVareNR,
@@ -102,12 +104,13 @@
             // 
             // buttonSupplyView
             // 
+            this.buttonSupplyView.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonSupplyView.Location = new System.Drawing.Point(469, 39);
             this.buttonSupplyView.Name = "buttonSupplyView";
             this.buttonSupplyView.Size = new System.Drawing.Size(200, 34);
             this.buttonSupplyView.TabIndex = 2;
             this.buttonSupplyView.Text = "Change to Supply View";
-            this.buttonSupplyView.UseVisualStyleBackColor = true;
+            this.buttonSupplyView.UseVisualStyleBackColor = false;
             this.buttonSupplyView.Click += new System.EventHandler(this.buttonSupplyView_Click);
             this.buttonSupplyView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.buttonSupplyView_MouseClick);
             // 
@@ -131,12 +134,13 @@
             // 
             // button1
             // 
+            this.button1.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.button1.Location = new System.Drawing.Point(328, 146);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(102, 27);
             this.button1.TabIndex = 5;
             this.button1.Text = "Get Products";
-            this.button1.UseVisualStyleBackColor = true;
+            this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // labelYear
@@ -159,12 +163,13 @@
             // 
             // buttonGetProductByNumber
             // 
+            this.buttonGetProductByNumber.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.buttonGetProductByNumber.Location = new System.Drawing.Point(14, 145);
             this.buttonGetProductByNumber.Name = "buttonGetProductByNumber";
             this.buttonGetProductByNumber.Size = new System.Drawing.Size(102, 27);
             this.buttonGetProductByNumber.TabIndex = 19;
             this.buttonGetProductByNumber.Text = "Get Product";
-            this.buttonGetProductByNumber.UseVisualStyleBackColor = true;
+            this.buttonGetProductByNumber.UseVisualStyleBackColor = false;
             this.buttonGetProductByNumber.Click += new System.EventHandler(this.buttonGetProductByNumber_Click);
             // 
             // labelStatus
@@ -204,6 +209,7 @@
             this.Controls.Add(this.buttonSupplyView);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.dataGridForecastInfo);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Forecast Sales";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);

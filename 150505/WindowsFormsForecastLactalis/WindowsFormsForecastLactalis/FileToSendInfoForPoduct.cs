@@ -1,4 +1,8 @@
-﻿using System;
+﻿///This file handles the data for the file sent to Lactalis France
+///This is the class that keeps all the numbers product for product
+///One instance of this calss for every product
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,11 +47,11 @@ namespace WindowsFormsForecastLactalis
             GetFromM3 m3Info = new GetFromM3();
             string m3ProdNumber = GetM3ProdNumber();
             Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
-            if (info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
+            if (info != null && info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
             {
 
-                    InLactaFranceFile = true;
-                
+                InLactaFranceFile = true;
+
 
                 weekPartPercentage = new int[] { Convert.ToInt32(info["forecastWeek"]), Convert.ToInt32(info["FCMO"]), Convert.ToInt32(info["FCTU"]), Convert.ToInt32(info["FCWE"]), Convert.ToInt32(info["FCTH"]), Convert.ToInt32(info["FCFR"]), Convert.ToInt32(info["FCSA"]), Convert.ToInt32(info["FCSU"]) };
             }
