@@ -20,13 +20,15 @@ namespace WindowsFormsForecastLactalis
         {
             ProductName = name;
             ProductNumber = number;
-            CustomerNumber = customerNumber;
+            CustomerNumberM3 = customerNumber;
+            CustomerCodeNav = ClassStaticVaribles.GetCustNavCode(customerNumber);
         }
 
 
         public string ProductName = "";
         public string ProductNumber = "0";
-        public string CustomerNumber = "";
+        public string CustomerNumberM3 = "";
+        public string CustomerCodeNav = "";
         public int WeekToLockFrom = 0;
 
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
@@ -90,29 +92,29 @@ namespace WindowsFormsForecastLactalis
             SQLCallsSalesCustomerInfo sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             sqlSalesCalls.SetYear(selectedYear);
 
-            Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerNumber);
+            Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerCodeNav);
             Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-            Dictionary<int, int> salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerNumber);
+            Dictionary<int, int> salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerCodeNav);
             // MessageBox.Show("Place 7");
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-            Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerNumber);
+            Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerCodeNav);
 
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-            Dictionary<int, int> KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerNumber);
+            Dictionary<int, int> KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerCodeNav);
             // MessageBox.Show("Place 8");
 
 
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
 
-            Dictionary<int, int> relaiseratSalg_LY = sqlSalesCalls.GetRelSalg_LY(ProductNumber, CustomerNumber);
+            Dictionary<int, int> relaiseratSalg_LY = sqlSalesCalls.GetRelSalg_LY(ProductNumber, CustomerCodeNav);
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-            Dictionary<int, int> relaiseratSalg_TY = sqlSalesCalls.GetRelSalg_TY(ProductNumber, CustomerNumber);
+            Dictionary<int, int> relaiseratSalg_TY = sqlSalesCalls.GetRelSalg_TY(ProductNumber, CustomerCodeNav);
 
             if (ProductName.Length < 2)
             {
@@ -158,7 +160,7 @@ namespace WindowsFormsForecastLactalis
 
             bool Completed = false;
             int laps = 1;
-            while (!Completed && laps<15)
+            while (!Completed && laps<3)
             {
                 Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(1000), () =>
                 {
@@ -208,6 +210,20 @@ namespace WindowsFormsForecastLactalis
             {
                 Console.WriteLine("Exception in time bound code Sales");
                 throw ae.InnerExceptions[0];
+            }
+        }
+
+        internal void UpdateSalesInfo(int selectedYear)
+        {
+            SQLCallsSalesCustomerInfo sqlSalesCalls = new SQLCallsSalesCustomerInfo();
+            sqlSalesCalls.SetYear(selectedYear);
+            Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerCodeNav);
+            Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
+
+            for (int i = 0; i < 54; i++)
+            {
+                Salgsbudget_ThisYear[i] = salesBudgetTY[i];
+                Salgsbudget_Comment[i] = Sales_CommentTY[i];
             }
         }
     }

@@ -396,13 +396,13 @@ namespace WindowsFormsForecastLactalis
                     {
                         if (!infoDict.ContainsKey(levKedja))
                         {
-                            infoDict.Add(levKedja, dateforNumber + " " + levAntal + comment);
+                            infoDict.Add(levKedja, dateforNumber + "    " + levAntal + "  " + comment);
                         }
                         else
                         {
                             i++;
                             string temp = i.ToString() + " " + levKedja;
-                            infoDict.Add(temp, dateforNumber + " " + levAntal + "  " + comment);
+                            infoDict.Add(temp, dateforNumber + "    " + levAntal + "  " + comment);
                         }
                     }
                 }

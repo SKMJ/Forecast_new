@@ -110,7 +110,7 @@ namespace WindowsFormsForecastLactalis
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
                 command.Parameters.AddWithValue("@Navn_DebBogfGr", custName);
-                command.Parameters.AddWithValue("@Kommentar", nowString + " Comment: " + cleanComment);
+                command.Parameters.AddWithValue("@Kommentar", "" + cleanComment);
 
                 command.Parameters.AddWithValue("@Tastedato", nowString);
 

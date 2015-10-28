@@ -94,15 +94,12 @@ namespace WindowsFormsForecastLactalis
             sqlSupplyCalls.SetSelectedYear(selectedYear);
             sqlSupplyCalls.UpdateVareKort();
 
-            GetAllForeCastSpecialFieldsFromM3(selectedYear, m3ProdNumber);
+            //GetAllForeCastSpecialFieldsFromM3(selectedYear, m3ProdNumber);
 
             Supplier = GetSupplierFromProduct();
 
 
 
-            Console.WriteLine("Time2: " + stopwatch2.ElapsedMilliseconds);
-
-            GetM3StockInfo(m3ProdNumber);
 
             Console.WriteLine("Time3: " + stopwatch2.ElapsedMilliseconds);
 
@@ -160,6 +157,24 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
         }
 
+        public void UpdateReguleretInfo(int selectedYear)
+        {
+            NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
+            sqlSupplyCalls.GetSalesBudget();
+            Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG_TY();
+            Dictionary<int, string> Reguleret_CommentTY = sqlSupplyCalls.GetRegComment_TY();
+
+
+            for (int i = 0; i < 54; i++)
+            {
+
+                SalgsbudgetReguleret_ThisYear[i] = salesBudget_REG_TY[i];
+
+                SalgsbudgetReguleret_Comment[i] = Reguleret_CommentTY[i];
+
+            }
+        }
+
 
         private void GetAllForeCastSpecialFieldsFromM3(int selectedYear, string m3ProdNumber)
         {
@@ -190,6 +205,11 @@ namespace WindowsFormsForecastLactalis
                     }
                 });
                 Console.WriteLine("SpecialFileds Completed: " + Completed + " lap: " + laps);
+                if (!Completed)
+                {
+                    System.Threading.Thread.Sleep(1500);
+                }
+
                 laps++;
             }
         }
@@ -198,6 +218,7 @@ namespace WindowsFormsForecastLactalis
         // If it hangs: Redo after one second
         private void GetM3StockInfo(string m3ProdNumber)
         {
+            StockDetails = "";
             GetFromM3 m3Info = new GetFromM3();
 
             bool Completed = false;
@@ -206,6 +227,7 @@ namespace WindowsFormsForecastLactalis
             {
                 Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(1000), () =>
                 {
+                    
                     //
                     // Write your time bounded code here
                     List<string> stockInfo = m3Info.GetStockInfo(m3ProdNumber);
@@ -217,11 +239,14 @@ namespace WindowsFormsForecastLactalis
                     foreach (string item in stockInfo)
                     {
                         int i = 0;
-                        while (item[10 + i] != ' ')
+                        if (!item.Contains("Total"))
                         {
-                            i++;
+                            while (item[10 + i] != ' ')
+                            {
+                                i++;
+                            }
+                            NBRonStock = NBRonStock + Convert.ToInt32(item.Substring(10, i));
                         }
-                        NBRonStock = NBRonStock + Convert.ToInt32(item.Substring(10, i));
                         if (!StockDetails.Contains("Nothing"))
                         {
                             StockDetails = StockDetails + item;
@@ -229,9 +254,14 @@ namespace WindowsFormsForecastLactalis
                         Console.WriteLine("Details: " + StockDetails);
 
                     }
+
                 });
                 Console.WriteLine("Stock Completed: " + Completed + " lap: " + laps + " m3 nbr: " + m3ProdNumber);
                 laps++;
+                if (!Completed)
+                {
+                    System.Threading.Thread.Sleep(1500);
+                }
             }
         }
 
@@ -275,6 +305,15 @@ namespace WindowsFormsForecastLactalis
                 Console.WriteLine("Exception in time bound code Supply");
                 throw ae.InnerExceptions[0];
             }
+        }
+
+        internal string GetStockInfo()
+        {
+            string m3ProdNumber = GetM3ProdNumber();
+
+            GetM3StockInfo(m3ProdNumber);
+
+            return StockDetails;
         }
     }
 }

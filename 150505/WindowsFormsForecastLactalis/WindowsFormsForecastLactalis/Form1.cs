@@ -40,6 +40,8 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<string, string> allProductsM3Dict = new Dictionary<string, string>();
         Dictionary<string, List<string>> allSuppliersM3 = new Dictionary<string, List<string>>();
         public Dictionary<string, string> newNumberDict = new Dictionary<string, string>();
+        int latestCommentRow;
+        string newCommentProdNBR = "";
 
 
         //Get_FromSimulatedM3 m3_info = new Get_FromSimulatedM3();
@@ -156,6 +158,7 @@ namespace WindowsFormsForecastLactalis
         //Fill the grid with info from the Products
         public void FillSalesGUIInfo()
         {
+            Dictionary<int,string> commentDict = new Dictionary<int,string>();
             this.dataGridForecastInfo.DataSource = null;
 
             this.dataGridForecastInfo.Rows.Clear();
@@ -246,9 +249,22 @@ namespace WindowsFormsForecastLactalis
                 tempList.Add("Salgsbudget_Comment");
                 for (int i = 1; i < 54; i++)
                 {
-                    tempList.Add(item.Salgsbudget_Comment[i]);
+                    tempList.Add("");
                 }
                 AddRowFromList(tempList);
+
+                commentDict = item.Salgsbudget_Comment;
+                DataGridViewRow tempRow = dataGridForecastInfo.Rows[dataGridForecastInfo.Rows.Count - 1];
+                for (int i = 3; i < tempRow.Cells.Count; i++)
+                {
+                    string tempComment = commentDict[i - 2];
+                    if (tempComment.Length > 1 &&
+                        (!tempComment.EndsWith(" Comment:  ")))
+                    {
+
+                        tempRow.Cells[i].Style = new DataGridViewCellStyle { BackColor = Color.Yellow };
+                    }
+                }
 
                 tempList = new List<object>();
                 tempList.Add("");
@@ -259,6 +275,7 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add(item.Salgsbudget_ChangeHistory[i]);
                 }
                 AddRowFromList(tempList);
+                commentDict = item.Salgsbudget_Comment;
             }
             //Thread.Sleep(2000);
            
@@ -458,6 +475,7 @@ namespace WindowsFormsForecastLactalis
             loadingNewProductsOngoing = true;
             Stopwatch stopwatch = Stopwatch.StartNew();
 
+
             SetupColumns();
 
             if (!infoboxSales.Visible)
@@ -482,6 +500,7 @@ namespace WindowsFormsForecastLactalis
                     tempString = firstPart[0];
                     Products = new List<PrognosInfoSales>();
                     List<string> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
+                    latestCustomerLoaded = tempString;
                     
                     if (productList != null)
                     {
@@ -523,15 +542,16 @@ namespace WindowsFormsForecastLactalis
         //Set comment from outside this form (textbox)
         public void SetProductComment(string comment)
         {
-            foreach (PrognosInfoSales item in Products)
-            {
-                if (item.ProductNumber.ToString() == latestProductNumber)
-                {
-                    item.Salgsbudget_Comment[latestWeek] = comment;
-                    //TODO: Write to database
-                }
-            }
-            FillSalesGUIInfo();
+            dataGridForecastInfo.Rows[latestCommentRow].Cells[latestWeek + 2].Value = comment;
+            //foreach (PrognosInfoSales item in Products)
+            //{
+            //    if (item.ProductNumber.ToString() == latestProductNumber)
+            //    {
+            //        item.Salgsbudget_Comment[latestWeek] = comment;
+            //        //TODO: Write to database
+            //    }
+            //}
+            //FillSalesGUIInfo();
         }
 
 
@@ -628,8 +648,8 @@ namespace WindowsFormsForecastLactalis
                                 int ammount = Convert.ToInt32(e.FormattedValue) - item.Salgsbudget_ThisYear[week];
                                 if (ammount != 0)
                                 {
-                                   
-                                    string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
+                                    
+                                    string tempCustNumber = ClassStaticVaribles.GetCustNavCode(latestCustomerLoaded); ;
                                     //string startDato = "datum";
 
 
@@ -642,11 +662,22 @@ namespace WindowsFormsForecastLactalis
 
                                     Console.WriteLine("TasteDato: " + time.ToString(format));
                                     string inputNow = time.ToString(format);
-                                    System.Threading.ThreadPool.QueueUserWorkItem(delegate
+                                    string tempComment = GetValueFromGridAsString(rowIndex + 1, columnIndex);
+                                    dataGridForecastInfo.Rows[rowIndex + 1].Cells[columnIndex].Value = "";
+                                    if (tempComment.Length <= 1)
                                     {
+                                        System.Threading.ThreadPool.QueueUserWorkItem(delegate
+                                        {
+                                            NavSQLExecute conn = new NavSQLExecute();
+                                            conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow, "");
+                                        }, null);
+                                    }
+                                    else
+                                    {
+                                        newCommentProdNBR = productNumber;
                                         NavSQLExecute conn = new NavSQLExecute();
-                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow, item.Salgsbudget_Comment[week]);
-                                    }, null);
+                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow, tempComment);
+                                    }
 
                                     SetKöpsbudget(week, productNumber, Convert.ToInt32(e.FormattedValue));
                                     
@@ -702,6 +733,7 @@ namespace WindowsFormsForecastLactalis
             string TempE = e.ToString();
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
+            
 
             selectedYear = (int)comboBoxYear.SelectedItem;
             
@@ -712,14 +744,25 @@ namespace WindowsFormsForecastLactalis
             {
                 if (GetValueFromGridAsString(rowIndex, 2).Contains("Comment"))
                 {
+                    
                     if (!infoboxSales.Visible)
                     {
+                        latestCommentRow = rowIndex;
                         string temp = GetValueFromGridAsString(rowIndex, columnIndex);
+                        
                         //string temp2 = GetValueFromGridAsString(rowIndex - 6, 0);
 
 
                         latestWeek = columnIndex - 2;
                         latestProductNumber = GetProductNumberFromRow(rowIndex);
+
+                        foreach (PrognosInfoSales item in Products)
+                        {
+                            if (item.ProductNumber.ToString() == latestProductNumber)
+                            {
+                                temp = item.Salgsbudget_Comment[latestWeek];
+                            }
+                        }
                         infoboxSales.SetInfoText(this, "", " Product: " + latestProductNumber + " Week: " + latestWeek);
                         infoboxSales.SetOldInfo(temp);
                         infoboxSales.TopMost = true;
@@ -771,8 +814,8 @@ namespace WindowsFormsForecastLactalis
 
                         SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
                         sqlConnection.SetYear(selectedYear);
-                        string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
-                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, latestCustomerLoaded);
+                        //string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, ClassStaticVaribles.GetCustNavCode(latestCustomerLoaded));
 
                         temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
                         MessageBox.Show(temp);
@@ -866,8 +909,15 @@ namespace WindowsFormsForecastLactalis
             {
                 prodNMBR = ClassStaticVaribles.NewNumberDictM3Key[prodNMBR];
             }
-            string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
-            string temp = GetNameFromLoadedProducts(tempCustNumber);
+
+            string tempString = comboBoxAssortment.SelectedItem.ToString();
+            tempString = tempString.Substring(1);
+            string[] firstPart = tempString.Split(',');
+            tempString = firstPart[0];
+
+            string tempCustNumber = tempString;
+            string temp = GetNameFromLoadedProducts(prodNMBR);
+
 
             PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber);
             latestCustomerLoaded = tempCustNumber;
@@ -970,6 +1020,41 @@ namespace WindowsFormsForecastLactalis
         {
             Console.WriteLine("Close Sales form");
             //Application.Exit();
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void dataGridForecastInfo_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (newCommentProdNBR.Length > 0)
+            {
+                LoadSalesCommentAgain(newCommentProdNBR);
+                newCommentProdNBR = "";
+            }
+        }
+
+
+        private void LoadSalesCommentAgain(string newCommentProdNBR)
+        {
+            dataGridForecastInfo.Visible = false;
+            labelStatus.Visible = true;
+            SetStatus("Product Loading");
+            loadingNewProductsOngoing = true;
+            //SupplierProducts[prodNBR].UpdateReguleretInfo(selectedYear);
+
+            foreach(PrognosInfoSales prognos in Products)
+            {
+                if(prognos.ProductNumber == newCommentProdNBR)
+                {
+                    prognos.UpdateSalesInfo(selectedYear);
+                }
+            }
+
+            //throw new NotImplementedException();
+            LoadingReady();
         }
 
 

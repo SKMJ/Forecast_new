@@ -437,8 +437,9 @@ namespace WindowsFormsForecastLactalis
             }
             if (rc != 0)
             {
-                MessageBox.Show("Not Connected to M3!! communication Fail! Application will not work!");
-                MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                //MessageBox.Show("Not Connected to M3!! communication Fail! Application will not work!");
+                //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                Console.WriteLine("Exception in M3 connection: ") ;
             }
             return rc;
         }
@@ -637,6 +638,7 @@ namespace WindowsFormsForecastLactalis
         {
             //string returnString = "";
             List<string> returnStrings = new List<string>();
+            Dictionary<string, int> dict = new Dictionary<string, int>();
             if (m3ProdNumber.Length > 0)
             {
                 SERVER_ID sid = new SERVER_ID();
@@ -667,23 +669,43 @@ namespace WindowsFormsForecastLactalis
                     string datum = MvxSock.GetField(ref sid, "PRDT");
                     string antal = MvxSock.GetField(ref sid, "STQT");
                     int allokerbar = Convert.ToInt16(MvxSock.GetField(ref sid, "ALOC"));
-                    string antalAllokerbara = MvxSock.GetField(ref sid, "ALQT");
+                    string antalAllokerade = MvxSock.GetField(ref sid, "ALQT");
+                    string allokplats = MvxSock.GetField(ref sid, "WHSL");
 
-                    string temp = "In Stock: " + antal + "   Date: " + datum + "  NBR Allocated: " + antalAllokerbara;
-
-                    if (allokerbar > 0)
+                    Console.WriteLine(allokplats);
+                    if(!(allokplats == "IRMA") && (allokerbar > 0))
                     {
-                        temp = temp + "  Allocatable ";
+                        if (dict.ContainsKey(datum))
+                        {
+                            dict[datum] = Convert.ToInt32(antal) + dict[datum] - Convert.ToInt32(antalAllokerade);
+                        }
+                        else
+                        {
+                            dict.Add(datum, Convert.ToInt32(antal) - Convert.ToInt32(antalAllokerade));
+                        }
+                        string temp = "In Stock: " + antal + "   Date: " + datum + "  NBR Allocated: " + antalAllokerade;
+
+                        temp = temp + "\n";
+
+                        //returnStrings.Add(temp);
                     }
-
-                    temp = temp + "\n";
-
-                    returnStrings.Add(temp);
 
                     //Mooves to next row
                     MvxSock.Access(ref sid, null);
 
                 }
+
+                int total = 0;
+                foreach(KeyValuePair<string,int> item in dict)
+                {
+                    DateTime dt =
+                   DateTime.ParseExact(item.Key, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    string temp = "In Stock: " + item.Value + "   Date: " + dt.Day + "-" + dt.Month + "-" + dt.Year;// +"  NBR Allocated: " + antalAllokerbara;
+                    temp = temp + "\n";
+                    total = item.Value + total;
+                    returnStrings.Add(temp);
+                }
+                returnStrings.Add("Total: " + total);
             }
 
             else

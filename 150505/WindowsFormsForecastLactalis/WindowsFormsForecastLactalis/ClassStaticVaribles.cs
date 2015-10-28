@@ -30,6 +30,8 @@ namespace WindowsFormsForecastLactalis
         public static Dictionary<string, string> NewNumberDictNavKey = new Dictionary<string, string>();
         public static Dictionary<string, string> NewNumberDictM3Key = new Dictionary<string, string>();
 
+        public static Dictionary<string, string> AssortmentM3_toNav = new Dictionary<string, string>();
+
         public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>(); //Dict First Date of week 1 in Year
 
         private static bool AllProductsNavFirst = true;
@@ -38,16 +40,42 @@ namespace WindowsFormsForecastLactalis
         private static bool NewNumberDictNavKeyFirst = true;
 
         private static bool CustDictionaryFirst = true;
-        private static bool StartDateFirst = true; 
+        private static bool StartDateFirst = true;
 
 
 
+        public static void SetAssortmentDictionary()
+        {
+            if (CustDictionaryFirst)
+            {
+                CustDictionaryFirst = false;
+                Dictionary<string, string> allAssortments = new Dictionary<string, string>();
+                CustDictionary = new Dictionary<string, string>();
 
+                allAssortments.Add("KCWF", "IRMA");
+                allAssortments.Add("KD", "15");
+                allAssortments.Add("DS", "15");
+                allAssortments.Add("KC", "52");
+                allAssortments.Add("KDVC", "4");
+                allAssortments.Add("KI", "6");
+                allAssortments.Add("KR", "28");
+                allAssortments.Add("LD", "47");
+                allAssortments.Add("YEYD", "102");
+
+
+                //Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
+                foreach (KeyValuePair<string, string> item in allAssortments)
+                {
+                    AssortmentM3_toNav.Add(item.Key, item.Value);
+                }
+            }
+        }
 
         public static void SetCustDictionary()
         {
             if (CustDictionaryFirst)
             {
+                SetAssortmentDictionary();
                 CustDictionaryFirst = false;
                 Dictionary<string, string> allCustomers = new Dictionary<string, string>();
                 CustDictionary = new Dictionary<string, string>();
@@ -294,6 +322,16 @@ namespace WindowsFormsForecastLactalis
         internal static void SetAllSuppliersNameDict(Dictionary<string, string> AllSuppliersName)
         {
             AllSuppliersNameDict = AllSuppliersName;
+        }
+
+        internal static string GetCustNavCode(string M3code)
+        {
+            string returnString = M3code;
+            if(AssortmentM3_toNav.ContainsKey(M3code))
+            {
+                returnString = AssortmentM3_toNav[M3code];
+            }
+            return returnString;
         }
     }
 }

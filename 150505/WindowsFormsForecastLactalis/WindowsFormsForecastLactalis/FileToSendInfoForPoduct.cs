@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsForecastLactalis
 {
-    class FileToSendInfoForPoduct
+    public class FileToSendInfoForPoduct
     {
         public FileToSendInfoForPoduct(string prodNumber, int lactaFranceProdNumber)
         {
