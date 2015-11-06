@@ -21,7 +21,7 @@ namespace WindowsFormsForecastLactalis
             ProductName = name;
             ProductNumber = number;
             CustomerNumberM3 = customerNumber;
-            CustomerCodeNav = ClassStaticVaribles.GetCustNavCode(customerNumber);
+            CustomerCodeNav = ClassStaticVaribles.GetCustNavCodeFirst(customerNumber);
         }
 
 
@@ -72,6 +72,7 @@ namespace WindowsFormsForecastLactalis
             //MessageBox.Show("Place 3");
 
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
+            Console.WriteLine("Time1: " + stopwatch2.ElapsedMilliseconds);
             //MessageBox.Show("Place AA");
             sqlSupplyCalls.UpdateVareKort();
             //MessageBox.Show("Place BB");
@@ -80,7 +81,7 @@ namespace WindowsFormsForecastLactalis
             string m3ProdNumber = GetM3ProdNumber();
 
             LockWeeksInfoFromM3(m3ProdNumber, weektemp);
-
+            Console.WriteLine("Time2: " + stopwatch2.ElapsedMilliseconds);
             Console.WriteLine("Produkt " + ProductNumber + " Varukort,  Vecka nu: " + weektemp + " Weektolock from: " + WeekToLockFrom + " Antal att låsa: " + weekPartPercentage[0]);
 
             if (ProductName.Length < 2 || ProductName == "Name Unknown")
@@ -91,10 +92,10 @@ namespace WindowsFormsForecastLactalis
 
             SQLCallsSalesCustomerInfo sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             sqlSalesCalls.SetYear(selectedYear);
-
+            Console.WriteLine("Time3: " + stopwatch2.ElapsedMilliseconds);
             Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerCodeNav);
             Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
-
+            Console.WriteLine("Time4: " + stopwatch2.ElapsedMilliseconds);
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerCodeNav);
             // MessageBox.Show("Place 7");
@@ -102,9 +103,20 @@ namespace WindowsFormsForecastLactalis
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerCodeNav);
 
-
+            Console.WriteLine("Time5: " + stopwatch2.ElapsedMilliseconds);
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-            Dictionary<int, int> KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerCodeNav);
+            Dictionary<int, int> KampagnTY;
+            if (selectedYear >= 2015)
+            {
+                GetFromM3 m3 = new GetFromM3();
+                KampagnTY = m3.GetCampaignsOfProducts(ProductNumber, selectedYear, CustomerNumberM3);
+            }
+            else
+            {
+                KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerNumberM3);
+            }
+            Console.WriteLine("Time6: " + stopwatch2.ElapsedMilliseconds);
+
             // MessageBox.Show("Place 8");
 
 
@@ -115,7 +127,7 @@ namespace WindowsFormsForecastLactalis
 
             //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> relaiseratSalg_TY = sqlSalesCalls.GetRelSalg_TY(ProductNumber, CustomerCodeNav);
-
+            Console.WriteLine("Time7: " + stopwatch2.ElapsedMilliseconds);
             if (ProductName.Length < 2)
             {
                 ProductName = sqlSalesCalls.GetBeskrivelse();
@@ -124,7 +136,7 @@ namespace WindowsFormsForecastLactalis
             // MessageBox.Show("Place 9");
 
             //Todo add the code for the otther fileds.
-
+            Console.WriteLine("Time8: " + stopwatch2.ElapsedMilliseconds);
             for (int i = 0; i < 54; i++)
             {
                 Salgsbudget_LastYear[i] = salesBudgetLY[i];
@@ -137,7 +149,7 @@ namespace WindowsFormsForecastLactalis
                 Salgsbudget_Comment[i] = Sales_CommentTY[i];
                 Salgsbudget_ChangeHistory[i] = "";
             }
-
+            
             // MessageBox.Show("Place AA");
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;

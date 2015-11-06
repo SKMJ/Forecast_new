@@ -14,7 +14,7 @@ using System.ComponentModel;
 
 namespace WindowsFormsForecastLactalis
 {
-    class NavSQLExecute
+    public class NavSQLExecute
     {
         //private OdbcConnection conn;
         private SqlConnection conn;

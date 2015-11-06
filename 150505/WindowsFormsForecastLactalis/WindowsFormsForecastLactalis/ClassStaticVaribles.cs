@@ -13,7 +13,8 @@ namespace WindowsFormsForecastLactalis
 {
     public static class ClassStaticVaribles
     {
-        public static Dictionary<string, string> CustDictionary;
+        public static Dictionary<string, string> CustDictionaryNav;
+        public static Dictionary<string, string> CustDictionaryM3;
 
         // private bool loadingNewProductsOngoing;
 
@@ -30,7 +31,7 @@ namespace WindowsFormsForecastLactalis
         public static Dictionary<string, string> NewNumberDictNavKey = new Dictionary<string, string>();
         public static Dictionary<string, string> NewNumberDictM3Key = new Dictionary<string, string>();
 
-        public static Dictionary<string, string> AssortmentM3_toNav = new Dictionary<string, string>();
+        public static Dictionary<string, List<string>> AssortmentM3_toNav = new Dictionary<string, List<string>>();
 
         public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>(); //Dict First Date of week 1 in Year
 
@@ -42,6 +43,9 @@ namespace WindowsFormsForecastLactalis
         private static bool CustDictionaryFirst = true;
         private static bool StartDateFirst = true;
 
+        public enum WritePermission { Read = 1, Write = 2, SaleWrite = 3, SupplWrite = 4};
+
+
 
 
         public static void SetAssortmentDictionary()
@@ -50,7 +54,19 @@ namespace WindowsFormsForecastLactalis
             {
                 CustDictionaryFirst = false;
                 Dictionary<string, string> allAssortments = new Dictionary<string, string>();
-                CustDictionary = new Dictionary<string, string>();
+                CustDictionaryNav = new Dictionary<string, string>();
+
+
+                allAssortments.Add("LDWA-LDWB-LDWC", "47");
+                allAssortments.Add("LI", "19");
+                allAssortments.Add("LH", "45");
+                allAssortments.Add("LZ", "58");
+                allAssortments.Add("LDWF", "56");
+                allAssortments.Add("LDW2", "41");
+                allAssortments.Add("LDWE", "73");
+                allAssortments.Add("LOWT", "44");
+                allAssortments.Add("LOWR", "40");
+                allAssortments.Add("LOWS", "76");
 
                 allAssortments.Add("KCWF", "IRMA");
                 allAssortments.Add("KD", "15");
@@ -61,13 +77,49 @@ namespace WindowsFormsForecastLactalis
                 allAssortments.Add("KR", "28");
                 allAssortments.Add("LD", "47");
                 allAssortments.Add("YEYD", "102");
-
+                allAssortments.Add("DIIL", "973");
+                allAssortments.Add("DKCK", "974");
+                allAssortments.Add("DDDC", "975");
+                allAssortments.Add("DBDB", "976");
+                allAssortments.Add("ZGZG", "971");
+                allAssortments.Add("DNZN", "969");
+                allAssortments.Add("DZDZ", "989");
+                allAssortments.Add("DBBC", "977");
+                allAssortments.Add("DKK1", "984");
+                allAssortments.Add("DDDH", "986");
 
                 //Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, string> item in allAssortments)
                 {
-                    AssortmentM3_toNav.Add(item.Key, item.Value);
+                    List<string> tempList = new List<string>();
+                    tempList.Add(item.Value);
+                    AssortmentM3_toNav.Add(item.Key, tempList);
                 }
+
+                List<string> tempList2 = new List<string>();
+                tempList2.Add("60");
+                tempList2.Add("65");
+                tempList2.Add("63");
+                tempList2.Add("69");
+                tempList2.Add("43");
+                AssortmentM3_toNav.Add("LOWQ", tempList2);
+
+                tempList2 = new List<string>();
+                tempList2.Add("27");
+                tempList2.Add("71");
+
+                AssortmentM3_toNav.Add("LDWG", tempList2);
+
+                tempList2 = new List<string>();
+                tempList2.Add("10");
+                tempList2.Add("41");
+
+                AssortmentM3_toNav.Add("LSWU", tempList2);
+
+
+
+
+
             }
         }
 
@@ -78,7 +130,7 @@ namespace WindowsFormsForecastLactalis
                 SetAssortmentDictionary();
                 CustDictionaryFirst = false;
                 Dictionary<string, string> allCustomers = new Dictionary<string, string>();
-                CustDictionary = new Dictionary<string, string>();
+                CustDictionaryNav = new Dictionary<string, string>();
                 allCustomers.Add("0", " ");
                 allCustomers.Add("904", "914-KristianstadsOstföräd.EUR");
                 allCustomers.Add("981", "ArlaNorge");
@@ -141,9 +193,17 @@ namespace WindowsFormsForecastLactalis
                 //Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, string> item in allCustomers)
                 {
-                    CustDictionary.Add(item.Value, item.Key);
+                    CustDictionaryNav.Add(item.Value, item.Key);
                 }
             }
+        }
+
+        public static void SetCustAssortmentListM3( Dictionary<string, string> inputDict)
+        {
+            CustDictionaryM3 = new Dictionary<string, string>();
+
+            CustDictionaryM3 = inputDict;
+            
         }
 
         public static void SetAllProductsNavDict(Dictionary<string, string> dict)
@@ -157,6 +217,7 @@ namespace WindowsFormsForecastLactalis
                 }
             }
         }
+
 
         public static void InitiateDate()
         {
@@ -193,6 +254,7 @@ namespace WindowsFormsForecastLactalis
                 StartDate.Add(2017, dt);
             }
         }
+
 
         public static void SetAllSuppliersM3(Dictionary<string, List<string>> dict)
         {
@@ -324,12 +386,20 @@ namespace WindowsFormsForecastLactalis
             AllSuppliersNameDict = AllSuppliersName;
         }
 
-        internal static string GetCustNavCode(string M3code)
+        internal static string GetCustNavCodeFirst(string M3code)
         {
             string returnString = M3code;
-            if(AssortmentM3_toNav.ContainsKey(M3code))
+            string tempFirst = "";
+            if (AssortmentM3_toNav.ContainsKey(M3code))
             {
-                returnString = AssortmentM3_toNav[M3code];
+                foreach (string item in AssortmentM3_toNav[M3code])
+                {
+                    tempFirst = item;
+                    break;
+                }
+
+
+                returnString = tempFirst;
             }
             return returnString;
         }

@@ -157,6 +157,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
         }
 
+
         public void UpdateReguleretInfo(int selectedYear)
         {
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);

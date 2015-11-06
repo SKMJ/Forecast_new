@@ -31,6 +31,7 @@ namespace WindowsFormsForecastLactalis
         Point latestMouseClick;
         int selectedYear;
         bool AssortmentFromM3 = true;
+        ClassStaticVaribles.WritePermission OnlyLook;
         //Dictionary<string, string> custDictionary;
 
         private bool loadingNewProductsOngoing;
@@ -71,6 +72,12 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Height = this.Height - 250;
             ClassStaticVaribles.SetAllProductsNavDict(allProductsDict);
             ClassStaticVaribles.InitiateDate();
+            m3Info.GetCampaignsOfProducts("1062", 2015, "");
+            m3Info.GetCampaignsOfProducts("2432", 2015, "");
+            m3Info.GetCampaignsOfProducts("1444", 2015, "");
+            m3Info.GetCampaignsOfProducts("1620", 2015, "");
+            m3Info.GetCampaignsOfProducts("1195", 2015, "");
+
 
 
         }
@@ -91,7 +98,7 @@ namespace WindowsFormsForecastLactalis
             comboBoxAssortment.DropDownStyle = ComboBoxStyle.DropDownList;
             if (!AssortmentFromM3)
             {
-                comboBoxAssortment.DataSource = new BindingSource(ClassStaticVaribles.CustDictionary, null);
+                comboBoxAssortment.DataSource = new BindingSource(ClassStaticVaribles.CustDictionaryNav, null);
                 comboBoxAssortment.DisplayMember = "Key";
                 comboBoxAssortment.ValueMember = "Key";
             }
@@ -100,6 +107,8 @@ namespace WindowsFormsForecastLactalis
                 comboBoxAssortment.DataSource = new BindingSource(m3Info.GetListOfAssortments(), null);
                 comboBoxAssortment.DisplayMember = "Value";
                 comboBoxAssortment.ValueMember = "Key";
+
+                
             }
 
 
@@ -318,10 +327,13 @@ namespace WindowsFormsForecastLactalis
                     row.Cells[2].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                     for (int i = 3; i < row.Cells.Count; i++)
                     {
-                        if(weekToLock[weekProdNBR] < i)
+                        if (weekToLock[weekProdNBR] < i && (OnlyLook == ClassStaticVaribles.WritePermission.SaleWrite || OnlyLook == ClassStaticVaribles.WritePermission.Write ))
                         {
+
                             row.Cells[i].ReadOnly = false;
                             row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };
+
+
                         }
                         else
                         {
@@ -377,7 +389,7 @@ namespace WindowsFormsForecastLactalis
         //Add testinfo Products
         private void CreateProducts()
         {
-            string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
+            string tempCustNumber = ClassStaticVaribles.CustDictionaryNav[comboBoxAssortment.Text];
             PrognosInfoSales product1 = new PrognosInfoSales(GetNameFromLoadedProducts("2432"), "2432", tempCustNumber);
             PrognosInfoSales product2 = new PrognosInfoSales(GetNameFromLoadedProducts("1442"), "1442", tempCustNumber);
             PrognosInfoSales product3 = new PrognosInfoSales(GetNameFromLoadedProducts("1238"), "1238", tempCustNumber);
@@ -441,6 +453,14 @@ namespace WindowsFormsForecastLactalis
                 Point tempLocation = this.Location;
                 supplyViewInstance = new FormSupply(tempLocation);
                 supplyViewInstance.Location = this.Location;
+                if (OnlyLook == ClassStaticVaribles.WritePermission.SupplWrite || OnlyLook == ClassStaticVaribles.WritePermission.Write)
+                {
+                    supplyViewInstance.SetOnlyLook(false);
+                }
+                else
+                {
+                    supplyViewInstance.SetOnlyLook(true);
+                }
 
                 this.Visible = false;
                 supplyViewInstance.SetForm1Instanse(this);
@@ -649,7 +669,7 @@ namespace WindowsFormsForecastLactalis
                                 if (ammount != 0)
                                 {
                                     
-                                    string tempCustNumber = ClassStaticVaribles.GetCustNavCode(latestCustomerLoaded); ;
+                                    string tempCustNumber = ClassStaticVaribles.GetCustNavCodeFirst(latestCustomerLoaded); ;
                                     //string startDato = "datum";
 
 
@@ -815,7 +835,7 @@ namespace WindowsFormsForecastLactalis
                         SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
                         sqlConnection.SetYear(selectedYear);
                         //string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
-                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, ClassStaticVaribles.GetCustNavCode(latestCustomerLoaded));
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, ClassStaticVaribles.GetCustNavCodeFirst(latestCustomerLoaded));
 
                         temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
                         MessageBox.Show(temp);
@@ -1060,7 +1080,9 @@ namespace WindowsFormsForecastLactalis
 
 
 
-
-
+        internal void SetOnlyLook(ClassStaticVaribles.WritePermission a)
+        {
+            OnlyLook = a;
+        }
     }
 }

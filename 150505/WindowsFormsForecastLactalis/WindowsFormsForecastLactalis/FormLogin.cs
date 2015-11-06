@@ -25,7 +25,10 @@ namespace WindowsFormsForecastLactalis
         private void buttonLogIN_Click(object sender, EventArgs e)
         {
             Users = new Dictionary<string,string>();
-            Users.Add("admin","admin");
+            Users.Add("admin","admin222");
+            Users.Add("kige", "kige111");
+            Users.Add("sale", "sale321");
+            Users.Add("suppl", "suppl123");
             string username;
             string password;
             //textBoxUserName.Text
@@ -33,11 +36,35 @@ namespace WindowsFormsForecastLactalis
             username = textBoxUserName.Text.ToLower();
             password = textBox1.Text.ToLower();
 
+            ClassStaticVaribles.WritePermission a;
+            if (username == "suppl")
+            {
+               
+                a = ClassStaticVaribles.WritePermission.SupplWrite;
+            }
+            else if (username == "sale")
+            {
+                a = ClassStaticVaribles.WritePermission.SaleWrite;
+            }
+            else if (username == "admin")
+            {
+                a = ClassStaticVaribles.WritePermission.Write;
+            }
+            else 
+            {
+                a = ClassStaticVaribles.WritePermission.Read;
+            }
+
+
+
             if (Users.ContainsKey(username) && Users[username].Equals(password))
             {
                 labelMessageText.ForeColor = Color.Green;
                 SetStatus("Welcome!! Starting up..");
                 Form1 salesForm = new Form1();
+
+                    salesForm.SetOnlyLook(a);
+
                 salesForm.FormClosed += new FormClosedEventHandler(salesForm_FormClosed);
                 salesForm.Show();
                 // Close login form
@@ -66,6 +93,11 @@ namespace WindowsFormsForecastLactalis
         }
 
         private void FormLogin_Shown(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
         }

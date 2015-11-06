@@ -243,10 +243,10 @@ namespace WindowsFormsForecastLactalis
                 {
                     string temp = kvp.Key;
 
-                        while (temp.Length > 0 && !Char.IsLetter(temp, 0))
-                        {
-                            temp = temp.Substring(1, temp.Length - 1);
-                        }
+                    while (temp.Length > 0 && !Char.IsLetter(temp, 0))
+                    {
+                        temp = temp.Substring(1, temp.Length - 1);
+                    }
 
                     infoString = infoString + "\n " + temp + "  " + kvp.Value;
                 }
@@ -308,9 +308,17 @@ namespace WindowsFormsForecastLactalis
 
         internal Dictionary<int, int> GetKampagnTY()
         {
-            LoadKampagnTY_FromSQL();
-            PrepareKampagnTY_ForGUI();
-            return kampagn_TY;
+            if (currentSelectedYear >= 2015)
+            {
+                GetFromM3 m3 = new GetFromM3();
+                return m3.GetCampaignsOfProducts(currentProdNumber, currentSelectedYear, "");
+            }
+            else
+            {
+                LoadKampagnTY_FromSQL();
+                PrepareKampagnTY_ForGUI();
+                return kampagn_TY;
+            }
         }
 
 
@@ -489,14 +497,14 @@ namespace WindowsFormsForecastLactalis
                     LoadRelSalg_FromQlick();
                 }
                 ComputeNumberPerWeekDict(currentSelectedYear - 1);
-                
+
             }
             return relSalg_LY;
         }
 
         internal Dictionary<int, int> GetRelSalg_TY(bool fromNewQlickview)
         {
-            if ( currentSelectedYear < 2016)
+            if (currentSelectedYear < 2016)
             {
                 LoadRelSalg_FromSQL(currentSelectedYear);
                 Console.WriteLine("Call 2 REl salg LY: " + currentSelectedYear + " prodNBR " + currentProdNumber);
@@ -511,7 +519,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     LoadRelSalg_FromQlick();
                 }
-                ComputeNumberPerWeekDict(currentSelectedYear);               
+                ComputeNumberPerWeekDict(currentSelectedYear);
             }
             return relSalg_TY;
         }
@@ -564,7 +572,7 @@ namespace WindowsFormsForecastLactalis
                                                             DateTimeStyles.None);
 
                     string tempNameString = row["ArtikelNamn"].ToString();
-                    if(Beskrivelse.Length <2)
+                    if (Beskrivelse.Length < 2)
                     {
                         Beskrivelse = tempNameString;
                         Console.WriteLine("Get Name from Qlickview: " + Beskrivelse);

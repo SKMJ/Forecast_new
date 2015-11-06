@@ -48,6 +48,7 @@ namespace WindowsFormsForecastLactalis
         int latestRow;
         string latestSelectedYear;
         int selectedYear;
+        bool OnlyLook = true;
 
         public FormSupply()
         {
@@ -444,13 +445,14 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.DefaultCellStyle.ForeColor = Color.Black;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 10, FontStyle.Bold);
-                    row.ReadOnly = false;
+                   
+                    row.ReadOnly = OnlyLook;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Köpsbudget_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Black;
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
-                    row.ReadOnly = false;
+                    row.ReadOnly = OnlyLook;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "Köpsorder_ThisYear")
                 {
@@ -650,6 +652,7 @@ namespace WindowsFormsForecastLactalis
             //}
         }
 
+
         private void dataGridForecastInfo_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int columnIndex = e.ColumnIndex;
@@ -704,6 +707,36 @@ namespace WindowsFormsForecastLactalis
                     temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek);
 
                     temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
+                    MessageBox.Show(temp);
+                }
+                else
+                {
+                    MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
+                }
+            }
+            else if ((GetValueFromGridAsString(rowIndex, 2) == "Kampagn_ThisYear") && columnIndex > 2)
+            {
+                if (!infoboxSupply.Visible)
+                {
+                    string tempProdNBR = GetProductNumberFromRow(rowIndex);
+                    string tempNewName = tempProdNBR;
+                    if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(tempProdNBR))
+                    {
+                        tempNewName = tempProdNBR + " New Number (" + ClassStaticVaribles.NewNumberDictNavKey[tempProdNBR] + ")";
+                    }
+                    //int productNumber = Convert.ToInt32(temp2);
+
+                    int latestWeek = columnIndex - 2;
+                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
+                    Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
+
+                    //Create dummy value to show something before real numbers
+
+                    string temp = "";
+                    GetFromM3 m3Connection = new GetFromM3();
+                    temp = m3Connection.GetKampagnWeekInfo(latestWeek, tempProdNBR, selectedYear);
+
+                    temp = "Kampagn " + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
                     MessageBox.Show(temp);
                 }
                 else
@@ -1320,31 +1353,6 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        //internal void SetAllProdM3Dict(Dictionary<string, string> allProductsM3Dict)
-        //{
-        //    //foreach (KeyValuePair<string, string> item in allProductsM3Dict)
-        //    //{
-        //    //    if (!AllProductsM3Dict_Supply.ContainsKey(item.Key))
-        //    //    {
-        //    //        AllProductsM3Dict_Supply.Add(item.Key, item.Value);
-        //    //    }
-        //    //}
-        //}
-
-        //internal void SetAllSupplDict(Dictionary<string, List<string>> allSuppliersM3)
-        //{
-        //    //foreach (KeyValuePair<string, List<string>> item in allSuppliersM3)
-        //    //{
-        //    //    if (!AllSupplierM3Dict_Supply.ContainsKey(item.Key))
-        //    //    {
-
-        //    //        AllSupplierM3Dict_Supply.Add(item.Key, item.Value);
-        //    //    }
-        //    //}
-
-
-        //}
-
         private void numericUpDownPRoductNumber_ValueChanged(object sender, EventArgs e)
         {
 
@@ -1378,6 +1386,11 @@ namespace WindowsFormsForecastLactalis
                 LoadReguleretAgain(newRegCommentProdNBR);
                 newRegCommentProdNBR = "";
             }
+        }
+
+        internal void SetOnlyLook(bool look)
+        {
+            OnlyLook = look;
         }
     }
 }
