@@ -11,6 +11,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Data.SqlClient;
 using System.ComponentModel;
+using System.Configuration;
 
 namespace WindowsFormsForecastLactalis
 {
@@ -32,6 +33,7 @@ namespace WindowsFormsForecastLactalis
             //Navision SQL
             try
             {
+               
 
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
@@ -145,7 +147,9 @@ namespace WindowsFormsForecastLactalis
                 command.Parameters.AddWithValue("@Type", "5");
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
-                command.Parameters.AddWithValue("@Kommentar", thisDate + " Comment: " + cleanComment);
+                string tempCom = thisDate + ": " + cleanComment;
+                command.Parameters.AddWithValue("@Kommentar", tempCom.Substring(0,50));
+                Console.WriteLine("length comment: " + tempCom.Length);
 
                 command.Parameters.AddWithValue("@Tastedato", thisDate);
                 try

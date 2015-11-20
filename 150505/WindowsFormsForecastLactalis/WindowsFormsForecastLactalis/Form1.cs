@@ -72,14 +72,6 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Height = this.Height - 250;
             ClassStaticVaribles.SetAllProductsNavDict(allProductsDict);
             ClassStaticVaribles.InitiateDate();
-            m3Info.GetCampaignsOfProducts("1062", 2015, "");
-            m3Info.GetCampaignsOfProducts("2432", 2015, "");
-            m3Info.GetCampaignsOfProducts("1444", 2015, "");
-            m3Info.GetCampaignsOfProducts("1620", 2015, "");
-            m3Info.GetCampaignsOfProducts("1195", 2015, "");
-
-
-
         }
 
         private void frm_sizeChanged(object sender, EventArgs e)
@@ -835,7 +827,7 @@ namespace WindowsFormsForecastLactalis
                         SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
                         sqlConnection.SetYear(selectedYear);
                         //string tempCustNumber = ClassStaticVaribles.CustDictionary[comboBoxAssortment.Text];
-                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, ClassStaticVaribles.GetCustNavCodeFirst(latestCustomerLoaded));
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek, prodNBRTemp, ClassStaticVaribles.GetCustNavCodes(latestCustomerLoaded));
 
                         temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
                         MessageBox.Show(temp);
@@ -960,9 +952,9 @@ namespace WindowsFormsForecastLactalis
         {
             NavSQLExecute conn = new NavSQLExecute();
             DataTable tempTable = new DataTable();
-            string queryString = @"select Varenr, Dato, Antal_Budget, Beskrivelse  from Kampagnelinier_Fordelt where Dato >= '2014/12/29' and Dato < '2016/01/05' order by varenr";
+            string query = @"select Varenr, Dato, Antal_Budget, Beskrivelse  from Kampagnelinier_Fordelt where Dato >= '2014/12/29' and Dato < '2016/01/05' order by varenr";
             Console.WriteLine("LoadAllProductsDict Query: ");
-            tempTable = conn.QueryExWithTableReturn(queryString);
+            tempTable = conn.QueryExWithTableReturn(query);
             conn.Close();
             DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
             currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);

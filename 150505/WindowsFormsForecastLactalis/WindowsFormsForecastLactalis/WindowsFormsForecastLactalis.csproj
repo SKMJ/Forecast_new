@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="GetFromM3.cs" />
     <Compile Include="Get_FromSimulatedM3.cs" />
+    <Compile Include="KampaignInfo.cs" />
     <Compile Include="NavSQLSupplyInformation.cs" />
     <Compile Include="NavSQLExecute.cs" />
     <Compile Include="PrognosInfoForSupply.cs" />

@@ -33,6 +33,8 @@ namespace WindowsFormsForecastLactalis
 
         public static Dictionary<string, List<string>> AssortmentM3_toNav = new Dictionary<string, List<string>>();
 
+        public static Dictionary<string, List<string>> AssortmentM3_toKedjor = new Dictionary<string, List<string>>();
+
         public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>(); //Dict First Date of week 1 in Year
 
         private static bool AllProductsNavFirst = true;
@@ -56,69 +58,50 @@ namespace WindowsFormsForecastLactalis
                 Dictionary<string, string> allAssortments = new Dictionary<string, string>();
                 CustDictionaryNav = new Dictionary<string, string>();
 
+                allAssortments.Add("KGVG", "23");
+                allAssortments.Add("LUWW", "26,9500");
+                allAssortments.Add("YEYD", "102,51500");
+                allAssortments.Add("KDVC", "4,9102");
+                allAssortments.Add("KDVA", "15");
+                allAssortments.Add("KRVI", "28,6312");
+                allAssortments.Add("KIVM", "6,1810");
+                allAssortments.Add("KCVD", "52,9705");
+                allAssortments.Add("LUWX", "30,31");
+                allAssortments.Add("KCVF", "IRMA,9800");
 
-                allAssortments.Add("LDWA-LDWB-LDWC", "47");
+                allAssortments.Add("LDWA", "47");
                 allAssortments.Add("LI", "19");
                 allAssortments.Add("LH", "45");
                 allAssortments.Add("LZ", "58");
                 allAssortments.Add("LDWF", "56");
-                allAssortments.Add("LDW2", "41");
+                allAssortments.Add("LOWQ", "60,63,65,43,69");
+                allAssortments.Add("LDWZ", "41");
+                allAssortments.Add("LDWG", "27,71");
                 allAssortments.Add("LDWE", "73");
                 allAssortments.Add("LOWT", "44");
+                allAssortments.Add("LSWU", "10,42");
                 allAssortments.Add("LOWR", "40");
                 allAssortments.Add("LOWS", "76");
-
-                allAssortments.Add("KCWF", "IRMA");
-                allAssortments.Add("KD", "15");
-                allAssortments.Add("DS", "15");
-                allAssortments.Add("KC", "52");
-                allAssortments.Add("KDVC", "4");
-                allAssortments.Add("KI", "6");
-                allAssortments.Add("KR", "28");
-                allAssortments.Add("LD", "47");
-                allAssortments.Add("YEYD", "102");
-                allAssortments.Add("DIIL", "973");
-                allAssortments.Add("DKCK", "974");
-                allAssortments.Add("DDDC", "975");
-                allAssortments.Add("DBDB", "976");
                 allAssortments.Add("ZGZG", "971");
-                allAssortments.Add("DNZN", "969");
-                allAssortments.Add("DZDZ", "989");
-                allAssortments.Add("DBBC", "977");
-                allAssortments.Add("DKK1", "984");
-                allAssortments.Add("DDDH", "986");
-
+                allAssortments.Add("NR", "988");
+                //allAssortments.Add("OZOZ", "96");
+                allAssortments.Add("OIOI", "92");
+                allAssortments.Add("OZ", "93");
+                allAssortments.Add("YEYB", "103");
                 //Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, string> item in allAssortments)
                 {
                     List<string> tempList = new List<string>();
-                    tempList.Add(item.Value);
+                    string[] tempList2 = item.Value.Split(',');
+                    for (int i = 0; i < tempList2.Length; i++)
+                    {
+                        tempList.Add(tempList2[i]);
+                    }
+                    
                     AssortmentM3_toNav.Add(item.Key, tempList);
                 }
 
-                List<string> tempList2 = new List<string>();
-                tempList2.Add("60");
-                tempList2.Add("65");
-                tempList2.Add("63");
-                tempList2.Add("69");
-                tempList2.Add("43");
-                AssortmentM3_toNav.Add("LOWQ", tempList2);
-
-                tempList2 = new List<string>();
-                tempList2.Add("27");
-                tempList2.Add("71");
-
-                AssortmentM3_toNav.Add("LDWG", tempList2);
-
-                tempList2 = new List<string>();
-                tempList2.Add("10");
-                tempList2.Add("41");
-
-                AssortmentM3_toNav.Add("LSWU", tempList2);
-
-
-
-
+                Console.WriteLine("Assortment ready" + AssortmentM3_toNav.ToString());
 
             }
         }
@@ -225,32 +208,32 @@ namespace WindowsFormsForecastLactalis
             if (StartDateFirst)
             {
                 StartDateFirst = false;
-                string s = "2014-12-29 00:01";
+                string s = "2014-12-29";
 
                 DateTime dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2015, dt);
                 //MessageBox.Show("after");
 
-                s = "2013-12-30 00:01";
+                s = "2013-12-30";
 
                 dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2014, dt);
 
                 //st = "01/04/2016";
-                s = "2016-01-04 00:01";
+                s = "2016-01-04";
 
                 dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2016, dt);
 
                 //startDate.Add(2016, DateTime.Parse(st));
                 //st = "01/02/2017";
-                s = "2017-01-02 00:01";
+                s = "2017-01-02";
 
                 dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2017, dt);
             }
         }
@@ -402,6 +385,21 @@ namespace WindowsFormsForecastLactalis
                 returnString = tempFirst;
             }
             return returnString;
+        }
+
+        internal static List<string> GetCustNavCodes(string customerNumber)
+        {
+            if (AssortmentM3_toNav.ContainsKey(customerNumber))
+            {
+                return AssortmentM3_toNav[customerNumber];
+            }
+            else
+            {
+                Console.WriteLine("Assotment ERROR code missing");
+                List<string> temp = new List<string>();
+                temp.Add(customerNumber);
+                return temp;
+            }
         }
     }
 }

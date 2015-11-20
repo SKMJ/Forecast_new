@@ -46,19 +46,19 @@ namespace WindowsFormsForecastLactalis
             sqlSupplyCalls.UpdateVareKort();
             GetFromM3 m3Info = new GetFromM3();
             string m3ProdNumber = GetM3ProdNumber();
-            Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
-            if (info != null && info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
-            {
+            //Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
+            //if (info != null && info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
+            //{
 
-                InLactaFranceFile = true;
+            //    InLactaFranceFile = true;
 
-
-                weekPartPercentage = new int[] { Convert.ToInt32(info["forecastWeek"]), Convert.ToInt32(info["FCMO"]), Convert.ToInt32(info["FCTU"]), Convert.ToInt32(info["FCWE"]), Convert.ToInt32(info["FCTH"]), Convert.ToInt32(info["FCFR"]), Convert.ToInt32(info["FCSA"]), Convert.ToInt32(info["FCSU"]) };
-            }
-            else
-            {
-                weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
-            }
+            //    Console.WriteLine("M3 prod infofields: " + m3ProdNumber);
+            //    weekPartPercentage = new int[] { Convert.ToInt32(info["forecastWeek"]), Convert.ToInt32(info["FCMO"]), Convert.ToInt32(info["FCTU"]), Convert.ToInt32(info["FCWE"]), Convert.ToInt32(info["FCTH"]), Convert.ToInt32(info["FCFR"]), Convert.ToInt32(info["FCSA"]), Convert.ToInt32(info["FCSU"]) };
+            //}
+            //else
+            //{
+            //    weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+            //}
             LactalisFranceProductNumber = sqlSupplyCalls.GetLactaVareNR();
             Antal_pr_kolli = sqlSupplyCalls.GetLactalis_NBRPer_colli();
 

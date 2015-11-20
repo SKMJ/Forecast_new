@@ -1263,18 +1263,30 @@ namespace WindowsFormsForecastLactalis
 
             List<string> productsToSendKopbudget = new List<string>();
 
+            GetFromM3 m3 = new GetFromM3();
 
+            //productsToSendKopbudget = GetListOfProductsWithSupplierLactaFrance();
+            Dictionary<string, string> productsInSkaevinge = m3.GetAllSkaevingeProductsDict();
+            Dictionary<string, string> productsInFile = new Dictionary<string,string>();
 
-            productsToSendKopbudget = GetListOfProductsWithSupplierLactaFrance();
+            foreach (KeyValuePair<string, string> item in productsInSkaevinge)
+            {
+                Dictionary<string, string> info = m3.GetItemInfoByItemNumber(item.Key);
+
+                if (info != null && info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
+                {
+                    productsInFile.Add(item.Key, item.Value);
+                }
+            }
 
             int i = 0;
             int numberOfProducts = productsToSendKopbudget.Count;
 
-            foreach (string item in productsToSendKopbudget)
+            foreach (KeyValuePair<string,string> item in productsInFile)
             {
                 i++;
                 SetStatus("Products to Forecast France Creating File Info for product " + i.ToString() + "/" + numberOfProducts.ToString());
-                FileToSendInfoForPoduct currentProdFileInfo = new FileToSendInfoForPoduct(item, 0);
+                FileToSendInfoForPoduct currentProdFileInfo = new FileToSendInfoForPoduct(item.Key, 0);
                 currentProdFileInfo.FillNumbers();
 
                 int[] weekPartPercentage = currentProdFileInfo.weekPartPercentage;

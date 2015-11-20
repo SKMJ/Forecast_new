@@ -21,14 +21,14 @@ namespace WindowsFormsForecastLactalis
             ProductName = name;
             ProductNumber = number;
             CustomerNumberM3 = customerNumber;
-            CustomerCodeNav = ClassStaticVaribles.GetCustNavCodeFirst(customerNumber);
+            CustomerCodeNav = ClassStaticVaribles.GetCustNavCodes(customerNumber);
         }
 
 
         public string ProductName = "";
         public string ProductNumber = "0";
         public string CustomerNumberM3 = "";
-        public string CustomerCodeNav = "";
+        public List<string> CustomerCodeNav = new List<string>();
         public int WeekToLockFrom = 0;
 
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
@@ -73,9 +73,7 @@ namespace WindowsFormsForecastLactalis
 
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             Console.WriteLine("Time1: " + stopwatch2.ElapsedMilliseconds);
-            //MessageBox.Show("Place AA");
             sqlSupplyCalls.UpdateVareKort();
-            //MessageBox.Show("Place BB");
             weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
             int weektemp = sqlSupplyCalls.GetCurrentWeekNBR();
             string m3ProdNumber = GetM3ProdNumber();
@@ -88,7 +86,6 @@ namespace WindowsFormsForecastLactalis
             {
                 ProductName = sqlSupplyCalls.GetBeskrivelse();
             }
-            //MessageBox.Show("Place 6");
 
             SQLCallsSalesCustomerInfo sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             sqlSalesCalls.SetYear(selectedYear);
@@ -109,11 +106,27 @@ namespace WindowsFormsForecastLactalis
             if (selectedYear >= 2015)
             {
                 GetFromM3 m3 = new GetFromM3();
-                KampagnTY = m3.GetCampaignsOfProducts(ProductNumber, selectedYear, CustomerNumberM3);
+                KampagnTY = new Dictionary<int, int>();
+                for (int i = 0; i < 54; i++)
+                {
+                    KampagnTY.Add(i, 0);
+                }
+                List<KampaignInfo>  Kampangrader  = m3.GetKampainForAllCustomerAsListv2(ProductNumber, selectedYear);
+                foreach(KampaignInfo item in Kampangrader)
+                {
+                    List<string>  KadjeNiva = m3.GetAllKampaignLevelsByCuse(item.tempCampCuse);
+                    //This if statement checks if the campaign is connected to this assortment
+                    if (KadjeNiva.Intersect(ClassStaticVaribles.AssortmentM3_toKedjor[CustomerNumberM3]).Any())
+                    {
+                        KampagnTY[item.weekNBR] = KampagnTY[item.weekNBR] + item.Antal;
+                    }
+                }
+
+               // KampagnTY = m3.GetCampaignsOfProducts(ProductNumber, selectedYear, CustomerNumberM3);
             }
             else
             {
-                KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerNumberM3);
+                KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerCodeNav);
             }
             Console.WriteLine("Time6: " + stopwatch2.ElapsedMilliseconds);
 

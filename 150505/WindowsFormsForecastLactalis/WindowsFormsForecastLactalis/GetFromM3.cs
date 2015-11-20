@@ -74,7 +74,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     return null;
                 }
-
+                SetMaxList(sid, 2000);
                 //Set the field without need to know position Start from this customer 00752
                 MvxSock.SetField(ref sid, "ASCD", assortment);
                 MvxSock.SetField(ref sid, "CONO", "001");
@@ -119,6 +119,7 @@ namespace WindowsFormsForecastLactalis
                 return null;
             }
             Console.WriteLine("Get Item campaign: " + itno);
+            SetMaxList(sid, 2000);
             //Set the field without need to know position Start from this customer 00752
             MvxSock.SetField(ref sid, "YEAR", "2015");
             MvxSock.SetField(ref sid, "CONO", "001");
@@ -144,8 +145,8 @@ namespace WindowsFormsForecastLactalis
                 string tempAntal = MvxSock.GetField(ref sid, "BUQT");
                 string[] temp = tempAntal.Split('.');
                 int Antal = Convert.ToInt32(temp[0]);
-                string tempCustNBR = MvxSock.GetField(ref sid, "CUSE");
-                Console.WriteLine("Kedja: " + tempCustNBR + " start: " + tempstartDate + " end: " + tempEndDate + " antal: " + tempAntal);
+                string tempCampCuse = MvxSock.GetField(ref sid, "CUSE");
+                Console.WriteLine("Kedja: " + tempCampCuse + " start: " + tempstartDate + " end: " + tempEndDate + " antal: " + tempAntal);
                 //Mooves to next row
                 MvxSock.Access(ref sid, null);
 
@@ -176,7 +177,7 @@ namespace WindowsFormsForecastLactalis
 
                 if (weekInt > 0 && weekInt < 54)
                 {
-                    if (customer.Length == 0 || customer == tempCustNBR)
+                    if (customer.Length == 0 || customer == tempCampCuse)
                     {
                         kampagn_TY[weekInt] = kampagn_TY[weekInt] + Antal;
                     }
@@ -203,7 +204,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     return null;
                 }
-
+                SetMaxList(sid, 2000);
                 //Set the field without need to know position Start from this customer 00752
                 //MvxSock.SetField(ref sid, "ASCD", assortment);
                 MvxSock.SetField(ref sid, "CONO", "001");
@@ -217,13 +218,13 @@ namespace WindowsFormsForecastLactalis
 
                 while (MvxSock.More(ref sid))
                 {
-                    string kedja = MvxSock.GetField(ref sid, "ASCD");
+                    string m3_kod = MvxSock.GetField(ref sid, "ASCD");
                     string tx40 = MvxSock.GetField(ref sid, "TX40");
                     string tx15 = MvxSock.GetField(ref sid, "TX15");
-                    Console.WriteLine("Kedja: " + kedja + " tx40: " + tx40 + " tx15: " + tx15);
-                    if (ClassStaticVaribles.AssortmentM3_toNav.ContainsKey(kedja))
+                    Console.WriteLine("Kedja: " + m3_kod + " tx40: " + tx40 + " tx15: " + tx15);
+                    if (ClassStaticVaribles.AssortmentM3_toNav.ContainsKey(m3_kod))
                     {
-                        Console.WriteLine("Kedja NavKod: " + ClassStaticVaribles.AssortmentM3_toNav[kedja][0]);
+                        Console.WriteLine("M3kod till NavKod: " + ClassStaticVaribles.AssortmentM3_toNav[m3_kod][0]);
                     }
                     else
                     {
@@ -232,7 +233,23 @@ namespace WindowsFormsForecastLactalis
                     //Mooves to next row
                     MvxSock.Access(ref sid, null);
 
-                    returnStrings.Add(kedja, tx40);
+                    List<string> temp = new List<string>();
+                    if (tx15.Contains(';'))
+                    {
+                        
+                        string[] tempArray = tx15.Split(';');
+                        for (int i = 0; i < tempArray.Length; i++)
+                        {
+                            temp.Add(tempArray[i]);
+                        }
+                    }
+                    else
+                    {
+                        temp.Add(m3_kod);
+                    }
+
+                    ClassStaticVaribles.AssortmentM3_toKedjor.Add(m3_kod, temp);
+                    returnStrings.Add(m3_kod, tx40);
 
                 }
 
@@ -306,7 +323,9 @@ namespace WindowsFormsForecastLactalis
 
 
                 //Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
-                //MvxSock.Close(ref sid);
+                MvxSock.Close(ref sid);
+
+                Console.WriteLine("M3 Forecast info communication: SUCCESS!!");
                 return returnStrings;
             }
         }
@@ -468,6 +487,48 @@ namespace WindowsFormsForecastLactalis
                 return returnString;
 
             }
+        }
+
+
+
+        public List<string> GetAllKampaignLevelsByCuse(string CUSE)
+        {
+            List<string> returnString = new List<string>();
+            
+                SERVER_ID sid = new SERVER_ID();
+
+                uint rc;
+                rc = ConnectToM3Interface(ref sid, "OIS038MI");
+                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                    return returnString;
+                }
+
+                //Set the field without need to know position Start from this customer 00752
+                MvxSock.SetField(ref sid, "CHAI", CUSE);
+                MvxSock.SetField(ref sid, "CONO", "001");
+                rc = MvxSock.Access(ref sid, "LstBusChainStr");
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error in get Supplier by number " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return returnString;
+                }
+
+                //string tempItemNBR = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
+                returnString.Add(MvxSock.GetField(ref sid, "CHL1"));
+                returnString.Add(MvxSock.GetField(ref sid, "CHL2"));
+                returnString.Add(MvxSock.GetField(ref sid, "CHL3"));
+                returnString.Add(MvxSock.GetField(ref sid, "CHL4"));
+
+                
+                //Console.WriteLine("SupplierNBR: " + supplierNbr + " Name: " + returnString);
+                MvxSock.Close(ref sid);
+                return returnString;
+
+            
         }
 
 
@@ -773,6 +834,7 @@ namespace WindowsFormsForecastLactalis
 
         internal string GetKampagnWeekInfo(int latestWeek, string itno, int year)
         {
+            Console.WriteLine("M3 Campain TRY GET ROWS");
             SERVER_ID sid = new SERVER_ID();
             Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
 
@@ -784,6 +846,7 @@ namespace WindowsFormsForecastLactalis
             {
                 return null;
             }
+            SetMaxList(sid, 2000);
             Console.WriteLine("Get Item campaign: " + itno);
             //Set the field without need to know position Start from this customer 00752
             MvxSock.SetField(ref sid, "YEAR", "2015");
@@ -855,8 +918,95 @@ namespace WindowsFormsForecastLactalis
 
             MvxSock.Close(ref sid);
 
-            Console.WriteLine("M3 communication: SUCCESS!!");
+            Console.WriteLine("M3 Campain communication: SUCCESS!!");
             return tempInfo;
+        }
+
+        internal void GetKampainForAllCustomerAsList()
+        {
+
+        }
+
+        internal List<KampaignInfo> GetKampainForAllCustomerAsListv2(string itno, int year)
+        {
+            List<KampaignInfo> answerList = new List<KampaignInfo>();
+            SERVER_ID sid = new SERVER_ID();
+            Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
+
+            uint rc = 0;
+            rc = ConnectToM3Interface(ref sid, "OIS840MI");
+            if (rc != 0)
+            {
+                return null;
+            }
+            SetMaxList(sid, 2000);
+            Console.WriteLine("Get Item campaign: " + itno);
+            //Set the field without need to know position Start from this customer 00752
+            MvxSock.SetField(ref sid, "YEAR", year.ToString());
+            MvxSock.SetField(ref sid, "CONO", "001");
+            MvxSock.SetField(ref sid, "DIVI", "710");
+            MvxSock.SetField(ref sid, "ITNO", itno);
+            rc = MvxSock.Access(ref sid, "LstPromItem");
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Error in get products no " + rc + "\n");
+                MvxSock.Close(ref sid);
+                return null;
+            }
+
+            for (int i = 0; i < 54; i++)
+            {
+                kampagn_TY.Add(i, 0);
+            }
+
+            while (MvxSock.More(ref sid))
+            {
+                string tempstartDate = MvxSock.GetField(ref sid, "FVDT");
+                string tempEndDate = MvxSock.GetField(ref sid, "LVDT");
+                string tempAntal = MvxSock.GetField(ref sid, "BUQT");
+                string[] temp = tempAntal.Split('.');
+                int Antal = Convert.ToInt32(temp[0]);
+                string tempCampCuse = MvxSock.GetField(ref sid, "CUSE");
+                Console.WriteLine("Kedja: " + tempCampCuse + " start: " + tempstartDate + " end: " + tempEndDate + " antal: " + tempAntal);
+                //Mooves to next row
+                MvxSock.Access(ref sid, null);
+
+
+                DateTime tempDate = DateTime.ParseExact(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                tempDate = tempDate.AddMinutes(10);
+                double weekStart = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays;
+                double weekStartNBR = weekStart / 7.0;
+                int weekStartInt = (int)Math.Floor(weekStartNBR);
+
+                int weekInt = weekStartInt;
+                int thisWeekday = (int)tempDate.DayOfWeek;
+                int weekDay;
+                // this code is (monday = 1, teuseday = 2,.... sunday=7
+                // answer from day of week code is (sunday=7 = 0, monday = 1, teuseday = 2,.... 
+                if (thisWeekday > 0) //if not sunday
+                {
+                    weekDay = thisWeekday;
+                }
+                else
+                {
+                    weekDay = 7; //sunday
+                }
+                if (weekDay > 5)
+                {
+                    weekInt = weekInt + 1;
+                }
+
+                if (weekInt > 0 && weekInt < 54)
+                {
+                    KampaignInfo tempKampagnInfo = new KampaignInfo(tempCampCuse, Antal, weekInt, itno);
+                    answerList.Add(tempKampagnInfo);
+                }
+            }
+
+            MvxSock.Close(ref sid);
+
+            Console.WriteLine("M3 communication: SUCCESS!!");
+            return answerList;
         }
     }
 }
