@@ -255,12 +255,6 @@ namespace WindowsFormsForecastLactalis
 
                 AllSuppliersM3.Add("Cutting", AllCuttingProducts);
 
-                List<string> TestStockProducts = new List<string>();
-                TestStockProducts.Add("56170");
-                TestStockProducts.Add("60268");
-                TestStockProducts.Add("56108");
-
-                AllSuppliersM3.Add("TestStock", TestStockProducts);
             }
         }
 

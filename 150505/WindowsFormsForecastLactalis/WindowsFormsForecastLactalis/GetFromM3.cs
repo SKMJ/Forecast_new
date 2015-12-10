@@ -13,6 +13,7 @@ namespace WindowsFormsForecastLactalis
 {
     public class GetFromM3
     {
+        //ConnectionString
         string ipNummer = "172.31.157.25";//M3 Test //dev
         //string ipNummer = "172.31.157.14";//M3 produktion
 
@@ -236,7 +237,7 @@ namespace WindowsFormsForecastLactalis
                     List<string> temp = new List<string>();
                     if (tx15.Contains(';'))
                     {
-                        
+
                         string[] tempArray = tx15.Split(';');
                         for (int i = 0; i < tempArray.Length; i++)
                         {
@@ -331,128 +332,6 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        //public string GetItemNameByItemNumber(string itemNbr)
-        //{
-        //    string returnString = "";
-        //    {
-        //        SERVER_ID sid = new SERVER_ID();
-        //        uint rc;
-        //        rc = ConnectToM3Interface(ref sid, "MMS200MI");
-        //        if (rc != 0)
-        //        {
-        //            return returnString;
-        //        }
-        //        //Set the field without need to know position Start from this customer 00752
-        //        MvxSock.SetField(ref sid, "ITNO", itemNbr);
-        //        MvxSock.SetField(ref sid, "CONO", "001");
-        //        rc = MvxSock.Access(ref sid, "GetItmBasic");
-        //        if (rc != 0)
-        //        {
-        //            //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
-        //            MvxSock.Close(ref sid);
-        //            return returnString;
-        //        }
-        //        returnString = MvxSock.GetField(ref sid, "ITDS");
-        //        Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
-        //        MvxSock.Close(ref sid);
-        //        return returnString;
-        //    }
-        //}
-
-
-        //public List<int> GetListOfSuppliers()
-        //{
-        //    List<int> supplierList = new List<int>();
-        //    {
-        //        SERVER_ID sid = new SERVER_ID();
-        //        uint rc;
-        //        rc = ConnectToM3Interface(ref sid, "CRS111MI");
-        //        //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
-        //        if (rc != 0)
-        //        {
-        //            //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
-        //            return null;
-        //        }
-        //        SetMaxList(sid, 299);
-        //        //Set the field without need to know position Start from this customer 00752
-        //        //MvxSock.SetField(ref sid, "ASCD", Assortment);
-        //        MvxSock.SetField(ref sid, "CONO", "001");
-        //        rc = MvxSock.Access(ref sid, "LstSuppliers");
-        //        if (rc != 0)
-        //        {
-        //            MvxSock.ShowLastError(ref sid, "Error in get suppliers no " + rc + "\n");
-        //            MvxSock.Close(ref sid);
-        //            return null;
-        //        }
-
-        //        while (MvxSock.More(ref sid))
-        //        {
-        //            string tempSupplierNbr = MvxSock.GetField(ref sid, "SUNO") + "\t\t";
-        //            if (Convert.ToInt32(tempSupplierNbr) > 99)
-        //            {
-        //                //Console.Write("Supplier nr: " + tempSupplierNBR);
-        //                //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-        //                supplierList.Add(Convert.ToInt32(tempSupplierNbr));
-        //            }
-        //            //Mooves to next row
-        //            MvxSock.Access(ref sid, null);
-        //        }
-
-        //        MvxSock.Close(ref sid);
-        //        return supplierList;
-        //    }
-        //}
-
-
-        //public List<string> GetListOfProductsBySupplier(string supplNbr)
-        //{
-        //    List<string> itemList = new List<string>();
-        //    //Dictionary<string, string> itemDict = new Dictionary<string, string>();
-        //    {
-
-        //        SERVER_ID sid = new SERVER_ID();
-
-        //        uint rc;
-        //        rc = ConnectToM3Interface(ref sid, "MDBREADMI");
-        //        if (rc != 0)
-        //        {
-        //            //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
-        //            return null;
-        //        }
-
-        //        SetMaxList(sid, 299);
-
-        //        //Set the field without need to know position Start from this customer 00752
-        //        MvxSock.SetField(ref sid, "SUNO", supplNbr);
-        //        rc = MvxSock.Access(ref sid, "LstMITVEN10");
-        //        if (rc != 0)
-        //        {
-        //            MvxSock.ShowLastError(ref sid, "Error in get suppliers items " + rc + "\n");
-        //            MvxSock.Close(ref sid);
-        //            return null;
-        //        }
-
-        //        while (MvxSock.More(ref sid))
-        //        {
-        //            string tempItemNbr = MvxSock.GetField(ref sid, "ITNO") ;
-        //            string tempSuno = MvxSock.GetField(ref sid, "SUNO") ;
-        //            //Console.WriteLine("XX Supplyer item Nbr: " + tempItemNbr + " YY Supplyer item Nbr: " + tempSuno + "Suppl NBR: " + supplNbr);
-        //            if (tempItemNbr.Length > 1 && tempSuno.Equals(supplNbr))
-        //            {
-        //                //Console.Write("Supplier nr: " + tempSupplierNBR);
-        //                //Console.WriteLine("Kedja: " + MvxSock.GetField(ref sid, "ASCD"));
-        //                Console.WriteLine("M3 Listed Supplyer item Nbr: " + tempItemNbr + " Suppl NBR: " + supplNbr);
-        //                itemList.Add(tempItemNbr);
-        //            }
-        //            //Mooves to next row
-        //            MvxSock.Access(ref sid, null);
-        //        }
-
-        //        MvxSock.Close(ref sid);
-        //        return itemList;
-        //    }
-        //}
-
 
         public string GetSupplierNameByNumber(string supplierNbr)
         {
@@ -462,7 +341,6 @@ namespace WindowsFormsForecastLactalis
 
                 uint rc;
                 rc = ConnectToM3Interface(ref sid, "CRS620MI");
-                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
                 if (rc != 0)
                 {
                     //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
@@ -494,41 +372,41 @@ namespace WindowsFormsForecastLactalis
         public List<string> GetAllKampaignLevelsByCuse(string CUSE)
         {
             List<string> returnString = new List<string>();
-            
-                SERVER_ID sid = new SERVER_ID();
 
-                uint rc;
-                rc = ConnectToM3Interface(ref sid, "OIS038MI");
-                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
-                if (rc != 0)
-                {
-                    //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
-                    return returnString;
-                }
+            SERVER_ID sid = new SERVER_ID();
 
-                //Set the field without need to know position Start from this customer 00752
-                MvxSock.SetField(ref sid, "CHAI", CUSE);
-                MvxSock.SetField(ref sid, "CONO", "001");
-                rc = MvxSock.Access(ref sid, "LstBusChainStr");
-                if (rc != 0)
-                {
-                    //MvxSock.ShowLastError(ref sid, "Error in get Supplier by number " + rc + "\n");
-                    MvxSock.Close(ref sid);
-                    return returnString;
-                }
+            uint rc;
+            rc = ConnectToM3Interface(ref sid, "OIS038MI");
+            //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
+            if (rc != 0)
+            {
+                //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
+                return returnString;
+            }
 
-                //string tempItemNBR = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
-                returnString.Add(MvxSock.GetField(ref sid, "CHL1"));
-                returnString.Add(MvxSock.GetField(ref sid, "CHL2"));
-                returnString.Add(MvxSock.GetField(ref sid, "CHL3"));
-                returnString.Add(MvxSock.GetField(ref sid, "CHL4"));
-
-                
-                //Console.WriteLine("SupplierNBR: " + supplierNbr + " Name: " + returnString);
+            //Set the field without need to know position Start from this customer 00752
+            MvxSock.SetField(ref sid, "CHAI", CUSE);
+            MvxSock.SetField(ref sid, "CONO", "001");
+            rc = MvxSock.Access(ref sid, "LstBusChainStr");
+            if (rc != 0)
+            {
+                //MvxSock.ShowLastError(ref sid, "Error in get Supplier by number " + rc + "\n");
                 MvxSock.Close(ref sid);
                 return returnString;
+            }
 
-            
+            //string tempItemNBR = MvxSock.GetField(ref sid, "ITNO") + "\t\t";
+            returnString.Add(MvxSock.GetField(ref sid, "CHL1"));
+            returnString.Add(MvxSock.GetField(ref sid, "CHL2"));
+            returnString.Add(MvxSock.GetField(ref sid, "CHL3"));
+            returnString.Add(MvxSock.GetField(ref sid, "CHL4"));
+
+
+            //Console.WriteLine("SupplierNBR: " + supplierNbr + " Name: " + returnString);
+            MvxSock.Close(ref sid);
+            return returnString;
+
+
         }
 
 
@@ -763,8 +641,8 @@ namespace WindowsFormsForecastLactalis
                 ////Set the field without need to know position Start from this customer 00752
                 MvxSock.SetField(ref sid, "ITNO", m3ProdNumber);
                 MvxSock.SetField(ref sid, "CONO", "001");
-                //test with FMÖ should be chnaged to Skaevinge
-                MvxSock.SetField(ref sid, "WHLO", "FMÖ");
+
+                MvxSock.SetField(ref sid, "WHLO", "LSK");
                 rc = MvxSock.Access(ref sid, "List");
 
                 if (rc != 0)
@@ -847,7 +725,7 @@ namespace WindowsFormsForecastLactalis
                 return null;
             }
             SetMaxList(sid, 2000);
-            Console.WriteLine("Get Item campaign: " + itno);
+            Console.WriteLine("Get Item campaign Info: " + itno);
             //Set the field without need to know position Start from this customer 00752
             MvxSock.SetField(ref sid, "YEAR", "2015");
             MvxSock.SetField(ref sid, "CONO", "001");
@@ -905,13 +783,13 @@ namespace WindowsFormsForecastLactalis
 
                 if (weekInt == latestWeek)
                 {
-                    if(ClassStaticVaribles.CustDictionaryM3.ContainsKey(tempCustNBR))
+                    if (ClassStaticVaribles.CustDictionaryM3.ContainsKey(tempCustNBR))
                     {
                         tempInfo = tempInfo + "\n  " + tempCustNBR + "  " + ClassStaticVaribles.CustDictionaryM3[tempCustNBR] + "  " + tempAntal;
                     }
                     else
                     {
-                        tempInfo = tempInfo + "\n  " + tempCustNBR + "  " +  tempAntal;
+                        tempInfo = tempInfo + "\n  " + tempCustNBR + "  " + tempAntal;
                     }
                 }
             }
@@ -1007,6 +885,154 @@ namespace WindowsFormsForecastLactalis
 
             Console.WriteLine("M3 communication: SUCCESS!!");
             return answerList;
+        }
+
+
+
+
+        internal Dictionary<int, int> GetKopsorderFromM3(string Warehouse, string itemNumber, int year, Dictionary<string, int> unitToNBR)
+        {
+            Stopwatch stopwatch2 = Stopwatch.StartNew();
+            if (itemNumber == "1095")
+            {
+                Console.WriteLine(itemNumber);
+            }
+            Dictionary<int, int> answerDict = new Dictionary<int, int>();
+            SERVER_ID sid = new SERVER_ID();
+            //Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
+
+            uint rc = 0;
+            rc = ConnectToM3Interface(ref sid, "MDBREADMI");
+            Console.WriteLine("Time5aaa: " + stopwatch2.ElapsedMilliseconds);
+            if (rc != 0)
+            {
+                return null;
+            }
+            SetMaxList(sid, 2000);
+            Console.WriteLine("Get Item Kopsorder: " + itemNumber);
+            //Set the field without need to know position Start from this customer 00752
+            //MvxSock.SetField(ref sid, "YEAR", year.ToString());
+            //MvxSock.SetField(ref sid, "CONO", "001");
+            MvxSock.SetField(ref sid, "WHLO", Warehouse);
+            MvxSock.SetField(ref sid, "ITNO", itemNumber);
+            rc = MvxSock.Access(ref sid, "LstMPLINEV2");
+            Console.WriteLine("Time5bbb: " + stopwatch2.ElapsedMilliseconds);
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Error in get Kopsorder no " + rc + "\n");
+                MvxSock.Close(ref sid);
+                return null;
+            }
+
+            for (int i = 0; i < 54; i++)
+            {
+                answerDict.Add(i, 0);
+            }
+            Console.WriteLine("Time5ccc: " + stopwatch2.ElapsedMilliseconds);
+            while (MvxSock.More(ref sid))
+            {
+                string orderDate = MvxSock.GetField(ref sid, "RCDT");
+
+                string tempAntal = MvxSock.GetField(ref sid, "RVQA");
+                string purchaseUnit = MvxSock.GetField(ref sid, "PUUN");
+                if (orderDate.Length > 3)
+                {
+                    int nbrPerUnit = 1; 
+                    if (unitToNBR.ContainsKey(purchaseUnit))
+                    { 
+                        nbrPerUnit = unitToNBR[purchaseUnit];
+                    }
+                    string[] temp = tempAntal.Split('.');
+                    int Antal = Convert.ToInt32(temp[0]);
+                    Console.WriteLine("Datum: " + orderDate + " antal: " + tempAntal);
+                    //Mooves to next row
+
+
+
+                    DateTime tempDate = DateTime.ParseExact(orderDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    tempDate = tempDate.AddMinutes(10);
+                    double weekStart = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays;
+                    double weekStartNBR = weekStart / 7.0;
+                    int weekStartInt = (int)Math.Floor(weekStartNBR);
+
+                    int weekInt = weekStartInt + 1;
+
+                    // this code is (monday = 1, teuseday = 2,.... sunday=7
+
+
+                    if (weekInt > 0 && weekInt < 54)
+                    {
+                        //mpaignInfo tempKampagnInfo = new KampaignInfo(tempCampCuse, Antal, weekInt, itno);
+                        answerDict[weekInt] = answerDict[weekInt] + Antal * nbrPerUnit;
+                    }
+                }
+
+                MvxSock.Access(ref sid, null);
+            }
+            Console.WriteLine("Time5ddd: " + stopwatch2.ElapsedMilliseconds);
+            MvxSock.Close(ref sid);
+
+            Console.WriteLine("M3 communication: SUCCESS!!");
+            return answerDict;
+        }
+
+
+        internal Dictionary<string, int> GetUnitToNBR(string itemNumber)
+        {
+            Dictionary<string, int> answerDict = new Dictionary<string, int>();
+
+
+            SERVER_ID sid = new SERVER_ID();
+            //Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
+
+            uint rc = 0;
+            rc = ConnectToM3Interface(ref sid, "MMS200MI");
+            if (rc != 0)
+            {
+                return null;
+            }
+            SetMaxList(sid, 2000);
+            Console.WriteLine("Get UInt to nbr: " + itemNumber);
+            //Set the field without need to know position Start from this customer 00752
+            //MvxSock.SetField(ref sid, "YEAR", year.ToString());
+            MvxSock.SetField(ref sid, "CONO", "001");
+            MvxSock.SetField(ref sid, "FITN", itemNumber);
+            MvxSock.SetField(ref sid, "TITN", itemNumber);
+            MvxSock.SetField(ref sid, "FAUT", "1");
+            MvxSock.SetField(ref sid, "TAUT", "1");
+
+            rc = MvxSock.Access(ref sid, "LstItmAltUnitMs");
+            if (rc != 0)
+            {
+                MvxSock.ShowLastError(ref sid, "Error in get Kopsorder no " + rc + "\n");
+                MvxSock.Close(ref sid);
+                return null;
+            }
+
+            while (MvxSock.More(ref sid))
+            {
+                string nameOfUnit = MvxSock.GetField(ref sid, "ALUN");
+
+                string tempAntal = MvxSock.GetField(ref sid, "COFA");
+
+
+                string[] temp = tempAntal.Split('.');
+                int Antal = Convert.ToInt32(temp[0]);
+                Console.WriteLine("NAme Of unit: " + nameOfUnit + " Antal: " + tempAntal);
+
+
+                if (!answerDict.ContainsKey(nameOfUnit))
+                {
+                    answerDict.Add(nameOfUnit, Antal);
+                }
+                MvxSock.Access(ref sid, null);
+
+            }
+
+            MvxSock.Close(ref sid);
+
+            Console.WriteLine("M3 communication: SUCCESS!!");
+            return answerDict;
         }
     }
 }

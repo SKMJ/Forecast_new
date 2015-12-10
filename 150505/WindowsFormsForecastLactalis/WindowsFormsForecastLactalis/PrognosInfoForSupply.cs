@@ -121,7 +121,9 @@ namespace WindowsFormsForecastLactalis
             }
             Console.WriteLine("Time5: " + stopwatch2.ElapsedMilliseconds);
             Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY(true);
+            Console.WriteLine("Time5A: " + stopwatch2.ElapsedMilliseconds);
             Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
+            Console.WriteLine("Time5B: " + stopwatch2.ElapsedMilliseconds);
 
             for (int i = 0; i < 54; i++)
             {

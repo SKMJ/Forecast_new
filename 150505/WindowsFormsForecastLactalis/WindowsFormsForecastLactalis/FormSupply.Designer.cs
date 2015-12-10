@@ -226,6 +226,7 @@
             this.buttonCreateM3LactalisOrders.TabIndex = 18;
             this.buttonCreateM3LactalisOrders.Text = "create orders";
             this.buttonCreateM3LactalisOrders.UseVisualStyleBackColor = true;
+            this.buttonCreateM3LactalisOrders.Visible = false;
             this.buttonCreateM3LactalisOrders.Click += new System.EventHandler(this.buttonCreateM3LactalisOrders_Click);
             // 
             // checkBoxLastYear
@@ -258,6 +259,7 @@
             this.buttonCreateLactalisFile.TabIndex = 22;
             this.buttonCreateLactalisFile.Text = "create Lacatlis File";
             this.buttonCreateLactalisFile.UseVisualStyleBackColor = true;
+            this.buttonCreateLactalisFile.Visible = false;
             this.buttonCreateLactalisFile.Click += new System.EventHandler(this.buttonCreateLactalisFile_Click);
             // 
             // textBoxProdNBR

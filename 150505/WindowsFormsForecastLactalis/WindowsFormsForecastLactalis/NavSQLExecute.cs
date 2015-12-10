@@ -33,9 +33,9 @@ namespace WindowsFormsForecastLactalis
             //Navision SQL
             try
             {
-               
 
 
+                //ConnectionString
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 conn = new SqlConnection("Data Source=210.2.250.9,1433;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
                 //conn = new SqlConnection("Data Source=210.2.250.9,1433;Network Library=DBMSSOCN;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
@@ -148,7 +148,7 @@ namespace WindowsFormsForecastLactalis
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
                 string tempCom = thisDate + ": " + cleanComment;
-                command.Parameters.AddWithValue("@Kommentar", tempCom.Substring(0,50));
+                command.Parameters.AddWithValue("@Kommentar", tempCom.Substring(0,Math.Min(50, tempCom.Length)));
                 Console.WriteLine("length comment: " + tempCom.Length);
 
                 command.Parameters.AddWithValue("@Tastedato", thisDate);

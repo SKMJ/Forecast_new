@@ -492,11 +492,11 @@ namespace WindowsFormsForecastLactalis
             if (currentSelectedYear > 2015)
             {
                 //Get sales numbers from Qlickview
-                if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
-                {
-                    LoadRelSalg_FromQlick();
-                }
-                ComputeNumberPerWeekDict(currentSelectedYear - 1);
+                //if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
+                //{
+                //    LoadRelSalg_FromQlick();
+                //}
+                //ComputeNumberPerWeekDict(currentSelectedYear - 1);
 
             }
             return relSalg_LY;
@@ -515,11 +515,11 @@ namespace WindowsFormsForecastLactalis
             if (currentSelectedYear > 2014)
             {
                 //Get sales numbers from Qlickview
-                if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
-                {
-                    LoadRelSalg_FromQlick();
-                }
-                ComputeNumberPerWeekDict(currentSelectedYear);
+                //if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
+                //{
+                //    LoadRelSalg_FromQlick();
+                //}
+                //ComputeNumberPerWeekDict(currentSelectedYear);
             }
             return relSalg_TY;
         }
@@ -736,9 +736,27 @@ namespace WindowsFormsForecastLactalis
 
         internal Dictionary<int, int> GetKopsorder_TY()
         {
+            Stopwatch stopwatch2 = Stopwatch.StartNew();
             LoadKopsorder_TY_FromSQL();
+            Console.WriteLine("Time5aa: " + stopwatch2.ElapsedMilliseconds);
             PrepareKopsorder_TYForGUI();
-            return kopsOrderTY;
+            Console.WriteLine("Time5bb: " + stopwatch2.ElapsedMilliseconds);
+
+            GetFromM3 m3 = new GetFromM3();
+            string Warehouse = "LSK";
+            string itemNumber = currentProdNumber;
+            Dictionary<string, int> unitToNBR = new Dictionary<string, int>();
+            unitToNBR = m3.GetUnitToNBR(itemNumber);
+            Console.WriteLine("Time5cc: " + stopwatch2.ElapsedMilliseconds);
+
+            Dictionary<int, int> kopsOrderM3 = m3.GetKopsorderFromM3(Warehouse, itemNumber, currentSelectedYear, unitToNBR);
+            Console.WriteLine("Time5dd: " + stopwatch2.ElapsedMilliseconds);
+
+            for (int i = 1; i < 54; i++)
+            {
+                kopsOrderTY[i] = kopsOrderTY[i] + kopsOrderM3[i];
+            }
+            return kopsOrderTY;            
         }
 
 

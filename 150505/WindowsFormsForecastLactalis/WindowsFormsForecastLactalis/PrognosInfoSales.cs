@@ -196,7 +196,15 @@ namespace WindowsFormsForecastLactalis
                     if (info != null && info.Count > 0 && Convert.ToInt32(info["FCLockSale"]) > 0)
                     {
                         int tempDaysLock = Convert.ToInt32(info["FCLockSale"]);
+                        //if (tempDaysLock <= 0)
+                        //{
+                        //    //Todo get weeks to lock from for supplier
+                        //    tempDaysLock = GetDaysFromSupplier(GetSupplierFromProduct());
+
+                        //}
                         int tempWeeksToLOCK = tempDaysLock / 7;
+
+                       
                         WeekToLockFrom = tempWeeksToLOCK + weektemp;
                     }
                     else
@@ -244,12 +252,25 @@ namespace WindowsFormsForecastLactalis
             sqlSalesCalls.SetYear(selectedYear);
             Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerCodeNav);
             Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
+            Console.WriteLine("APAP");
 
             for (int i = 0; i < 54; i++)
             {
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
                 Salgsbudget_Comment[i] = Sales_CommentTY[i];
             }
+        }
+
+        private string GetSupplierFromProduct()
+        {
+            string returnSuppl = "";
+            string tempProdNBr = GetM3ProdNumber();
+
+            if (ClassStaticVaribles.ProdToSupplDict.ContainsKey(tempProdNBr))
+            {
+                returnSuppl = ClassStaticVaribles.ProdToSupplDict[tempProdNBr];
+            }
+            return returnSuppl;
         }
     }
 }

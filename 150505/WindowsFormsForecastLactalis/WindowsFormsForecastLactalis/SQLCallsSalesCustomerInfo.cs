@@ -58,15 +58,24 @@ namespace WindowsFormsForecastLactalis
         private void InitiateProperties()
         {
 
-           
-            startDateStrings.Add(2014, @"2013/12/30");
-            endDateStrings.Add(2014, @"2014/12/30");
-            startDateStrings.Add(2015, @"2014/12/29");
-            endDateStrings.Add(2015, @"2016/01/05");
-            startDateStrings.Add(2016, @"2016/01/04");
-            endDateStrings.Add(2016, @"2017/01/01");
-            startDateStrings.Add(2017, @"2017/01/02");
-            endDateStrings.Add(2017, @"2018/01/01");
+            startDateStrings.Add(2014, @"2013/12/29");
+            endDateStrings.Add(2014, @"2014/12/29");
+            startDateStrings.Add(2015, @"2014/12/28");
+            endDateStrings.Add(2015, @"2016/01/04");
+            startDateStrings.Add(2016, @"2016/01/03");
+            endDateStrings.Add(2016, @"2015/12/31");
+            startDateStrings.Add(2017, @"2017/01/01");
+            endDateStrings.Add(2017, @"2017/12/31");
+
+
+            //startDateStrings.Add(2014, @"2013/12/30");
+            //endDateStrings.Add(2014, @"2014/12/30");
+            //startDateStrings.Add(2015, @"2014/12/29");
+            //endDateStrings.Add(2015, @"2016/01/05");
+            //startDateStrings.Add(2016, @"2016/01/04");
+            //endDateStrings.Add(2016, @"2017/01/01");
+            //startDateStrings.Add(2017, @"2017/01/02");
+            //endDateStrings.Add(2017, @"2018/01/01");
 
 
             for (int k = 0; k < 54; k++)

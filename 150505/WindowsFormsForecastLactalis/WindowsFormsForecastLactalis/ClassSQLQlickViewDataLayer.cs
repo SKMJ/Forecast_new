@@ -27,7 +27,7 @@ namespace WindowsFormsForecastLactalis
             try
             {
 
-
+                //ConnectionString
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 conn = new SqlConnection("Data Source=SMMFOSI0400.skanemejerier.lan; Initial Catalog=SKMJDWDataMarts;User ID=developerSKMJ;Password=SSc!!a7xZ");
                 //OLEDB CONNECT TO [Provider=SQLOLEDB.1;Persist Security Info=True;User ID=QvReader;Initial Catalog=SKMJDWDataMarts;
