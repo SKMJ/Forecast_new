@@ -41,6 +41,8 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<string, string> allProductsM3Dict = new Dictionary<string, string>();
         Dictionary<string, List<string>> allSuppliersM3 = new Dictionary<string, List<string>>();
         public Dictionary<string, string> newNumberDict = new Dictionary<string, string>();
+
+        Dictionary<string, List<string>> allkedjaToCustM3 = new Dictionary<string, List<string>>();
         int latestCommentRow;
         string newCommentProdNBR = "";
 
@@ -53,7 +55,7 @@ namespace WindowsFormsForecastLactalis
             AssortmentFromM3 = true;
             InitializeComponent();
             Console.WriteLine("Start Form1!");
-            
+
 
             loadingNewProductsOngoing = false;
             //test with Coop and test customer
@@ -76,7 +78,7 @@ namespace WindowsFormsForecastLactalis
 
         private void frm_sizeChanged(object sender, EventArgs e)
         {
-            
+
         }
 
 
@@ -96,11 +98,24 @@ namespace WindowsFormsForecastLactalis
             }
             else
             {
-                comboBoxAssortment.DataSource = new BindingSource(m3Info.GetListOfAssortments(), null);
+                Dictionary<string, string> assormentList = m3Info.GetListOfAssortments();
+                comboBoxAssortment.DataSource = new BindingSource(assormentList, null);
+                //m3Info.GetDictOfKedjaToCustNBR();
+
+                //foreach(KeyValuePair <string, List<string>> item in ClassStaticVaribles.Kedjor_toCUNO)
+                //{
+                //    Console.WriteLine("kedja: " + item.Key);
+                //    foreach(string cunoitem in item.Value)
+                //    {
+                //        Console.WriteLine("kund: " + cunoitem);
+                //    }
+                //}
+
+
                 comboBoxAssortment.DisplayMember = "Value";
                 comboBoxAssortment.ValueMember = "Key";
 
-                
+
             }
 
 
@@ -112,6 +127,9 @@ namespace WindowsFormsForecastLactalis
             comboBoxYear.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxYear.DataSource = new BindingSource(yearList, null);
         }
+
+
+
 
 
         private void dataGridForecastInfo_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -147,9 +165,9 @@ namespace WindowsFormsForecastLactalis
                     //dataGridForecastInfo.Columns[i + 2].Width = 45;
                 }
 
-                foreach(DataGridViewColumn item in   dataGridForecastInfo.Columns)
+                foreach (DataGridViewColumn item in dataGridForecastInfo.Columns)
                 {
-                    item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; 
+                    item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 }
             }
@@ -159,7 +177,7 @@ namespace WindowsFormsForecastLactalis
         //Fill the grid with info from the Products
         public void FillSalesGUIInfo()
         {
-            Dictionary<int,string> commentDict = new Dictionary<int,string>();
+            Dictionary<int, string> commentDict = new Dictionary<int, string>();
             this.dataGridForecastInfo.DataSource = null;
 
             this.dataGridForecastInfo.Rows.Clear();
@@ -168,8 +186,8 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToDeleteRows = false;
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
-            Dictionary<int,int> weekToLock = new Dictionary<int,int>();
-            int weekProdNBR =0;
+            Dictionary<int, int> weekToLock = new Dictionary<int, int>();
+            int weekProdNBR = 0;
             Products.Sort();
             foreach (PrognosInfoSales item in Products)
             {
@@ -185,7 +203,7 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add(item.ProductNumber.ToString());
                 }
                 tempList.Add(item.ProductName);
-                
+
 
                 tempList.Add("RealiseretSalg_LastYear");
                 for (int i = 1; i < 54; i++)
@@ -279,8 +297,8 @@ namespace WindowsFormsForecastLactalis
                 commentDict = item.Salgsbudget_Comment;
             }
             //Thread.Sleep(2000);
-           
-                weekProdNBR = 0;
+
+            weekProdNBR = 0;
             //After all is filled set colors and reaqdonly properties
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
             {
@@ -310,16 +328,16 @@ namespace WindowsFormsForecastLactalis
                     row.DefaultCellStyle.ForeColor = Color.DarkRed;
                     row.ReadOnly = true;
                 }
-                    
+
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
-                    
+
                     row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
                     row.Cells[2].ReadOnly = true;
                     row.Cells[2].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                     for (int i = 3; i < row.Cells.Count; i++)
                     {
-                        if (weekToLock[weekProdNBR] < i && (OnlyLook == ClassStaticVaribles.WritePermission.SaleWrite || OnlyLook == ClassStaticVaribles.WritePermission.Write ))
+                        if (weekToLock[weekProdNBR] < i && (OnlyLook == ClassStaticVaribles.WritePermission.SaleWrite || OnlyLook == ClassStaticVaribles.WritePermission.Write))
                         {
 
                             row.Cells[i].ReadOnly = false;
@@ -344,7 +362,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.ReadOnly = true;
                 }
-                
+
             }
             int colNBR = 0;
             foreach (DataGridViewColumn col in dataGridForecastInfo.Columns)
@@ -390,9 +408,9 @@ namespace WindowsFormsForecastLactalis
 
             latestCustomerLoaded = tempCustNumber;
             SetStatus("Products loading 1/5");
-           // MessageBox.Show("Place 1");
+            // MessageBox.Show("Place 1");
             product1.FillNumbers(selectedYear);
-           // MessageBox.Show("Place 2");
+            // MessageBox.Show("Place 2");
             SetStatus("Products loading 2/5");
             product2.FillNumbers(selectedYear);
             SetStatus("Products loading 3/5");
@@ -478,8 +496,8 @@ namespace WindowsFormsForecastLactalis
         //Load products by customer
         private void button1_Click(object sender, EventArgs e)
         {
-            selectedYear = (int) comboBoxYear.SelectedItem;
-            
+            selectedYear = (int)comboBoxYear.SelectedItem;
+
             labelStatus.Visible = true;
             dataGridForecastInfo.Visible = false;
             SetStatus("Loading Products");
@@ -505,7 +523,7 @@ namespace WindowsFormsForecastLactalis
 
                     //Console.WriteLine("");
 
-                   // KeyValuePair<string, string> tempPair = (KeyValuePair<string, string>)comboBoxAssortment.SelectedItem;
+                    // KeyValuePair<string, string> tempPair = (KeyValuePair<string, string>)comboBoxAssortment.SelectedItem;
                     string tempString = comboBoxAssortment.SelectedItem.ToString();
                     tempString = tempString.Substring(1);
                     string[] firstPart = tempString.Split(',');
@@ -513,7 +531,7 @@ namespace WindowsFormsForecastLactalis
                     Products = new List<PrognosInfoSales>();
                     List<string> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
                     latestCustomerLoaded = tempString;
-                    
+
                     if (productList != null)
                     {
                         int nbrItems = productList.Count;
@@ -656,11 +674,11 @@ namespace WindowsFormsForecastLactalis
                         {
                             if (item.ProductNumber.ToString() == productNumber)
                             {
-                              //here a new budget_line post should be added to the database
+                                //here a new budget_line post should be added to the database
                                 int ammount = Convert.ToInt32(e.FormattedValue) - item.Salgsbudget_ThisYear[week];
                                 if (ammount != 0)
                                 {
-                                    
+
                                     string tempCustNumber = ClassStaticVaribles.GetCustNavCodeFirst(latestCustomerLoaded); ;
                                     //string startDato = "datum";
 
@@ -692,7 +710,7 @@ namespace WindowsFormsForecastLactalis
                                     }
 
                                     SetKöpsbudget(week, productNumber, Convert.ToInt32(e.FormattedValue));
-                                    
+
                                 }
                             }
                         }
@@ -745,10 +763,10 @@ namespace WindowsFormsForecastLactalis
             string TempE = e.ToString();
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
-            
+
 
             selectedYear = (int)comboBoxYear.SelectedItem;
-            
+
 
             latestMouseClick = System.Windows.Forms.Cursor.Position;
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
@@ -756,12 +774,12 @@ namespace WindowsFormsForecastLactalis
             {
                 if (GetValueFromGridAsString(rowIndex, 2).Contains("Comment"))
                 {
-                    
+
                     if (!infoboxSales.Visible)
                     {
                         latestCommentRow = rowIndex;
                         string temp = GetValueFromGridAsString(rowIndex, columnIndex);
-                        
+
                         //string temp2 = GetValueFromGridAsString(rowIndex - 6, 0);
 
 
@@ -904,7 +922,7 @@ namespace WindowsFormsForecastLactalis
         {
             dataGridForecastInfo.Visible = false;
             labelStatus.Visible = true;
-            SetStatus("Product Loading"); 
+            SetStatus("Product Loading");
             loadingNewProductsOngoing = true;
             SetupColumns();
             Products = new List<PrognosInfoSales>();
@@ -999,7 +1017,7 @@ namespace WindowsFormsForecastLactalis
 
         private void dataGridForecastInfo_ColumnDividerWidthChanged(object sender, DataGridViewColumnEventArgs e)
         {
-           
+
         }
 
         private void dataGridForecastInfo_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
@@ -1016,7 +1034,7 @@ namespace WindowsFormsForecastLactalis
 
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
-            dataGridForecastInfo.Width = this.Width-50;
+            dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
         }
 
@@ -1024,7 +1042,7 @@ namespace WindowsFormsForecastLactalis
         {
             //var loginForm = new FormLogin();
             //loginForm.ShowDialog();
-            
+
 
         }
 
@@ -1057,9 +1075,9 @@ namespace WindowsFormsForecastLactalis
             loadingNewProductsOngoing = true;
             //SupplierProducts[prodNBR].UpdateReguleretInfo(selectedYear);
 
-            foreach(PrognosInfoSales prognos in Products)
+            foreach (PrognosInfoSales prognos in Products)
             {
-                if(prognos.ProductNumber == newCommentProdNBR)
+                if (prognos.ProductNumber == newCommentProdNBR)
                 {
                     prognos.UpdateSalesInfo(selectedYear);
                 }
@@ -1072,9 +1090,23 @@ namespace WindowsFormsForecastLactalis
 
 
 
-        internal void SetOnlyLook(ClassStaticVaribles.WritePermission a)
+        internal void SetOnlyLook(ClassStaticVaribles.WritePermission permission)
         {
-            OnlyLook = a;
+            OnlyLook = permission;
+        }
+
+        internal void SetProdOrTestHeading(bool prod)
+        {
+            if(prod)
+            {
+                this.Text = "Forecast Sales Production Environment  "+ Application.ProductVersion;
+            }
+            else
+            {
+                this.Text = "Forecast Sales Test Environment  " + Application.ProductVersion; ;
+                this.BackColor = Color.WhiteSmoke;
+            }
+
         }
     }
 }

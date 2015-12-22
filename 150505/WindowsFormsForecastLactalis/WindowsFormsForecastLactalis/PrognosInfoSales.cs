@@ -74,13 +74,13 @@ namespace WindowsFormsForecastLactalis
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             Console.WriteLine("Time1: " + stopwatch2.ElapsedMilliseconds);
             sqlSupplyCalls.UpdateVareKort();
-            weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
+            //weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
             int weektemp = sqlSupplyCalls.GetCurrentWeekNBR();
             string m3ProdNumber = GetM3ProdNumber();
 
             LockWeeksInfoFromM3(m3ProdNumber, weektemp);
             Console.WriteLine("Time2: " + stopwatch2.ElapsedMilliseconds);
-            Console.WriteLine("Produkt " + ProductNumber + " Varukort,  Vecka nu: " + weektemp + " Weektolock from: " + WeekToLockFrom + " Antal att låsa: " + weekPartPercentage[0]);
+            //Console.WriteLine("Produkt " + ProductNumber + " Varukort,  Vecka nu: " + weektemp + " Weektolock from: " + WeekToLockFrom + " Antal att låsa: " + weekPartPercentage[0]);
 
             if (ProductName.Length < 2 || ProductName == "Name Unknown")
             {
@@ -196,12 +196,13 @@ namespace WindowsFormsForecastLactalis
                     if (info != null && info.Count > 0 && Convert.ToInt32(info["FCLockSale"]) > 0)
                     {
                         int tempDaysLock = Convert.ToInt32(info["FCLockSale"]);
-                        //if (tempDaysLock <= 0)
-                        //{
-                        //    //Todo get weeks to lock from for supplier
-                        //    tempDaysLock = GetDaysFromSupplier(GetSupplierFromProduct());
 
-                        //}
+                        if (tempDaysLock <= 0)
+                        {
+                            //Todo get weeks to lock from for supplier
+                            tempDaysLock = Convert.ToInt32(m3Info.GetSalesWeekLockFromSupplier(GetSupplierFromProduct()));
+
+                        }
                         int tempWeeksToLOCK = tempDaysLock / 7;
 
                        
@@ -209,7 +210,15 @@ namespace WindowsFormsForecastLactalis
                     }
                     else
                     {
-                        WeekToLockFrom = weektemp;
+                        int tempDaysLock = 0;
+                        if (tempDaysLock <= 0)
+                        {
+                            //Todo get weeks to lock from for supplier
+                            tempDaysLock = Convert.ToInt32(m3Info.GetSalesWeekLockFromSupplier(GetSupplierFromProduct()));
+
+                        }
+                        int tempWeeksToLOCK = tempDaysLock / 7;
+                        WeekToLockFrom = tempWeeksToLOCK + weektemp;
                     }
                 });
 

@@ -46,7 +46,7 @@ namespace WindowsFormsForecastLactalis
             sqlSupplyCalls.UpdateVareKort();
             GetFromM3 m3Info = new GetFromM3();
             string m3ProdNumber = GetM3ProdNumber();
-            //Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
+            Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
             //if (info != null && info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
             //{
 

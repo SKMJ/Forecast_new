@@ -35,7 +35,10 @@ namespace WindowsFormsForecastLactalis
 
         public static Dictionary<string, List<string>> AssortmentM3_toKedjor = new Dictionary<string, List<string>>();
 
+        public static Dictionary<string, List<string>> Kedjor_toCUNO = new Dictionary<string, List<string>>();
+
         public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>(); //Dict First Date of week 1 in Year
+        public static bool Production = true;
 
         private static bool AllProductsNavFirst = true;
         private static bool AllProductsM3DictFirst = true;
@@ -394,6 +397,16 @@ namespace WindowsFormsForecastLactalis
                 temp.Add(customerNumber);
                 return temp;
             }
+        }
+
+        internal static void SetKedjaToCunoListM3(Dictionary<string, List<string>> returnStrings)
+        {
+            Kedjor_toCUNO = returnStrings;
+        }
+
+        internal static void SetProdOrTest(bool prod)
+        {
+            Production = prod;
         }
     }
 }

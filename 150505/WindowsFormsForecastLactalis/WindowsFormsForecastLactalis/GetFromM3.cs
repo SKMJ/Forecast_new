@@ -13,6 +13,7 @@ namespace WindowsFormsForecastLactalis
 {
     public class GetFromM3
     {
+
         //ConnectionString
         string ipNummer = "172.31.157.25";//M3 Test //dev
         //string ipNummer = "172.31.157.14";//M3 produktion
@@ -263,6 +264,70 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+        public void GetDictOfKedjaToCustNBR()
+        {
+            Dictionary<string, List<string>> returnStrings = new Dictionary<string, List<string>>();
+            {
+                Stopwatch stopwatch2 = Stopwatch.StartNew();
+                SERVER_ID sid = new SERVER_ID();
+                
+                uint rc = 0;
+                rc = ConnectToM3Interface(ref sid, "OIS038MI");
+                
+                if (rc != 0)
+                {
+                    return;
+                }
+                SetMaxList(sid, 20000);
+                //Set the field without need to know position Start from this customer 00752
+                //MvxSock.SetField(ref sid, "ASCD", assortment);
+                MvxSock.SetField(ref sid, "CONO", "001");
+                rc = MvxSock.Access(ref sid, "LstBusChainCust");
+                if (rc != 0)
+                {
+                    MvxSock.ShowLastError(ref sid, "Error in get products no " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return;
+                }
+
+                while (MvxSock.More(ref sid))
+                {
+                    string cuno = MvxSock.GetField(ref sid, "CUNO");
+                    string chl = MvxSock.GetField(ref sid, "CHL4");
+                    if(chl.Trim().Length < 1)
+                        chl = MvxSock.GetField(ref sid, "CHL3");
+                    if (chl.Trim().Length < 1)
+                        chl = MvxSock.GetField(ref sid, "CHL2");
+                    if (chl.Trim().Length < 1)
+                        chl = MvxSock.GetField(ref sid, "CHL1");
+                    Console.WriteLine("cuno: " + cuno + " chl1: " + chl);
+                    if (returnStrings.ContainsKey(chl))
+                    {
+                        Console.WriteLine("kedja: " + chl + " existerar i returnStrings");
+                        returnStrings[chl].Add(cuno);
+                    }
+                    else
+                    {
+                        Console.WriteLine("kedja: " + chl + " saknas i returnStrings");
+                        List<string> cunoTemp = new List<string>();
+                        cunoTemp.Add(cuno);
+                        returnStrings.Add(chl, cunoTemp);
+                    }
+                    //Mooves to next row
+                    MvxSock.Access(ref sid, null);
+                }
+
+                MvxSock.Close(ref sid);
+
+                Console.WriteLine("M3 communication: SUCCESS!!");
+
+                ClassStaticVaribles.SetKedjaToCunoListM3(returnStrings);
+                Console.WriteLine("Antal Kedjor: " + returnStrings.Count);
+                Console.WriteLine("Time KedjaToCuno: " + stopwatch2.ElapsedMilliseconds);
+                //return returnStrings;
+            }
+        }
+
 
 
         public Dictionary<string, string> GetItemInfoByItemNumber(string itemNbr)
@@ -318,16 +383,54 @@ namespace WindowsFormsForecastLactalis
                 string FCLockSale = MvxSock.GetField(ref sid, "FCSL");
                 returnStrings.Add("FCLockSale", FCLockSale);
 
-                //string div  = "hittepåDiv";
-                //string prepLocation = "hittepåPrep";
-                //string whsLocation = "hittepåWHS";
-
-
                 //Console.WriteLine("ProductNBR: " + itemNbr + " Name: " + returnString);
                 MvxSock.Close(ref sid);
 
                 Console.WriteLine("M3 Forecast info communication: SUCCESS!!");
                 return returnStrings;
+            }
+        }
+
+        //CRS620MI med transaktion GetBasicData 
+
+        public string GetSalesWeekLockFromSupplier(string supplNBR)
+        {
+            //string returnString = "";
+            Dictionary<string, string> returnStrings = new Dictionary<string, string>();
+            {
+                SERVER_ID sid = new SERVER_ID();
+                uint rc;
+                rc = ConnectToM3Interface(ref sid, "CRS620MI");
+                if (rc != 0)
+                {
+                    return null;
+                }
+                ////Set the field without need to know position Start from this customer 00752
+                MvxSock.SetField(ref sid, "SUNO", supplNBR);
+                MvxSock.SetField(ref sid, "CONO", "001");
+                rc = MvxSock.Access(ref sid, "GetBasicData");
+
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error in get ForeCast info by productsNbr: " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return null;
+                }
+
+                ////Division, Prep location och Whs location
+                string FCLockSale = MvxSock.GetField(ref sid, "CFI3");
+                FCLockSale = FCLockSale.Trim();
+                if (FCLockSale.Length < 1)
+                {
+                    FCLockSale = "0";
+                }
+
+                MvxSock.Close(ref sid);
+
+                Console.WriteLine("Get Lock days. Supplier: " + supplNBR + " days: " + FCLockSale );
+
+                Console.WriteLine("M3 Forecast info communication get supplier days: SUCCESS!!");
+                return FCLockSale;
             }
         }
 
@@ -377,7 +480,7 @@ namespace WindowsFormsForecastLactalis
 
             uint rc;
             rc = ConnectToM3Interface(ref sid, "OIS038MI");
-            //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
+            
             if (rc != 0)
             {
                 //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
@@ -413,6 +516,12 @@ namespace WindowsFormsForecastLactalis
         private uint ConnectToM3Interface(ref SERVER_ID sid, string m3Interface)
         {
             //Console.WriteLine("Before Connect to M3 Interface: " + M3Interface);
+            if(ClassStaticVaribles.Production)
+            { 
+                ipNummer = "172.31.157.14";
+                portNumber = 16105;
+            }
+            
             uint rc = 0;
             try
             {
@@ -422,6 +531,7 @@ namespace WindowsFormsForecastLactalis
             catch (Exception ex)
             {
                 MessageBox.Show("fail M3 communication Connect! 2: MI: " + m3Interface);
+                MessageBox.Show("Exception in M3 connection: " + ex.Message);
                 Console.WriteLine("Exception in M3 connection: " + ex.Message);
                 return rc;
             }
@@ -464,7 +574,7 @@ namespace WindowsFormsForecastLactalis
             SERVER_ID sid = new SERVER_ID();
 
             rc = ConnectToM3Interface(ref sid, "PPS370MI");
-            //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
+
             if (rc != 0)
             {
                 MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
@@ -497,7 +607,7 @@ namespace WindowsFormsForecastLactalis
             SERVER_ID sid = new SERVER_ID();
 
             rc = ConnectToM3Interface(ref sid, "PPS370MI");
-            //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS620MI", null);
+
             if (rc != 0)
             {
                 MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
@@ -539,7 +649,7 @@ namespace WindowsFormsForecastLactalis
                 SERVER_ID sid = new SERVER_ID();
                 uint rc;
                 rc = ConnectToM3Interface(ref sid, "MMS200MI");
-                //rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, "CRS111MI", null);
+
                 if (rc != 0)
                 {
                     //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");

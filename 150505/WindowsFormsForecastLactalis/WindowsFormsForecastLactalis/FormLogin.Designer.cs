@@ -36,6 +36,8 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.labelMessageText = new System.Windows.Forms.Label();
+            this.comboBoxProdOrTest = new System.Windows.Forms.ComboBox();
+            this.labelM3Version = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -107,12 +109,33 @@
             this.labelMessageText.TabIndex = 6;
             this.labelMessageText.Text = "A";
             // 
+            // comboBoxProdOrTest
+            // 
+            this.comboBoxProdOrTest.FormattingEnabled = true;
+            this.comboBoxProdOrTest.Location = new System.Drawing.Point(308, 69);
+            this.comboBoxProdOrTest.Name = "comboBoxProdOrTest";
+            this.comboBoxProdOrTest.Size = new System.Drawing.Size(155, 30);
+            this.comboBoxProdOrTest.TabIndex = 7;
+            this.comboBoxProdOrTest.SelectedIndexChanged += new System.EventHandler(this.comboBoxProdOrTest_SelectedIndexChanged);
+            // 
+            // labelM3Version
+            // 
+            this.labelM3Version.AutoSize = true;
+            this.labelM3Version.Location = new System.Drawing.Point(308, 46);
+            this.labelM3Version.Name = "labelM3Version";
+            this.labelM3Version.Size = new System.Drawing.Size(116, 24);
+            this.labelM3Version.TabIndex = 8;
+            this.labelM3Version.Text = "M3 Version";
+            this.labelM3Version.Click += new System.EventHandler(this.labelM3Version_Click);
+            // 
             // FormLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(475, 374);
+            this.Controls.Add(this.labelM3Version);
+            this.Controls.Add(this.comboBoxProdOrTest);
             this.Controls.Add(this.labelMessageText);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.textBox1);
@@ -141,5 +164,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label labelMessageText;
+        private System.Windows.Forms.ComboBox comboBoxProdOrTest;
+        private System.Windows.Forms.Label labelM3Version;
     }
 }

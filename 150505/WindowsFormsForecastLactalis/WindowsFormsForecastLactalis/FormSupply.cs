@@ -16,7 +16,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using WindowsFormsForecastLactalis;
 
 namespace WindowsFormsForecastLactalis
 {
@@ -27,17 +26,12 @@ namespace WindowsFormsForecastLactalis
         string newRegCommentProdNBR = "";
 
         public static Dictionary<string, PrognosInfoForSupply> SupplierProducts = new Dictionary<string, PrognosInfoForSupply>();
-        Form1 form1Instance;// = new Form1();
-        //private List<string> supplier = new List<string>();
+        Form1 form1Instance;
         GetFromM3 m3Info = new GetFromM3();
         TextBoxForm infoboxSupply = new TextBoxForm();
         public Dictionary<int, List<int>> MotherSupplierWithChilds = new Dictionary<int, List<int>>();
 
         public Dictionary<string, string> OrderCodes = new Dictionary<string, string>();
-        //public Dictionary<string, string> AllProductsDict_Supply = new Dictionary<string, string>();
-
-        //public Dictionary<string, string> AllProductsM3Dict_Supply = new Dictionary<string, string>();
-        //Dictionary<string, List<string>> AllSupplierM3Dict_Supply = new Dictionary<string, List<string>>();
 
 
         int desiredStartLocationX;
@@ -55,12 +49,22 @@ namespace WindowsFormsForecastLactalis
             InitializeComponent();
             Console.WriteLine("Start FormSupply!");
 
-            //FixMotherChildList();
-
             SetupColumns();
             FixSupplierChoices();
             dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
+
+            if(ClassStaticVaribles.Production)
+            {
+                this.Text = "Forecast Supply Production Environment  " + Application.ProductVersion;
+
+            }
+            else
+            {
+
+                this.Text = "Forecast Supply Test Environment  " + Application.ProductVersion;
+                this.BackColor = Color.WhiteSmoke;
+            }
             //FillInfo();
         }
 
@@ -86,7 +90,7 @@ namespace WindowsFormsForecastLactalis
         {
             List<string> supplier = new List<string>();
 
-            foreach (KeyValuePair<string, List<string>> item in ClassStaticVaribles.AllSuppliersM3)//AllSupplierM3Dict_Supply)
+            foreach (KeyValuePair<string, List<string>> item in ClassStaticVaribles.AllSuppliersM3)
             {
                 if (ClassStaticVaribles.AllSuppliersNameDict.ContainsKey(item.Key))
                 {
@@ -195,12 +199,8 @@ namespace WindowsFormsForecastLactalis
             {
                 i++;
 
-                //int tempInt = 0;
-                //bool result = int.TryParse(item, out tempInt); //i now = 108
-                //if (result)
-                //{
                 SetStatus("Products loading " + i.ToString() + "/" + numberOfProducts.ToString());
-                //ClassStaticVaribles.AllProductsM3Dict
+
                 string tempName = " ";
                 if (ClassStaticVaribles.AllProductsM3Dict.ContainsKey(item))
                 {
@@ -215,13 +215,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     SupplierProducts.Add(item, product1);
                 }
-
-                //}
-                //SupplierProductsFromM3.Add(product1);
-                //Console.WriteLine(" Supplier produkt!! " + item + "  Name: " + tempName);
             }
-
-
             SetStatus("Products Preparing For User Interface. Will soon be ready to view.");
             PrepareGUI();
         }
@@ -943,16 +937,8 @@ namespace WindowsFormsForecastLactalis
                                 {
                                     dataGridForecastInfo.Rows[rowIndex + 1].Cells[columnIndex].Value = sBudget + regSbudget;
                                 }
-                                //TODO: Write to database
 
-                                //here a new budget_line post should be added to the database
-
-
-
-                                //string startDato = "datum";
                                 string comment = dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString();
-
-
 
                                 DateTime tempDate = DateTime.Parse(ClassStaticVaribles.StartDate[selectedYear].ToString());
                                 DateTime answer = tempDate.AddDays((week - 1) * 7);
@@ -960,9 +946,6 @@ namespace WindowsFormsForecastLactalis
 
                                 NavSQLExecute conn = new NavSQLExecute();
                                 conn.InsertReguleretBudgetLine(productNumber.ToString(), answer.ToString(format), ammount, comment);
-                                
-
-                                //conn.InsertBudgetLine(tempCustNumber, productNumber, answer.ToString(format), ammount);
 
                                 dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value = "";
                                 dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Style = new DataGridViewCellStyle { BackColor = Color.Yellow };
@@ -975,10 +958,7 @@ namespace WindowsFormsForecastLactalis
 
                             }
                             newRegCommentProdNBR = productNumber;
-
                         }
-
-
                     }
                 }
             }
@@ -1042,25 +1022,12 @@ namespace WindowsFormsForecastLactalis
 
         public void SetProductRegComment(string comment)
         {
-            //int prodNBRint = Convert.ToInt32(latestProductNumber);
-
             dataGridForecastInfo.Rows[latestRow].Cells[latestWeek + 2].Value = comment;
-            //if (SupplierProducts.ContainsKey(latestProductNumber))
-            //{
-            //    SupplierProducts[latestProductNumber].Salgsbudget_Comment[latestWeek] = comment;
-            //}
-            //FillInfo();
         }
 
 
         private void buttonGetSupplierFromNBR_Click(object sender, EventArgs e)
         {
-            //dataGridForecastInfo.Visible = false;
-            //SetStatus("Loading products");
-            //dataGridForecastInfo.ClearSelection();
-            //SetupColumns();
-
-
             if (ClassStaticVaribles.AllSuppliersM3.ContainsKey(numericSupplyNBR.Value.ToString()))
             {
                 comboBoxSupplier.SelectedItem = numericSupplyNBR.Value.ToString() + "  " + ClassStaticVaribles.AllSuppliersNameDict[numericSupplyNBR.Value.ToString()];
@@ -1092,8 +1059,6 @@ namespace WindowsFormsForecastLactalis
             {
                 MessageBox.Show(new Form() { TopMost = true }, "No supplier with that number");
             }
-            //dataGridForecastInfo.Visible = true;
-            //LoadReadyStatus();
 
         }
 
@@ -1117,8 +1082,6 @@ namespace WindowsFormsForecastLactalis
             this.dataGridForecastInfo.AllowUserToDeleteRows = false;
             this.dataGridForecastInfo.AllowUserToOrderColumns = false;
 
-
-            //int prodNMBR = (int)numericUpDownPRoductNumber.Value;
             string prodNMBR = textBoxProdNBR.Text;
             if (ClassStaticVaribles.NewNumberDictM3Key.ContainsKey(prodNMBR))
             {
@@ -1198,18 +1161,11 @@ namespace WindowsFormsForecastLactalis
                     {
                         Console.WriteLine("LActanbr: " + lactalisProdNBR + " number per week: " + numberPerWeek);
                     }
-
-
                     //weekDay++;
                     dayOrderStrings.Add(CreateLine(lactalisProdNBR, answer, Convert.ToInt32(numberThisDate)));
                 }
 
             }
-
-            //dayOrderStrings.Add(CreateLine(123, DateTime.Now, 525));
-            //dayOrderStrings.Add(CreateLine(666666, DateTime.Now, 0));
-
-
         }
 
 
@@ -1242,12 +1198,7 @@ namespace WindowsFormsForecastLactalis
 
             temp = temp + date.Day + ",";
             temp = temp + numberToBuy;
-
-            //Console.WriteLine(temp);
-
             return temp;
-
-
         }
 
         private void checkBoxLastYear_CheckedChanged(object sender, EventArgs e)
@@ -1264,8 +1215,6 @@ namespace WindowsFormsForecastLactalis
             List<string> productsToSendKopbudget = new List<string>();
 
             GetFromM3 m3 = new GetFromM3();
-
-            //productsToSendKopbudget = GetListOfProductsWithSupplierLactaFrance();
             Dictionary<string, string> productsInSkaevinge = m3.GetAllSkaevingeProductsDict();
             Dictionary<string, string> productsInFile = new Dictionary<string,string>();
 

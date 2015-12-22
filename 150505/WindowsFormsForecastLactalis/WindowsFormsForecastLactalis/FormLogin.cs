@@ -18,6 +18,12 @@ namespace WindowsFormsForecastLactalis
         {
             InitializeComponent();
             SetStatus("");
+            List<string> prodTestList = new List<string>();
+            prodTestList.Add("Test");
+            prodTestList.Add("Production");
+
+            comboBoxProdOrTest.DataSource = prodTestList;
+            comboBoxProdOrTest.SelectedIndex = 0;
             
         }
 
@@ -61,9 +67,18 @@ namespace WindowsFormsForecastLactalis
             {
                 labelMessageText.ForeColor = Color.Green;
                 SetStatus("Welcome!! Starting up..");
+                bool tempProd = true;
+                if (comboBoxProdOrTest.SelectedIndex == 0)
+                {
+                    tempProd = false;
+                }
+                ClassStaticVaribles.SetProdOrTest(tempProd);
+
                 Form1 salesForm = new Form1();
 
-                    salesForm.SetOnlyLook(a);
+                salesForm.SetOnlyLook(a);
+                salesForm.SetProdOrTestHeading(tempProd);
+
 
                 salesForm.FormClosed += new FormClosedEventHandler(salesForm_FormClosed);
                 salesForm.Show();
@@ -98,6 +113,16 @@ namespace WindowsFormsForecastLactalis
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBoxProdOrTest_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelM3Version_Click(object sender, EventArgs e)
         {
 
         }

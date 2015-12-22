@@ -179,9 +179,9 @@
             this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelStatus.Location = new System.Drawing.Point(704, 128);
             this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(181, 25);
+            this.labelStatus.Size = new System.Drawing.Size(179, 25);
             this.labelStatus.TabIndex = 20;
-            this.labelStatus.Text = "Loading Numbers";
+            this.labelStatus.Text = "Loading Forecast";
             this.labelStatus.Visible = false;
             this.labelStatus.Click += new System.EventHandler(this.labelStatus_Click);
             // 
