@@ -893,9 +893,9 @@ namespace WindowsFormsForecastLactalis
 
                 if (weekInt == latestWeek)
                 {
-                    if (ClassStaticVaribles.CustDictionaryM3.ContainsKey(tempCustNBR))
+                    if (ClassStaticVaribles.AssortmentDictionaryM3.ContainsKey(tempCustNBR))
                     {
-                        tempInfo = tempInfo + "\n  " + tempCustNBR + "  " + ClassStaticVaribles.CustDictionaryM3[tempCustNBR] + "  " + tempAntal;
+                        tempInfo = tempInfo + "\n  " + tempCustNBR + "  " + ClassStaticVaribles.AssortmentDictionaryM3[tempCustNBR] + "  " + tempAntal;
                     }
                     else
                     {

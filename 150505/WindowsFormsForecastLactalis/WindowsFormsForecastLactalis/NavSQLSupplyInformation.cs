@@ -868,7 +868,7 @@ namespace WindowsFormsForecastLactalis
 
         public int GetLactalis_NBRPer_colli()
         {
-            if (Beskrivelse.Length > 1)
+            if (Beskrivelse.Length > 1 && Lactalis_NBRPer_colli > 0)
             {
                 return Lactalis_NBRPer_colli;
             }

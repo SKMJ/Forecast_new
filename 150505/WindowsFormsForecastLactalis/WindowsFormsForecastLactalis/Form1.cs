@@ -92,7 +92,7 @@ namespace WindowsFormsForecastLactalis
             comboBoxAssortment.DropDownStyle = ComboBoxStyle.DropDownList;
             if (!AssortmentFromM3)
             {
-                comboBoxAssortment.DataSource = new BindingSource(ClassStaticVaribles.CustDictionaryNav, null);
+                comboBoxAssortment.DataSource = new BindingSource(ClassStaticVaribles.AssortmentDictionaryNav, null);
                 comboBoxAssortment.DisplayMember = "Key";
                 comboBoxAssortment.ValueMember = "Key";
             }
@@ -162,7 +162,6 @@ namespace WindowsFormsForecastLactalis
                 {
                     string temp = i + "." + comboBoxYear.Text;
                     dataGridForecastInfo.Columns[i + 2].Name = temp;
-                    //dataGridForecastInfo.Columns[i + 2].Width = 45;
                 }
 
                 foreach (DataGridViewColumn item in dataGridForecastInfo.Columns)
@@ -399,7 +398,7 @@ namespace WindowsFormsForecastLactalis
         //Add testinfo Products
         private void CreateProducts()
         {
-            string tempCustNumber = ClassStaticVaribles.CustDictionaryNav[comboBoxAssortment.Text];
+            string tempCustNumber = ClassStaticVaribles.AssortmentDictionaryNav[comboBoxAssortment.Text];
             PrognosInfoSales product1 = new PrognosInfoSales(GetNameFromLoadedProducts("2432"), "2432", tempCustNumber);
             PrognosInfoSales product2 = new PrognosInfoSales(GetNameFromLoadedProducts("1442"), "1442", tempCustNumber);
             PrognosInfoSales product3 = new PrognosInfoSales(GetNameFromLoadedProducts("1238"), "1238", tempCustNumber);

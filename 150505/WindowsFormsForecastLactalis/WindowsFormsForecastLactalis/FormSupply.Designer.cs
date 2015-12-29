@@ -144,6 +144,7 @@
             this.comboBoxSupplier.Name = "comboBoxSupplier";
             this.comboBoxSupplier.Size = new System.Drawing.Size(262, 24);
             this.comboBoxSupplier.TabIndex = 7;
+            this.comboBoxSupplier.SelectedIndexChanged += new System.EventHandler(this.comboBoxSupplier_SelectedIndexChanged);
             // 
             // buttonTestSupplItems
             // 
@@ -259,7 +260,6 @@
             this.buttonCreateLactalisFile.TabIndex = 22;
             this.buttonCreateLactalisFile.Text = "create Lacatlis File";
             this.buttonCreateLactalisFile.UseVisualStyleBackColor = true;
-            this.buttonCreateLactalisFile.Visible = false;
             this.buttonCreateLactalisFile.Click += new System.EventHandler(this.buttonCreateLactalisFile_Click);
             // 
             // textBoxProdNBR

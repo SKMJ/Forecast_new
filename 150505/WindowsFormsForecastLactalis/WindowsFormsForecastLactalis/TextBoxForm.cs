@@ -13,7 +13,7 @@ namespace WindowsFormsForecastLactalis
     //This form is used to show and edit comments
     public partial class TextBoxForm : Form
     {
-        Object Instance;
+        //Object Instance;
         Form1 Form1Instance;
         FormSupply FormSupplyInstance;
         public int desiredStartLocationX;

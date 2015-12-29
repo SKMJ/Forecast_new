@@ -13,8 +13,8 @@ namespace WindowsFormsForecastLactalis
 {
     public static class ClassStaticVaribles
     {
-        public static Dictionary<string, string> CustDictionaryNav;
-        public static Dictionary<string, string> CustDictionaryM3;
+        public static Dictionary<string, string> AssortmentDictionaryNav;
+        public static Dictionary<string, string> AssortmentDictionaryM3;
 
         // private bool loadingNewProductsOngoing;
 
@@ -59,7 +59,7 @@ namespace WindowsFormsForecastLactalis
             {
                 CustDictionaryFirst = false;
                 Dictionary<string, string> allAssortments = new Dictionary<string, string>();
-                CustDictionaryNav = new Dictionary<string, string>();
+                AssortmentDictionaryNav = new Dictionary<string, string>();
 
                 allAssortments.Add("KGVG", "23");
                 allAssortments.Add("LUWW", "26,9500");
@@ -116,7 +116,7 @@ namespace WindowsFormsForecastLactalis
                 SetAssortmentDictionary();
                 CustDictionaryFirst = false;
                 Dictionary<string, string> allCustomers = new Dictionary<string, string>();
-                CustDictionaryNav = new Dictionary<string, string>();
+                AssortmentDictionaryNav = new Dictionary<string, string>();
                 allCustomers.Add("0", " ");
                 allCustomers.Add("904", "914-KristianstadsOstföräd.EUR");
                 allCustomers.Add("981", "ArlaNorge");
@@ -179,16 +179,16 @@ namespace WindowsFormsForecastLactalis
                 //Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, string> item in allCustomers)
                 {
-                    CustDictionaryNav.Add(item.Value, item.Key);
+                    AssortmentDictionaryNav.Add(item.Value, item.Key);
                 }
             }
         }
 
         public static void SetCustAssortmentListM3( Dictionary<string, string> inputDict)
         {
-            CustDictionaryM3 = new Dictionary<string, string>();
+            AssortmentDictionaryM3 = new Dictionary<string, string>();
 
-            CustDictionaryM3 = inputDict;
+            AssortmentDictionaryM3 = inputDict;
             
         }
 
@@ -207,6 +207,7 @@ namespace WindowsFormsForecastLactalis
 
         public static void InitiateDate()
         {
+            //Todo ? maybe change dates to last sunday instead of first monday
            // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
             if (StartDateFirst)
             {

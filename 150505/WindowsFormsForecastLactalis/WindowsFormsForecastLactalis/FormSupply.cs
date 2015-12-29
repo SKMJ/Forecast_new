@@ -1128,10 +1128,12 @@ namespace WindowsFormsForecastLactalis
         {
             int dayFromNow = 0;
 
+            int PerKolli = Math.Max(lactaNBRPerKolli, 1);
+
 
             for (int i = 1; i < kopesBudgetFormNextWeek_TY.Count; i++)
             {
-                int numberPerWeek = kopesBudgetFormNextWeek_TY[i] / lactaNBRPerKolli;
+                int numberPerWeek = kopesBudgetFormNextWeek_TY[i] / PerKolli;
                 int weekDay = 1;
                 int thisWeekday = 1;
                 while (thisWeekday != 0 && weekDay < 8)
@@ -1352,6 +1354,11 @@ namespace WindowsFormsForecastLactalis
         internal void SetOnlyLook(bool look)
         {
             OnlyLook = look;
+        }
+
+        private void comboBoxSupplier_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
