@@ -260,6 +260,7 @@
             this.buttonCreateLactalisFile.TabIndex = 22;
             this.buttonCreateLactalisFile.Text = "create Lacatlis File";
             this.buttonCreateLactalisFile.UseVisualStyleBackColor = true;
+            this.buttonCreateLactalisFile.Visible = false;
             this.buttonCreateLactalisFile.Click += new System.EventHandler(this.buttonCreateLactalisFile_Click);
             // 
             // textBoxProdNBR

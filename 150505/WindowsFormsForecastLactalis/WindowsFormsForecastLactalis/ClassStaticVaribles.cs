@@ -91,6 +91,7 @@ namespace WindowsFormsForecastLactalis
                 allAssortments.Add("OIOI", "92");
                 allAssortments.Add("OZ", "93");
                 allAssortments.Add("YEYB", "103");
+                allAssortments.Add("DD", "975");
                 //Dictionary<string, string> allCustomersSwitched = new Dictionary<string, string>();
                 foreach (KeyValuePair<string, string> item in allAssortments)
                 {
@@ -207,7 +208,7 @@ namespace WindowsFormsForecastLactalis
 
         public static void InitiateDate()
         {
-            //Todo ? maybe change dates to last sunday instead of first monday
+            //Todo ? maybe change dates to first sunday instead of first monday
            // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
             if (StartDateFirst)
             {
@@ -280,6 +281,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
+        //Set all products in WHS Skaevinge
         public static void SetAllProductsM3Dict(Dictionary<string, string> dict)
         {
             if (AllProductsM3DictFirst)

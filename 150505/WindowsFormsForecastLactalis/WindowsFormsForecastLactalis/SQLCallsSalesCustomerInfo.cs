@@ -63,7 +63,7 @@ namespace WindowsFormsForecastLactalis
             startDateStrings.Add(2015, @"2014/12/28");
             endDateStrings.Add(2015, @"2016/01/04");
             startDateStrings.Add(2016, @"2016/01/03");
-            endDateStrings.Add(2016, @"2015/12/31");
+            endDateStrings.Add(2016, @"2016/12/31");
             startDateStrings.Add(2017, @"2017/01/01");
             endDateStrings.Add(2017, @"2017/12/31");
 
@@ -646,7 +646,6 @@ namespace WindowsFormsForecastLactalis
 
                     double weekNBR = dayOFYear / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt + 1;
 
                     if (Antal > 0)
                     {

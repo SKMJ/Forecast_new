@@ -24,12 +24,14 @@ namespace WindowsFormsForecastLactalis
 
             comboBoxProdOrTest.DataSource = prodTestList;
             comboBoxProdOrTest.SelectedIndex = 0;
+            this.Text = "Forecast Login  " + Application.ProductVersion;
             
         }
 
         Dictionary<string, string> Users;
         private void buttonLogIN_Click(object sender, EventArgs e)
         {
+            //Here is the four users and their login details
             Users = new Dictionary<string,string>();
             Users.Add("admin","admin222");
             Users.Add("kige", "kige111");
@@ -42,23 +44,23 @@ namespace WindowsFormsForecastLactalis
             username = textBoxUserName.Text.ToLower();
             password = textBox1.Text.ToLower();
 
-            ClassStaticVaribles.WritePermission a;
+            ClassStaticVaribles.WritePermission writePermissons;
             if (username == "suppl")
             {
                
-                a = ClassStaticVaribles.WritePermission.SupplWrite;
+                writePermissons = ClassStaticVaribles.WritePermission.SupplWrite;
             }
             else if (username == "sale")
             {
-                a = ClassStaticVaribles.WritePermission.SaleWrite;
+                writePermissons = ClassStaticVaribles.WritePermission.SaleWrite;
             }
             else if (username == "admin")
             {
-                a = ClassStaticVaribles.WritePermission.Write;
+                writePermissons = ClassStaticVaribles.WritePermission.Write;
             }
             else 
             {
-                a = ClassStaticVaribles.WritePermission.Read;
+                writePermissons = ClassStaticVaribles.WritePermission.Read;
             }
 
 
@@ -76,7 +78,7 @@ namespace WindowsFormsForecastLactalis
 
                 Form1 salesForm = new Form1();
 
-                salesForm.SetOnlyLook(a);
+                salesForm.SetOnlyLook(writePermissons);
                 salesForm.SetProdOrTestHeading(tempProd);
 
 

@@ -298,7 +298,7 @@ namespace WindowsFormsForecastLactalis
             //Thread.Sleep(2000);
 
             weekProdNBR = 0;
-            //After all is filled set colors and reaqdonly properties
+            //After all is filled set colors and readonly properties
             foreach (DataGridViewRow row in dataGridForecastInfo.Rows)
             {
                 row.Height = 20;
@@ -384,18 +384,20 @@ namespace WindowsFormsForecastLactalis
         public string GetNameFromLoadedProducts(string prodNBR)
         {
             string temp = "Name Unknown";
-            if (ClassStaticVaribles.AllProductsNavDict.ContainsKey(prodNBR))
-            {
-                temp = ClassStaticVaribles.AllProductsNavDict[prodNBR];
-            }
-            else if (ClassStaticVaribles.AllProductsM3Dict.ContainsKey(prodNBR))
+            //First try to see if you find the name in M3 on Warehouse
+            //If not try with old Forecastdatabase, if not found Name Unknown
+            if (ClassStaticVaribles.AllProductsM3Dict.ContainsKey(prodNBR))
             {
                 temp = ClassStaticVaribles.AllProductsM3Dict[prodNBR];
+            }
+            else if (ClassStaticVaribles.AllProductsNavDict.ContainsKey(prodNBR))
+            {
+                temp = ClassStaticVaribles.AllProductsNavDict[prodNBR];
             }
             return temp;
         }
 
-        //Add testinfo Products
+        //Add testinfo Products only for test purposes
         private void CreateProducts()
         {
             string tempCustNumber = ClassStaticVaribles.AssortmentDictionaryNav[comboBoxAssortment.Text];
@@ -538,11 +540,7 @@ namespace WindowsFormsForecastLactalis
                         foreach (string item in productList)
                         {
                             i++;
-                            string temp = "";
-                            if (allProductsM3Dict.ContainsKey(item))
-                            {
-                                temp = allProductsM3Dict[item.ToString()];
-                            }
+                            string temp = GetNameFromLoadedProducts(item.ToString());
                             PrognosInfoSales product1 = new PrognosInfoSales(temp, item, tempString);
                             product1.FillNumbers(selectedYear);
                             Products.Add(product1);
