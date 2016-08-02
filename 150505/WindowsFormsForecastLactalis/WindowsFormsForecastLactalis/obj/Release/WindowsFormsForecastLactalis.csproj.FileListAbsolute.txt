@@ -1,5 +1,4 @@
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\bin\Release\WindowsFormsForecastLactalis.exe.config
-C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.Form1.resources
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.FormSupply.resources
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.Properties.Resources.resources
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.TextBoxForm.resources
@@ -521,3 +520,5 @@ C:\Users\chhe1226\Desktop\Forecast Jlui2016\v.1.8.0.0 160709\WindowsFormsForecas
 C:\Users\chhe1226\Desktop\Forecast Jlui2016\v.1.8.0.0 160709\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\bin\Release\WindowsFormsForecastLactalis.pdb
 C:\Users\chhe1226\Desktop\Forecast Jlui2016\v.1.8.0.0 160709\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.exe.manifest
 C:\Users\chhe1226\Desktop\Forecast Jlui2016\v.1.8.0.0 160709\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.application
+C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.FormSales.resources
+C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.SaleInfo.resources
