@@ -14,7 +14,7 @@ namespace WindowsFormsForecastLactalis
     public partial class TextBoxForm : Form
     {
         //Object Instance;
-        Form1 Form1Instance;
+        FormSales FormSalesInstance;
         FormSupply FormSupplyInstance;
         public int desiredStartLocationX;
         public int desiredStartLocationY;
@@ -45,10 +45,10 @@ namespace WindowsFormsForecastLactalis
         {
 
             richTextBoxInfo.Text = comment;
-            if(formInstance.GetType().ToString().Contains("Form1"))
+            if(formInstance.GetType() == typeof(FormSales))
             {
                 isSupplyComment = false;
-                Form1Instance = (Form1)formInstance;
+                FormSalesInstance = (FormSales)formInstance;
             }
             else
             {
@@ -79,7 +79,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 else
                 {
-                    Form1Instance.SetProductComment(richTextBoxInfo.Text);
+                    FormSalesInstance.SetProductComment(richTextBoxInfo.Text);
                 }
 
             }
@@ -167,6 +167,29 @@ namespace WindowsFormsForecastLactalis
             richTextBoxOldInfo.ReadOnly = true;
             richTextBoxOldInfo.Text = text;
 
+        }
+
+        /// <summary>
+        /// Determine if save button should be disabled. It will be disabled if the week is locked.
+        /// The save immediately button will be enabled.
+        /// </summary>
+        /// <param name="readOnly">If true save button will be disabled</param>
+        public void IsReadOnly(bool readOnly)
+        {
+            buttonSaveInfo.Enabled = !readOnly;
+        }
+
+        private void saveImmediateBtn_Click(object sender, EventArgs e)
+        {
+            if (richTextBoxInfo.Text.Trim().Length > 0)
+            {
+                if (!isSupplyComment)
+                {
+                    FormSalesInstance.SetProductCommentImmediately(richTextBoxInfo.Text);
+                }
+
+            }
+            this.Hide();
         }
     }
 }

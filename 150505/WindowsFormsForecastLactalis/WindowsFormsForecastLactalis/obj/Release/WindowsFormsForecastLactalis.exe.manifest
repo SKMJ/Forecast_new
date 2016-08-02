@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="WindowsFormsForecastLactalis.exe" version="1.0.0.7" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+  <asmv1:assemblyIdentity name="WindowsFormsForecastLactalis.exe" version="1.8.0.0" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="WindowsFormsForecastLactalis" version="1.0.0.6" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="WindowsFormsForecastLactalis" version="1.8.0.0" language="neutral" processorArchitecture="msil" />
     <commandLine file="WindowsFormsForecastLactalis.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -54,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WindowsFormsForecastLactalis.exe" size="902576">
-      <assemblyIdentity name="WindowsFormsForecastLactalis" version="1.0.0.6" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WindowsFormsForecastLactalis.exe" size="949680">
+      <assemblyIdentity name="WindowsFormsForecastLactalis" version="1.8.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>dKwSimPmJcWU/GAT22RToQUbDzM62OGhHHaYxqoSCGo=</dsig:DigestValue>
+        <dsig:DigestValue>Ow6xepsLRgns8fnv+ze3/6bd4avDcQjc37Oys4C/BsU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -74,13 +74,13 @@
       <dsig:DigestValue>sKGvMAmsqqN6FAbFr7DfC9vvEujsFzlJCVj7f5QBzXA=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="WindowsFormsForecastLactalis.exe.config" size="191">
+  <file name="WindowsFormsForecastLactalis.exe.config" size="574">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>lEYpYcLJeihUN16PvwBUf2asTRH+0izSXRjDjiR/iB0=</dsig:DigestValue>
+      <dsig:DigestValue>7KX0bVonjZWI5WtQRU7EOAEZI2rGgUkbSL9O2Wu3zlc=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

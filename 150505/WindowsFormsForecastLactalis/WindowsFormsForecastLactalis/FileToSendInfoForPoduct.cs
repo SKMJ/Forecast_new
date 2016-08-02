@@ -81,13 +81,6 @@ namespace WindowsFormsForecastLactalis
         private string GetM3ProdNumber()
         {
             string tempProdNBr = ProductNumber;
-
-            if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(ProductNumber))
-            {
-                tempProdNBr = ClassStaticVaribles.NewNumberDictNavKey[ProductNumber];
-
-                //Console.WriteLine("Search for pr");
-            }
             return tempProdNBr;
         }
     }

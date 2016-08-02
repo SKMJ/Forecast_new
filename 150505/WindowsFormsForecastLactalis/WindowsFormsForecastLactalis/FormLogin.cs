@@ -19,12 +19,13 @@ namespace WindowsFormsForecastLactalis
             InitializeComponent();
             SetStatus("");
             List<string> prodTestList = new List<string>();
+            
             prodTestList.Add("Test");
             prodTestList.Add("Production");
-
             comboBoxProdOrTest.DataSource = prodTestList;
-            comboBoxProdOrTest.SelectedIndex = 0;
+            comboBoxProdOrTest.SelectedIndex = 1;
             this.Text = "Forecast Login  " + Application.ProductVersion;
+            labelUserName.Focus();
             
         }
 
@@ -33,7 +34,7 @@ namespace WindowsFormsForecastLactalis
         {
             //Here is the four users and their login details
             Users = new Dictionary<string,string>();
-            Users.Add("admin","admin222");
+            Users.Add("admin","admin2000");
             Users.Add("kige", "kige111");
             Users.Add("sale", "sale321");
             Users.Add("suppl", "suppl123");
@@ -44,23 +45,23 @@ namespace WindowsFormsForecastLactalis
             username = textBoxUserName.Text.ToLower();
             password = textBox1.Text.ToLower();
 
-            ClassStaticVaribles.WritePermission writePermissons;
+            StaticVariables.WritePermission writePermissons;
             if (username == "suppl")
             {
                
-                writePermissons = ClassStaticVaribles.WritePermission.SupplWrite;
+                writePermissons = StaticVariables.WritePermission.SupplWrite;
             }
             else if (username == "sale")
             {
-                writePermissons = ClassStaticVaribles.WritePermission.SaleWrite;
+                writePermissons = StaticVariables.WritePermission.SaleWrite;
             }
             else if (username == "admin")
             {
-                writePermissons = ClassStaticVaribles.WritePermission.Write;
+                writePermissons = StaticVariables.WritePermission.Write;
             }
             else 
             {
-                writePermissons = ClassStaticVaribles.WritePermission.Read;
+                writePermissons = StaticVariables.WritePermission.Read;
             }
 
 
@@ -74,9 +75,9 @@ namespace WindowsFormsForecastLactalis
                 {
                     tempProd = false;
                 }
-                ClassStaticVaribles.SetProdOrTest(tempProd);
+                StaticVariables.SetProdOrTest(tempProd);
 
-                Form1 salesForm = new Form1();
+                FormSales salesForm = new FormSales();
 
                 salesForm.SetOnlyLook(writePermissons);
                 salesForm.SetProdOrTestHeading(tempProd);
@@ -127,6 +128,14 @@ namespace WindowsFormsForecastLactalis
         private void labelM3Version_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                buttonLogIN.PerformClick();
+            }
         }
     }
 }

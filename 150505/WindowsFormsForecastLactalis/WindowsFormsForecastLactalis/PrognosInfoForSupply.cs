@@ -31,25 +31,23 @@ namespace WindowsFormsForecastLactalis
         public bool ShowLastYear = false;
 
         public int NBRonStock = 0;
-        public string StockDetails = "";
 
         int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
 
 
         public string ProductNumber = "0";
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
-        public Dictionary<int, int> RealiseretSalg_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_ThisYear = new Dictionary<int, int>();
-        //public Dictionary<int, int> Salgsbudget_LastYear = new Dictionary<int, int>();
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
         public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
-        public Dictionary<int, int> RealiseratSalg_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> SalgsbudgetReguleret_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, string> SalgsbudgetReguleret_Comment = new Dictionary<int, string>();
         public Dictionary<int, int> Kopsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kopsorder_ThisYear = new Dictionary<int, int>();
-        //private PrognosInfo item;
+        public Dictionary<int, int> KopsorderExpected_ThisYear = new Dictionary<int, int>();
+        public List<ISalesRow> SalesRowsLastYear = new List<ISalesRow>();
+        public List<ISalesRow> SalesRowsThisYear = new List<ISalesRow>();
 
         public int CompareTo(object obj)
         {
@@ -69,7 +67,6 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
         public void FillNumbers(int selectedYear)
         {
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
@@ -80,30 +77,17 @@ namespace WindowsFormsForecastLactalis
             }
             Stopwatch stopwatch2 = Stopwatch.StartNew();
 
-            GetFromM3 m3Info = new GetFromM3();
-
             string m3ProdNumber = GetM3ProdNumber();
 
             Console.WriteLine("Time1: " + stopwatch2.ElapsedMilliseconds);
-
-
             Console.WriteLine("WareHouse: " + WareHouse + " PrepLocation: " + PrepLocation + " Supplier: " + Supplier);
-
 
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             sqlSupplyCalls.SetSelectedYear(selectedYear);
             sqlSupplyCalls.UpdateVareKort();
-
-            //GetAllForeCastSpecialFieldsFromM3(selectedYear, m3ProdNumber);
-
             Supplier = GetSupplierFromProduct();
 
-
-
-
             Console.WriteLine("Time3: " + stopwatch2.ElapsedMilliseconds);
-
-
 
             Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget();
             Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG_TY();
@@ -111,18 +95,28 @@ namespace WindowsFormsForecastLactalis
             Dictionary<int, int> kopesBudgetTY = sqlSupplyCalls.GetKopesBudget_TY();
             Console.WriteLine("Time4: " + stopwatch2.ElapsedMilliseconds);
 
+            // Load Promotions
             Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY();
             Dictionary<int, int> realiseretKampagnLY = new Dictionary<int, int>();
-            Dictionary<int, int> relaiseratSalgsbudget_LY = new Dictionary<int, int>();
             if (ShowLastYear)
             {
                 realiseretKampagnLY = sqlSupplyCalls.GetRealiseretKampagnLY();
-                relaiseratSalgsbudget_LY = sqlSupplyCalls.GetRelSalg_LY(false);
             }
             Console.WriteLine("Time5: " + stopwatch2.ElapsedMilliseconds);
-            Dictionary<int, int> relaiseratSalgsbudget_TY = sqlSupplyCalls.GetRelSalg_TY(true);
+
+            // Load Salesdata
+            SalesRowsThisYear.AddRange(sqlSupplyCalls.GetRealizedSalesByYear(selectedYear));
+            if (ShowLastYear)
+            {
+                SalesRowsLastYear.AddRange(sqlSupplyCalls.GetRealizedSalesByYear(selectedYear - 1));
+            }
             Console.WriteLine("Time5A: " + stopwatch2.ElapsedMilliseconds);
-            Dictionary<int, int> kopsOrder_TY = sqlSupplyCalls.GetKopsorder_TY();
+
+            // Load Purchase order
+            Dictionary<string, Dictionary<int, int>> kopsorder = sqlSupplyCalls.GetKopsorder_TY();
+            Dictionary<int, int> kopsOrder_TY = kopsorder["received"];
+            Dictionary<int, int> kopsOrderExp_TY = kopsorder["expected"];
+
             Console.WriteLine("Time5B: " + stopwatch2.ElapsedMilliseconds);
 
             for (int i = 0; i < 54; i++)
@@ -130,18 +124,14 @@ namespace WindowsFormsForecastLactalis
                 if (ShowLastYear)
                 {
                     RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
-                    RealiseretSalg_LastYear[i] = relaiseratSalgsbudget_LY[i];
                 }
                 Kampagn_ThisYear[i] = KampagnTY[i];
-                //Salgsbudget_LastYear[i] = 0;
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
-                RealiseratSalg_ThisYear[i] = relaiseratSalgsbudget_TY[i];
                 SalgsbudgetReguleret_ThisYear[i] = salesBudget_REG_TY[i];
                 Kopsbudget_ThisYear[i] = kopesBudgetTY[i];
                 Kopsorder_ThisYear[i] = kopsOrder_TY[i];
-                //Salgsbudget_Comment[i] = "Comment";
+                KopsorderExpected_ThisYear[i] = kopsOrderExp_TY[i];
                 SalgsbudgetReguleret_Comment[i] = Reguleret_CommentTY[i];
-                //Salgsbudget_ChangeHistory[i] = "";
             }
             Console.WriteLine("Time6: " + stopwatch2.ElapsedMilliseconds);
             string ProductNameTemp = sqlSupplyCalls.GetBeskrivelse();
@@ -151,14 +141,12 @@ namespace WindowsFormsForecastLactalis
             }
             if (ProductNameTemp.Length > 2)
             {
-
                 ProductName = ProductNameTemp;
             }
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
         }
-
 
         public void UpdateReguleretInfo(int selectedYear)
         {
@@ -170,14 +158,10 @@ namespace WindowsFormsForecastLactalis
 
             for (int i = 0; i < 54; i++)
             {
-
                 SalgsbudgetReguleret_ThisYear[i] = salesBudget_REG_TY[i];
-
                 SalgsbudgetReguleret_Comment[i] = Reguleret_CommentTY[i];
-
             }
         }
-
 
         private void GetAllForeCastSpecialFieldsFromM3(int selectedYear, string m3ProdNumber)
         {
@@ -219,78 +203,52 @@ namespace WindowsFormsForecastLactalis
 
         //Load from m3 is timebound since it sometimes hangs 
         // If it hangs: Redo after one second
-        private void GetM3StockInfo(string m3ProdNumber)
+        private List<BalanceId> GetM3StockInfo(string m3ProdNumber)
         {
-            StockDetails = "";
+            List<String> warehouses = new List<string> { "LDI", "LSK" };
+            List<BalanceId> balanceIdentities = new List<BalanceId>();
+            List<BalanceId> tempBalance = new List<BalanceId>();
             GetFromM3 m3Info = new GetFromM3();
-
-            bool Completed = false;
-            int laps = 1;
-            while (!Completed && laps <= 3)
+            foreach(string warehouse in warehouses)
             {
-                Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(1000), () =>
+                //Försök 3 gånger om man får null då API:et tydligen är lite ostadigt
+                tempBalance = m3Info.GetStockInfo(m3ProdNumber, warehouse);
+                if(tempBalance == null)
                 {
-                    
-                    //
-                    // Write your time bounded code here
-                    List<string> stockInfo = m3Info.GetStockInfo(m3ProdNumber);
-                    if (stockInfo == null)
-                    {
-                        stockInfo = new List<string>();
-                        stockInfo.Add("In Stock: 0  Nothing in stock!");
-                    }
-                    foreach (string item in stockInfo)
-                    {
-                        int i = 0;
-                        if (!item.Contains("Total"))
-                        {
-                            while (item[10 + i] != ' ')
-                            {
-                                i++;
-                            }
-                            NBRonStock = NBRonStock + Convert.ToInt32(item.Substring(10, i));
-                        }
-                        if (!StockDetails.Contains("Nothing"))
-                        {
-                            StockDetails = StockDetails + item;
-                        }
-                        Console.WriteLine("Details: " + StockDetails);
-
-                    }
-
-                });
-                Console.WriteLine("Stock Completed: " + Completed + " lap: " + laps + " m3 nbr: " + m3ProdNumber);
-                laps++;
-                if (!Completed)
+                    tempBalance = m3Info.GetStockInfo(m3ProdNumber, warehouse);
+                }
+                if (tempBalance == null)
                 {
-                    System.Threading.Thread.Sleep(1500);
+                    tempBalance = m3Info.GetStockInfo(m3ProdNumber, warehouse);
+                }
+                if (tempBalance == null)
+                {
+                    tempBalance = m3Info.GetStockInfo(m3ProdNumber, warehouse);
+                }
+
+                if (tempBalance != null)
+                {
+                    balanceIdentities.AddRange(tempBalance);
                 }
             }
+            return balanceIdentities;
         }
-
-
-
 
         private string GetM3ProdNumber()
         {
             string tempProdNBr = ProductNumber;
 
-            if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(ProductNumber))
-            {
-                tempProdNBr = ClassStaticVaribles.NewNumberDictNavKey[ProductNumber];
-            }
             return tempProdNBr;
         }
-
 
         private string GetSupplierFromProduct()
         {
             string returnSuppl = "";
             string tempProdNBr = GetM3ProdNumber();
 
-            if (ClassStaticVaribles.ProdToSupplDict.ContainsKey(tempProdNBr))
+            if (StaticVariables.ProdToSupplDict.ContainsKey(tempProdNBr))
             {
-                returnSuppl = ClassStaticVaribles.ProdToSupplDict[tempProdNBr];
+                returnSuppl = StaticVariables.ProdToSupplDict[tempProdNBr];
             }
             return returnSuppl;
         }
@@ -310,13 +268,10 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        internal string GetStockInfo()
+        internal List<BalanceId> GetStockInfo()
         {
             string m3ProdNumber = GetM3ProdNumber();
-
-            GetM3StockInfo(m3ProdNumber);
-
-            return StockDetails;
+            return GetM3StockInfo(m3ProdNumber);
         }
     }
 }

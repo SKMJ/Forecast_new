@@ -100,19 +100,23 @@ namespace WindowsFormsForecastLactalis
 
             using (SqlCommand command = new SqlCommand())
             {
-                string cleanComment = System.Text.RegularExpressions.Regex.Replace(comment, "[áàäâãåÁÀÄÂÃÅ]", "a");
-                cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
+                //string cleanComment = System.Text.RegularExpressions.Regex.Replace(comment, "[áàäâãåÁÀÄÂÃÅ]", "a");
+                //cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
+                //string format = "yyyy-MM-dd HH:mm:ss";
+                //string thisDate = DateTime.Now.ToString(format);
+                //cleanComment = thisDate + ": " + cleanComment;
 
                 command.Connection = conn;            // <== lacking
                 command.CommandType = CommandType.Text;
-                command.CommandText = "INSERT into Debitor_Budgetlinjepost (DebitorBogføringsruppe, Varenr, Type, Startdato, Antal, Navn_DebBogfGr, Tastedato, Kommentar) VALUES (@DebitorBogføringsruppe, @Varenr, @Type, @Startdato, @Antal, @Navn_DebBogfGr, @Tastedato, @Kommentar)";
+                command.CommandText = "INSERT into " +
+                StaticVariables.TableDebitorBudgetLinjePost + " (DebitorBogføringsruppe, Varenr, Type, Startdato, Antal, Navn_DebBogfGr, Tastedato, Kommentar) VALUES (@DebitorBogføringsruppe, @Varenr, @Type, @Startdato, @Antal, @Navn_DebBogfGr, @Tastedato, @Kommentar)";
                 command.Parameters.AddWithValue("@DebitorBogføringsruppe", custNumber);
                 command.Parameters.AddWithValue("@Varenr", prodNumber);
                 command.Parameters.AddWithValue("@Type", "4");
                 command.Parameters.AddWithValue("@Startdato", startdato);
                 command.Parameters.AddWithValue("@Antal", ammount);
                 command.Parameters.AddWithValue("@Navn_DebBogfGr", custName);
-                command.Parameters.AddWithValue("@Kommentar", "" + cleanComment);
+                command.Parameters.AddWithValue("@Kommentar", "" + comment);
 
                 command.Parameters.AddWithValue("@Tastedato", nowString);
 
@@ -142,7 +146,8 @@ namespace WindowsFormsForecastLactalis
 
                 command.Connection = conn;            // <== lacking
                 command.CommandType = CommandType.Text;
-                command.CommandText = "INSERT into Debitor_Budgetlinjepost (Varenr, Type, Startdato, Antal, Tastedato, Kommentar) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato, @Kommentar)";
+                command.CommandText = "INSERT into " +
+                StaticVariables.TableDebitorBudgetLinjePost + " (Varenr, Type, Startdato, Antal, Tastedato, Kommentar) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato, @Kommentar)";
                 command.Parameters.AddWithValue("@Varenr", prodNumber);
                 command.Parameters.AddWithValue("@Type", "5");
                 command.Parameters.AddWithValue("@Startdato", startdato);
@@ -172,7 +177,8 @@ namespace WindowsFormsForecastLactalis
 
                     command.Connection = conn;            // <== lacking
                     command.CommandType = CommandType.Text;
-                    command.CommandText = "INSERT into Debitor_Budgetlinjepost (Varenr, Type, Startdato, Antal, Tastedato) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato)";
+                    command.CommandText = "INSERT into " +
+                StaticVariables.TableDebitorBudgetLinjePost + " (Varenr, Type, Startdato, Antal, Tastedato) VALUES ( @Varenr, @Type, @Startdato, @Antal, @Tastedato)";
                     command.Parameters.AddWithValue("@Varenr", prodNumber);
                     command.Parameters.AddWithValue("@Type", "6");
                     command.Parameters.AddWithValue("@Startdato", startdato);

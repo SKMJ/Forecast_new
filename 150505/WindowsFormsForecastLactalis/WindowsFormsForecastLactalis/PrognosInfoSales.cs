@@ -14,16 +14,15 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsForecastLactalis
 {
-    class PrognosInfoSales : IComparable
+    public class PrognosInfoSales : IComparable
     {
         public PrognosInfoSales(string name, string number, string customerNumber)
         {
             ProductName = name;
             ProductNumber = number;
             CustomerNumberM3 = customerNumber;
-            CustomerCodeNav = ClassStaticVaribles.GetCustNavCodes(customerNumber);
+            CustomerCodeNav = StaticVariables.GetCustNavCodes(customerNumber);
         }
-
 
         public string ProductName = "";
         public string ProductNumber = "0";
@@ -32,17 +31,16 @@ namespace WindowsFormsForecastLactalis
         public int WeekToLockFrom = 0;
 
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
-        public Dictionary<int, int> RealiseretSalgs_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_LastYear = new Dictionary<int, int>();
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
         public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
-        public Dictionary<int, int> RealiseratSalg_ThisYear = new Dictionary<int, int>();
+        public List<PromotionInfo> PromotionLines = new List<PromotionInfo>();
+        public List<ISalesRow> SalesRowsLastYear = new List<ISalesRow>();
+        public List<ISalesRow> SalesRowsThisYear = new List<ISalesRow>();
 
         int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
-
-
 
         public int CompareTo(object obj)
         {
@@ -62,25 +60,18 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
         public void FillNumbers(int selectedYear)
         {
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
             Stopwatch stopwatch2 = Stopwatch.StartNew();
-           
-
-            //MessageBox.Show("Place 3");
-
             NavSQLSupplyInformation sqlSupplyCalls = new NavSQLSupplyInformation(selectedYear, ProductNumber);
             Console.WriteLine("Time1: " + stopwatch2.ElapsedMilliseconds);
             sqlSupplyCalls.UpdateVareKort();
-            //weekPartPercentage = sqlSupplyCalls.GetPercentageWeekArray();
             int weektemp = sqlSupplyCalls.GetCurrentWeekNBR();
             string m3ProdNumber = GetM3ProdNumber();
 
             LockWeeksInfoFromM3(m3ProdNumber, weektemp);
             Console.WriteLine("Time2: " + stopwatch2.ElapsedMilliseconds);
-            //Console.WriteLine("Produkt " + ProductNumber + " Varukort,  Vecka nu: " + weektemp + " Weektolock from: " + WeekToLockFrom + " Antal att låsa: " + weekPartPercentage[0]);
 
             if (ProductName.Length < 2 || ProductName == "Name Unknown")
             {
@@ -93,85 +84,81 @@ namespace WindowsFormsForecastLactalis
             Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerCodeNav);
             Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
             Console.WriteLine("Time4: " + stopwatch2.ElapsedMilliseconds);
-            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
             Dictionary<int, int> salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerCodeNav);
-            // MessageBox.Show("Place 7");
-
-            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-            Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerCodeNav);
-
             Console.WriteLine("Time5: " + stopwatch2.ElapsedMilliseconds);
-            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
+            
+            //Load Promotion data
             Dictionary<int, int> KampagnTY;
-            if (selectedYear >= 2015)
+            KampagnTY = new Dictionary<int, int>();
+            for (int i = 0; i < 54; i++)
+            {
+                KampagnTY.Add(i, 0);
+            }
+
+            if (selectedYear > 2015)
             {
                 GetFromM3 m3 = new GetFromM3();
-                KampagnTY = new Dictionary<int, int>();
-                for (int i = 0; i < 54; i++)
+                PromotionLines = m3.GetPromotionForAllCustomerAsListv2(ProductNumber, selectedYear);
+                foreach (PromotionInfo item in PromotionLines)
                 {
-                    KampagnTY.Add(i, 0);
-                }
-                List<KampaignInfo>  Kampangrader  = m3.GetKampainForAllCustomerAsListv2(ProductNumber, selectedYear);
-                foreach(KampaignInfo item in Kampangrader)
-                {
-                    List<string>  KadjeNiva = m3.GetAllKampaignLevelsByCuse(item.tempCampCuse);
-                    //This if statement checks if the campaign is connected to this assortment
-                    if (KadjeNiva.Intersect(ClassStaticVaribles.AssortmentM3_toKedjor[CustomerNumberM3]).Any())
+                    List<string> KadjeNiva = new List<string>();
+
+                    //Get which chain the promotion is connected to
+                    if (item.PromotionType == PromotionInfo.PromotionTypeEnum.CHAIN) {
+                        KadjeNiva = m3.GetAllKampaignLevelsByCuse(item.Chain);
+                    }
+                    else if(item.PromotionType == PromotionInfo.PromotionTypeEnum.CUSTOMER)
                     {
-                        KampagnTY[item.weekNBR] = KampagnTY[item.weekNBR] + item.Antal;
+                        KadjeNiva = new ChainStructureHandler().GetChainsFromCustomer(item.Customer);
+                    }
+                    
+                    //This if statement checks if the campaign is connected to this assortment
+                    int num = (from asch in StaticVariables.AssortmentM3_toKedjor[CustomerNumberM3]
+                                from ch in KadjeNiva
+                                where ch.StartsWith(asch)
+                                select ch).Count();
+                    if(num > 0)
+                    {
+                        KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
                     }
                 }
-
-               // KampagnTY = m3.GetCampaignsOfProducts(ProductNumber, selectedYear, CustomerNumberM3);
             }
-            else
+            if(selectedYear < 2017)
             {
-                KampagnTY = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerCodeNav);
+                Dictionary<int, int> promotions = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerCodeNav);
+                foreach(var promotionItems in promotions)
+                {
+                    KampagnTY[promotionItems.Key] += promotionItems.Value;
+                }
             }
+            Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerCodeNav);
             Console.WriteLine("Time6: " + stopwatch2.ElapsedMilliseconds);
 
-            // MessageBox.Show("Place 8");
-
-
-
-            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-
-            Dictionary<int, int> relaiseratSalg_LY = sqlSalesCalls.GetRelSalg_LY(ProductNumber, CustomerCodeNav);
-
-            //sqlSalesCalls = new SQLCallsSalesCustomerInfo();
-            Dictionary<int, int> relaiseratSalg_TY = sqlSalesCalls.GetRelSalg_TY(ProductNumber, CustomerCodeNav);
+            //Load Sales data
+            SalesRowsThisYear.AddRange(sqlSalesCalls.GetRealizedSalesByYear(selectedYear, ProductNumber, CustomerNumberM3, CustomerCodeNav));
+            SalesRowsLastYear.AddRange(sqlSalesCalls.GetRealizedSalesByYear(selectedYear-1, ProductNumber, CustomerNumberM3, CustomerCodeNav));
             Console.WriteLine("Time7: " + stopwatch2.ElapsedMilliseconds);
             if (ProductName.Length < 2)
             {
                 ProductName = sqlSalesCalls.GetBeskrivelse();
             }
 
-            // MessageBox.Show("Place 9");
-
-            //Todo add the code for the otther fileds.
             Console.WriteLine("Time8: " + stopwatch2.ElapsedMilliseconds);
             for (int i = 0; i < 54; i++)
             {
                 Salgsbudget_LastYear[i] = salesBudgetLY[i];
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
-
                 RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
-                RealiseretSalgs_LastYear[i] = relaiseratSalg_LY[i];
                 Kampagn_ThisYear[i] = KampagnTY[i];
-                RealiseratSalg_ThisYear[i] = relaiseratSalg_TY[i];
                 Salgsbudget_Comment[i] = Sales_CommentTY[i];
                 Salgsbudget_ChangeHistory[i] = "";
             }
             
-            // MessageBox.Show("Place AA");
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
-
-            //MessageBox.Show("Place BB");
         }
 
-        
         /// <summary>
         /// Load from m3 is timebound since it sometimes hangs 
         /// If it hangs redo after one second
@@ -180,7 +167,6 @@ namespace WindowsFormsForecastLactalis
         /// <param name="weektemp"></param>
         private void LockWeeksInfoFromM3(string m3ProdNumber, int weektemp)
         {
-
             GetFromM3 m3Info = new GetFromM3();
 
             bool Completed = false;
@@ -204,8 +190,6 @@ namespace WindowsFormsForecastLactalis
 
                         }
                         int tempWeeksToLOCK = tempDaysLock / 7;
-
-                       
                         WeekToLockFrom = tempWeeksToLOCK + weektemp;
                     }
                     else
@@ -231,12 +215,6 @@ namespace WindowsFormsForecastLactalis
         {
             string tempProdNBr = ProductNumber;
 
-            if (ClassStaticVaribles.NewNumberDictNavKey.ContainsKey(ProductNumber))
-            {
-                tempProdNBr = ClassStaticVaribles.NewNumberDictNavKey[ProductNumber];
-
-                //Console.WriteLine("Search for pr");
-            }
             return tempProdNBr;
         }
 
@@ -275,9 +253,9 @@ namespace WindowsFormsForecastLactalis
             string returnSuppl = "";
             string tempProdNBr = GetM3ProdNumber();
 
-            if (ClassStaticVaribles.ProdToSupplDict.ContainsKey(tempProdNBr))
+            if (StaticVariables.ProdToSupplDict.ContainsKey(tempProdNBr))
             {
-                returnSuppl = ClassStaticVaribles.ProdToSupplDict[tempProdNBr];
+                returnSuppl = StaticVariables.ProdToSupplDict[tempProdNBr];
             }
             return returnSuppl;
         }

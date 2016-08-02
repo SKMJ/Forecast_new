@@ -12,11 +12,10 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsForecastLactalis
 {
-    class SQLCallsSalesCustomerInfo
+    public class SQLCallsSalesCustomerInfo
     {
         DataTable latestQueryTable; //Holds latest loaded Query output
         DataTable latestQueryTable2; //Holds latest loaded Query output if 2 needed
-        DataTable latestQueryQlickTable;
         NavSQLExecute conn;
         String Beskrivelse = "A";
 
@@ -25,19 +24,13 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, int> salesBudgetLY = new Dictionary<int, int>();
         Dictionary<int, int> realKampagn_LY = new Dictionary<int, int>();
         Dictionary<int, int> kampagn_TY = new Dictionary<int, int>();
-        Dictionary<int, int> relSalg_LY = new Dictionary<int, int>();
-        Dictionary<int, int> relSalg_TY = new Dictionary<int, int>();
 
         Dictionary<int, string> startDateStrings = new Dictionary<int, string>();
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
-        //Dictionary<int, DateTime> startDate = new Dictionary<int, DateTime>();
 
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
 
         Dictionary<string, string> infoDict = new Dictionary<string, string>();
-        
-
-
         int currentSelectedYear = 2015;
 
         enum TypeEnum
@@ -52,12 +45,11 @@ namespace WindowsFormsForecastLactalis
         public SQLCallsSalesCustomerInfo()
         {
             InitiateProperties();
-            
+
         }
 
         private void InitiateProperties()
         {
-
             startDateStrings.Add(2014, @"2013/12/29");
             endDateStrings.Add(2014, @"2014/12/29");
             startDateStrings.Add(2015, @"2014/12/28");
@@ -66,7 +58,6 @@ namespace WindowsFormsForecastLactalis
             endDateStrings.Add(2016, @"2016/12/31");
             startDateStrings.Add(2017, @"2017/01/01");
             endDateStrings.Add(2017, @"2017/12/31");
-
 
             //startDateStrings.Add(2014, @"2013/12/30");
             //endDateStrings.Add(2014, @"2014/12/30");
@@ -77,19 +68,15 @@ namespace WindowsFormsForecastLactalis
             //startDateStrings.Add(2017, @"2017/01/02");
             //endDateStrings.Add(2017, @"2018/01/01");
 
-
             for (int k = 0; k < 54; k++)
             {
                 salesBudgetTY.Add(k, 0);
                 salesBudgetLY.Add(k, 0);
                 realKampagn_LY.Add(k, 0);
                 kampagn_TY.Add(k, 0);
-                relSalg_LY.Add(k, 0);
-                relSalg_TY.Add(k, 0);
                 Salgsbudget_Comment.Add(k, " ");
             }
         }
-
 
         public Dictionary<string, string> GetAllCustomers()
         {
@@ -102,7 +89,8 @@ namespace WindowsFormsForecastLactalis
         {
             conn = new NavSQLExecute();
 
-            string query = @"select Navn_DebBogfGr, DebitorBogføringsruppe  from Debitor_Budgetlinjepost where  startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by Navn_DebBogfGr";
+            string query = @"select Navn_DebBogfGr, DebitorBogføringsruppe  from " +
+                StaticVariables.TableDebitorBudgetLinjePost + " where  startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by Navn_DebBogfGr";
             Console.WriteLine("Load All Customers: ");
             latestQueryTable = conn.QueryExWithTableReturn(query);
             conn.Close();
@@ -132,11 +120,8 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
-       
-
         //Get sales buget data as dictionary
-        public Dictionary<int, int> GetSalesBudgetTY(string prodNumber, List <string> customerName)
+        public Dictionary<int, int> GetSalesBudgetTY(string prodNumber, List<string> customerName)
         {
             LoadSalesBudgetForProductFromSQL(prodNumber, customerName, currentSelectedYear);
             PrepareLoadedSalesBudgetForGUI(currentSelectedYear);
@@ -149,7 +134,8 @@ namespace WindowsFormsForecastLactalis
             conn = new NavSQLExecute();
             string query = "";
 
-            query = @"select Type, Antal, Debitorbogføringsruppe, Startdato, Navn_DebBogfGr, Tastedato, Kommentar from Debitor_Budgetlinjepost where ";
+            query = @"select Type, Antal, Debitorbogføringsruppe, Startdato, Navn_DebBogfGr, Tastedato, Kommentar from " +
+                StaticVariables.TableDebitorBudgetLinjePost + " where ";
             bool first = true;
             foreach (string item in customerName)
             {
@@ -164,11 +150,7 @@ namespace WindowsFormsForecastLactalis
                 }
             }
             query = query + @") and Varenr='XXXX' and startdato >= '" + startDateStrings[year] + "' and startdato < '" + endDateStrings[year] + "' order by Tastedato";
-
-
-            
             query = query.Replace("XXXX", prodNumber);
-            //queryString = queryString.Replace("YYYY", customerName);
             Console.WriteLine("Load Sales Budget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(query);
             conn.Close();
@@ -199,13 +181,10 @@ namespace WindowsFormsForecastLactalis
                     //string levKedja = row["Navn_DebBogfGr"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays; 
-                    
-
-                    
+                    double week = (tempDate - StaticVariables.StartDate[year]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt +1;
+                    weekInt = weekInt + 1;
 
                     if (intType == (int)TypeEnum.SalgsBudget && weekInt < 54 && weekInt >= 0)
                     {
@@ -217,7 +196,7 @@ namespace WindowsFormsForecastLactalis
                                 Salgsbudget_Comment[weekInt] = Salgsbudget_Comment[weekInt] + " \n " + Antal + "  " + comment;
                             }
                         }
-                        else if (year == currentSelectedYear-1)
+                        else if (year == currentSelectedYear - 1)
                         {
                             salesBudgetLY[weekInt] = salesBudgetLY[weekInt] + Antal;
                         }
@@ -229,17 +208,12 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
-
-
         internal Dictionary<int, int> GetSalesBudget_LY(string ProductNumber, List<string> CustomerNumber)
         {
-            LoadSalesBudgetForProductFromSQL(ProductNumber, CustomerNumber, currentSelectedYear-1);
+            LoadSalesBudgetForProductFromSQL(ProductNumber, CustomerNumber, currentSelectedYear - 1);
             PrepareLoadedSalesBudgetForGUI(currentSelectedYear - 1);
             return salesBudgetLY;
         }
-
-
 
         public Dictionary<int, int> GetRealiseretKampagnLY(string prodNumber, List<string> custNumber)
         {
@@ -247,8 +221,6 @@ namespace WindowsFormsForecastLactalis
             PrepareRealiseretKampagnLY_ForGUI();
             return realKampagn_LY;
         }
-
-
 
         //Load info for the RealiseretKampagnLY from SQL 
         private void LoadRealiseretKampagnLY_FromSQL(string prodNumber, List<string> custNumber)
@@ -295,10 +267,9 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear - 1]).TotalDays;
+                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear - 1]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
-
 
                     if (weekInt > 0 && weekInt < 54)
                     {
@@ -309,14 +280,12 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
         internal Dictionary<int, int> GetKampagnTY(string prodNumber, List<string> custNumber)
         {
             LoadKampagnTY_FromSQL(prodNumber, custNumber);
             PrepareKampagnTY_ForGUI();
             return kampagn_TY;
         }
-
 
         private void LoadKampagnTY_FromSQL(string prodNumber, List<string> custNumber)
         {
@@ -329,11 +298,11 @@ namespace WindowsFormsForecastLactalis
                 if (first)
                 {
                     first = false;
-                    query = query + @"( Debitorbogføringsruppe='" + item + "' ";
+                    query = query + @"( Debitorbogføringsgruppe='" + item + "' ";
                 }
                 else
                 {
-                    query = query + @" or Debitorbogføringsruppe='" + item + "' ";
+                    query = query + @" or Debitorbogføringsgruppe='" + item + "' ";
                 }
             }
             query = query + @")  and Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
@@ -349,11 +318,11 @@ namespace WindowsFormsForecastLactalis
                 if (first)
                 {
                     first = false;
-                    query = query + @"( Debitorbogføringsruppe='" + item + "' ";
+                    query = query + @"( Debitorbogføringsgruppe='" + item + "' ";
                 }
                 else
                 {
-                    query = query + @" or Debitorbogføringsruppe='" + item + "' ";
+                    query = query + @" or Debitorbogføringsgruppe='" + item + "' ";
                 }
             }
             query = query + @")  and Varenr='XXXX' and Dato >= '" + startDateStrings[currentSelectedYear] + "' and Dato < '" + endDateStrings[currentSelectedYear] + "' order by Dato";
@@ -364,7 +333,6 @@ namespace WindowsFormsForecastLactalis
 
             conn.Close();
         }
-
 
         private void PrepareKampagnTY_ForGUI()
         {
@@ -383,10 +351,9 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
+                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
-
 
                     if (weekInt > 0 && weekInt < 54)
                     {
@@ -410,7 +377,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Dato"].ToString());
-                    double week = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
+                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     Beskrivelse = row["Beskrivelse"].ToString();
@@ -425,11 +392,10 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-
         public string GetSalesBudgetWeekInfo(int week, string prodNumber, List<string> customerName)
         {
             LoadSalesBudgetForProductFromSQL(prodNumber, customerName, currentSelectedYear);
-             infoDict = new Dictionary<string, string>();
+            infoDict = new Dictionary<string, string>();
             string returnString = "";
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
 
@@ -452,7 +418,7 @@ namespace WindowsFormsForecastLactalis
                     string dateforNumber = row["Tastedato"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week1 = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
+                    double week1 = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
                     double weekNBR = week1 / 7.0;
                     int weekInt = (int)Math.Floor(weekNBR);
                     weekInt = weekInt + 1;
@@ -485,247 +451,117 @@ namespace WindowsFormsForecastLactalis
             }
             return returnString;
         }
-        
 
-        internal Dictionary<int, int> GetRelSalg_LY(string prodNumber, List<string> custNumber)
+        public List<ISalesRow> GetRealizedSalesByYear(int year, string itemNumber, String customerNumber, List<string> customerNumberNav)
         {
-            if (currentSelectedYear < 2017)
+            List<ISalesRow> salesRows = new List<ISalesRow>();
+            if (year < 2017)
             {
-                LoadRelSalg_FromSQL(prodNumber, currentSelectedYear - 1, custNumber);
-                PrepareRelSalg_LYorTYForGUI(currentSelectedYear - 1,  prodNumber);
+                salesRows.AddRange(LoadRelSalg_FromSQL(itemNumber, year, customerNumberNav));
             }
-            if (currentSelectedYear > 2015)
+            if (year > 2015)
             {
-                //Get sales numbers from Qlickview
-                //if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
-                //{
-                //    LoadRelSalg_FromQlick(prodNumber, currentSelectedYear - 1, "15701");
-                //}
-                //ComputeNumberPerWeekDict(currentSelectedYear - 1);
-
+                salesRows.AddRange(LoadRealizedSalesFromM3Sales(itemNumber, year, customerNumber));
             }
-
-            return relSalg_LY;
+            return salesRows;
         }
 
-        public void LoadRelSalg_FromQlick(string prodNumber, int year, string custNumber)
-        {
-            Console.WriteLine("Load Rel SAlg: prodnr" + prodNumber + " year: " + year + " custNumber: " + custNumber);
-            ClassSQLQlickViewDataLayer conn = new ClassSQLQlickViewDataLayer();
-            string query = "";
-            query = query + @"SELECT ";
-            query = query + @"SKMJDWDataMarts.dbo.FactFörsäljning.Kvantitet, SKMJDWDataMarts.dbo.FactFörsäljning.artikelid, SKMJDWDataMarts.dbo.FactFörsäljning.kundid, SKMJDWDataMarts.dbo.FactFörsäljning.KalenderIDBekräftadLeveransDatum, SKMJDWDataMarts.dbo.FactFörsäljning.FörsäljningID, SKMJDWDataMarts.dbo.DimArtikel.ArtikelNr , SKMJDWDataMarts.dbo.DimArtikel.ArtikelNamn, SKMJDWDataMarts.dbo.FactFörsäljning.KundID ";
-            query = query + @"FROM SKMJDWDataMarts.dbo.FactFörsäljning ";
-            query = query + @"Inner join SKMJDWDataMarts.dbo.DimArtikel ";
-            query = query + @"on SKMJDWDataMarts.dbo.DimArtikel.ArtikelId = SKMJDWDataMarts.dbo.FactFörsäljning.ArtikelId ";
-            query = query + @"Inner join SKMJDWDataMarts.dbo.DimKund ";
-            query = query + @"on SKMJDWDataMarts.dbo.DimKund.KundID = SKMJDWDataMarts.dbo.FactFörsäljning.KundID ";
-            query = query + @"WHERE FörsäljningID > '60000000' ";
-            query = query + @"AND SKMJDWDataMarts.dbo.DimArtikel.ArtikelNR =  'XXXXX' ";
-            query = query + @"AND SKMJDWDataMarts.dbo.DimKund.kundNR = 'YYYYY' ";
+        //public void LoadRelSalg_FromQlick(string prodNumber, int year, string custNumber)
+        //{
+        //    Console.WriteLine("Load Rel SAlg: prodnr" + prodNumber + " year: " + year + " custNumber: " + custNumber);
+        //    ClassSQLQlickViewDataLayer conn = new ClassSQLQlickViewDataLayer();
+        //    string query = "";
+        //    query = query + @"SELECT ";
+        //    query = query + @"SKMJDWDataMarts.dbo.FactFörsäljning.Kvantitet, SKMJDWDataMarts.dbo.FactFörsäljning.artikelid, SKMJDWDataMarts.dbo.FactFörsäljning.kundid, SKMJDWDataMarts.dbo.FactFörsäljning.KalenderIDBekräftadLeveransDatum, SKMJDWDataMarts.dbo.FactFörsäljning.FörsäljningID, SKMJDWDataMarts.dbo.DimArtikel.ArtikelNr , SKMJDWDataMarts.dbo.DimArtikel.ArtikelNamn, SKMJDWDataMarts.dbo.FactFörsäljning.KundID ";
+        //    query = query + @"FROM SKMJDWDataMarts.dbo.FactFörsäljning ";
+        //    query = query + @"Inner join SKMJDWDataMarts.dbo.DimArtikel ";
+        //    query = query + @"on SKMJDWDataMarts.dbo.DimArtikel.ArtikelId = SKMJDWDataMarts.dbo.FactFörsäljning.ArtikelId ";
+        //    query = query + @"Inner join SKMJDWDataMarts.dbo.DimKund ";
+        //    query = query + @"on SKMJDWDataMarts.dbo.DimKund.KundID = SKMJDWDataMarts.dbo.FactFörsäljning.KundID ";
+        //    query = query + @"WHERE FörsäljningID > '60000000' ";
+        //    query = query + @"AND SKMJDWDataMarts.dbo.DimArtikel.ArtikelNR =  'XXXXX' ";
+        //    query = query + @"AND SKMJDWDataMarts.dbo.DimKund.kundNR = 'YYYYY' ";
 
-            query = query.Replace("XXXXX", prodNumber);
-            query = query.Replace("YYYYY", custNumber);
-           // Console.WriteLine("LoadRealiseretKampagnLY Query Qlickview: " + queryString2);
-            latestQueryQlickTable = conn.QueryExWithTableReturn(query);
-            //dataGridViewQlickviewData.DataSource = latestQueryTable;
+        //    query = query.Replace("XXXXX", prodNumber);
+        //    query = query.Replace("YYYYY", custNumber);
+        //   // Console.WriteLine("LoadRealiseretKampagnLY Query Qlickview: " + queryString2);
+        //    latestQueryQlickTable = conn.QueryExWithTableReturn(query);
+        //    //dataGridViewQlickviewData.DataSource = latestQueryTable;
 
-            conn.Close();
-        }
-
-
-        private void ComputeNumberPerWeekDict(int year)
-        {
-            DataRow[] currentRows = latestQueryQlickTable.Select(null, null, DataViewRowState.CurrentRows);
-
-            if (currentRows.Length < 1)
-            {
-                Console.WriteLine("No prepare salg Rows Found" + year);
-            }
-            else
-            {
-                //loop trough all rows and write in tabs
-                foreach (DataRow row in currentRows)
-                {
-                    string levAntal = row["Kvantitet"].ToString();
-                    double ant = Math.Floor(Convert.ToDouble(levAntal));
-                    int Antal = Convert.ToInt32(ant);
-
-                    //int postType = Convert.ToInt32(row["Posttype"].ToString());
-                    //string lokKode = row["Lokationskode"].ToString();
-                    //bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
-                    string dateString = row["KalenderIDBekräftadLeveransDatum"].ToString();
-                    DateTime tempDate = DateTime.ParseExact(dateString,
-                                                            "yyyyMMdd",
-                                                            CultureInfo.InvariantCulture,
-                                                            DateTimeStyles.None);
-
-                    string tempNameString = row["ArtikelNamn"].ToString();
-                    if (Beskrivelse.Length < 2)
-                    {
-                        Beskrivelse = tempNameString;
-                        Console.WriteLine("Get Name from Qlickview: " + Beskrivelse);
-                    }
-                    double dayOFYear = 0;
-
-                    dayOFYear = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays;
-
-                    double weekNBR = dayOFYear / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt + 1;
-
-                    if (weekInt > 0 && weekInt < 54)
-                    {
-                        if (currentSelectedYear == year)
-                        {
-                            if (Antal > 0)
-                            {
-                                relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
-                            }
-                        }
-                        else if (currentSelectedYear - 1 == year)
-                        {
-                            if (Antal > 0)
-                            {
-                                relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        internal Dictionary<int, int> GetRelSalg_TY(string prodNumber, List<string> custNumbers)
-        {
-            Console.WriteLine("Start GetRelSalgTY: " + prodNumber + " Cust Number: " + custNumbers);
-            
-
-            if (currentSelectedYear < 2016)
-            {
-                LoadRelSalg_FromSQL(prodNumber, currentSelectedYear, custNumbers);
-                PrepareRelSalg_LYorTYForGUI(currentSelectedYear,  prodNumber);
-            }
-            if (currentSelectedYear > 2014)
-            {
-                //Get sales numbers from Qlickview
-                //if (latestQueryQlickTable == null || latestQueryQlickTable.Rows.Count <= 0)
-                //{
-                //    LoadRelSalg_FromQlick(prodNumber, currentSelectedYear , "15701");
-                //}
-                //ComputeNumberPerWeekDict(currentSelectedYear);
-
-            }
-            return relSalg_TY;
-        }
-
-        private void PrepareRelSalg_LYorTYForGUI(int year, string prodNumber)
-        {
-
-            DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
-
-            if (currentRows.Length < 1)
-            {
-                Console.WriteLine("No prepare kampagn Rows Found");
-            }
-            else
-            {
-                //loop trough all rows and write in tabs
-                foreach (DataRow row in currentRows)
-                {
-                    string levAntal = row["Faktureret_antal"].ToString();
-                    int Antal = Convert.ToInt32(levAntal);
-
-                    int postType = Convert.ToInt32(row["Posttype"].ToString());
-                    string lokKode = row["Lokationskode"].ToString();
-                    bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
-
-                    DateTime tempDate = DateTime.Parse(row["Bogføringsdato"].ToString());
-                    double dayOFYear = 0;
-
-                    dayOFYear = (tempDate - ClassStaticVaribles.StartDate[year]).TotalDays;
-
-                    double weekNBR = dayOFYear / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
-
-                    if (Antal > 0)
-                    {
-
-                        //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
-                    }
-                    if (weekInt > 0 && weekInt < 54)
-                    {
-                        if (year == currentSelectedYear - 1)
-                        {
-                            //if (prodNumber == 2735 && weekInt == 1 || weekInt == 2 || weekInt == 8)
-                            //{
-                                if (levEgetLager)
-                                {
-                                    if (postType == 2)
-                                    {
-                                        if (lokKode.Equals("8"))
-                                        {
-                                           // Console.WriteLine("Antal 1: " + Antal + " week: " + weekInt);
-                                            relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
-                                        }
-                                        else if (lokKode.Equals("100"))
-                                        {
-                                           // Console.WriteLine("Antal 2: " + Antal + " week: " + weekInt);
-                                            relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
-
-                                    if (postType == 1)
-                                    {
-                                        //Console.WriteLine("Antal 3: " + Antal + " week: " + weekInt);
-                                        relSalg_LY[weekInt] = relSalg_LY[weekInt] - Antal; 
-                                    }
-                                }
-                            //}
-
-                        }
-                        else if (year == currentSelectedYear)
-                        {
-
-                            if (levEgetLager)
-                            {
-                                if (postType == 2)
-                                {
-                                    if (lokKode.Equals("8"))
-                                    {
-                                        relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
-                                    }
-                                    else if (lokKode.Equals("100"))
-                                    {
-                                        relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                //Console.WriteLine(tempDate + "Realiseret Salg: week: " + weekInt + " Antal: " + Antal + " posttype: " + postTypeString + " bool: " + levEgetLager + " lokCode: " + lokKode);
-
-                                if (postType == 1)
-                                {
-                                    relSalg_TY[weekInt] = relSalg_TY[weekInt] - Antal;
-                                }
-                            }
-                        }
+        //    conn.Close();
+        //}
 
 
-                    }
-                }
-            }
-        }
+        //private void ComputeNumberPerWeekDict(int year)
+        //{
+        //    DataRow[] currentRows = latestQueryQlickTable.Select(null, null, DataViewRowState.CurrentRows);
 
-        private void LoadRelSalg_FromSQL(string prodNumber, int year, List<string> custNumber)
+        //    if (currentRows.Length < 1)
+        //    {
+        //        Console.WriteLine("No prepare salg Rows Found" + year);
+        //    }
+        //    else
+        //    {
+        //        //loop trough all rows and write in tabs
+        //        foreach (DataRow row in currentRows)
+        //        {
+        //            string levAntal = row["Kvantitet"].ToString();
+        //            double ant = Math.Floor(Convert.ToDouble(levAntal));
+        //            int Antal = Convert.ToInt32(ant);
+
+        //            //int postType = Convert.ToInt32(row["Posttype"].ToString());
+        //            //string lokKode = row["Lokationskode"].ToString();
+        //            //bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
+        //            string dateString = row["KalenderIDBekräftadLeveransDatum"].ToString();
+        //            DateTime tempDate = DateTime.ParseExact(dateString,
+        //                                                    "yyyyMMdd",
+        //                                                    CultureInfo.InvariantCulture,
+        //                                                    DateTimeStyles.None);
+
+        //            string tempNameString = row["ArtikelNamn"].ToString();
+        //            if (Beskrivelse.Length < 2)
+        //            {
+        //                Beskrivelse = tempNameString;
+        //                Console.WriteLine("Get Name from Qlickview: " + Beskrivelse);
+        //            }
+        //            double dayOFYear = 0;
+
+        //            dayOFYear = (tempDate - StaticVariables.StartDate[year]).TotalDays;
+
+        //            double weekNBR = dayOFYear / 7.0;
+        //            int weekInt = (int)Math.Floor(weekNBR);
+        //            weekInt = weekInt + 1;
+
+        //            if (weekInt > 0 && weekInt < 54)
+        //            {
+        //                if (currentSelectedYear == year)
+        //                {
+        //                    if (Antal > 0)
+        //                    {
+        //                        relSalg_TY[weekInt] = relSalg_TY[weekInt] + Antal;
+        //                    }
+        //                }
+        //                else if (currentSelectedYear - 1 == year)
+        //                {
+        //                    if (Antal > 0)
+        //                    {
+        //                        relSalg_LY[weekInt] = relSalg_LY[weekInt] + Antal;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
+        private List<ISalesRow> LoadRelSalg_FromSQL(string prodNumber, int year, List<string> custNumber)
         {
             conn = new NavSQLExecute();
             string query = "";
-            query = @"select Bogføringsdato, Faktureret_antal, LeverandørlagerOrdre, Posttype, Lokationskode  from  Varepost_Skyggetabel where ";
+            query = @"select DISTINCT Løbenr, Bogføringsdato, ISNULL(Styk_antal, Faktureret_antal) Styk_antal, LeverandørlagerOrdre, Posttype, Lokationskode, Varenr, AssortmentName
+                        from  Varepost_Skyggetabel vs
+                        LEFT OUTER JOIN dbo.AssortmentNav an ON Bogfgruppe = an.NavAssortment
+                        LEFT OUTER JOIN " + StaticVariables.TableChainAssortment + @" AS a ON an.Assortment = a.AssortmentCode
+                        where ";
             bool first = true;
             foreach (string item in custNumber)
             {
@@ -740,22 +576,162 @@ namespace WindowsFormsForecastLactalis
                 }
             }
             query = query + @")  and Varenr='XXXX' and Bogføringsdato >= '" + startDateStrings[year] + "' and Bogføringsdato < '" + endDateStrings[year] + "' order by Bogføringsdato";
-            //if (year == 2014)
-            //{
-            //    queryString = @"select Bogføringsdato, Faktureret_antal, LeverandørlagerOrdre, Posttype, Lokationskode  from  Varepost_Skyggetabel where Bogfgruppe='YYYY' and Varenr='XXXX' and Bogføringsdato >= '2013/12/30' and Bogføringsdato < '2014/12/30'";
-
-            //}
-            //else
-            //{
-            //    queryString = @"select Bogføringsdato, Faktureret_antal, LeverandørlagerOrdre, Posttype, Lokationskode  from  Varepost_Skyggetabel where  Bogfgruppe='YYYY' and Varenr='XXXX' and Bogføringsdato >= '2014/12/29' and Bogføringsdato < '2016/01/05'";
-
-            //}
-
             query = query.Replace("XXXX", prodNumber.ToString());
-            //queryString = queryString.Replace("YYYY", custNumber[0]);
             Console.WriteLine("LoadRelSalgsbudget Query: ");
+
+            List<ISalesRow> salesRows = new List<ISalesRow>();
+            DataTable table = conn.QueryExWithTableReturn(query);
+            DataRowCollection rows = table.Rows;
+            foreach (DataRow row in rows)
+            {
+                bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
+                string lokKode = row["Lokationskode"].ToString();
+                int postType = Convert.ToInt32(row["Posttype"].ToString());
+                DateTime date = (DateTime)row["Bogføringsdato"];
+                int week = GetWeek(date, year);
+                double quantity = Convert.ToDouble(row["Styk_antal"].ToString());
+                if (levEgetLager && postType == 2)
+                {
+                    if (lokKode.Equals("8") || lokKode.Equals("100"))
+                    {
+                        //Placeholder
+                    }
+                }
+                else if (!levEgetLager && postType == 1)
+                {
+                    quantity = -1 * quantity;
+                }
+                else
+                {
+                    quantity = 0;
+                }
+                if (quantity > 0)
+                {
+                    salesRows.Add(new SalesRowNavision()
+                    {
+                        Date = (DateTime)row["Bogføringsdato"],
+                        SupplyOwnStock = (bool)row["LeverandørlagerOrdre"],
+                        Quantity = (int)Math.Round(quantity, 0),
+                        Posttype = Convert.ToInt32(row["Posttype"].ToString()),
+                        ItemNumber = row["Varenr"].ToString(),
+                        Week = week,
+                        CustomerName = row["AssortmentName"].ToString(),
+                    });
+                }
+            }
+            return salesRows;
+        }
+
+        public int GetWeek(DateTime date, int year)
+        {
+            double dayOFYear = 0;
+            int week;
+            dayOFYear = (date - StaticVariables.StartDate[year]).TotalDays;
+
+            double weekNBR = dayOFYear / 7.0;
+            week = (int)Math.Floor(weekNBR);
+            week = week + 1;
+            return week;
+        }
+
+        private List<ISalesRow> LoadRealizedSalesFromM3Sales(string prodNumber, int year, string custNumber)
+        {
+            conn = new NavSQLExecute();
+            List<ISalesRow> salesRows = new List<ISalesRow>();
+            string query = "";
+            string tableSales = StaticVariables.TableM3Sales;
+            string tableChainCustomer = StaticVariables.TableChainCustomer;
+            string tableChainAssortment = StaticVariables.TableChainAssortment;
+            query = String.Format(@"SELECT * FROM (SELECT
+	                                [UCORNO],
+	                                [UCDLDT],
+                                    [UCIVQT],
+	                                [UCITNO],
+	                                [UCCUNO],
+                                    [F1A130],
+	                                CASE 
+		                                WHEN a.assortmentName IS NOT NULL	THEN a.assortmentName
+		                                WHEN a1.assortmentName IS NOT NULL	THEN a1.assortmentName
+		                                WHEN a2.assortmentName IS NOT NULL	THEN a2.assortmentName
+		                                WHEN a3.assortmentName IS NOT NULL	THEN a3.assortmentName
+		                                ELSE 'Øvrige'
+	                                END AssortmentName,
+	                                CASE 
+		                                WHEN a.assortmentCode IS NOT NULL	THEN a.assortmentCode
+		                                WHEN a1.assortmentCode IS NOT NULL	THEN a1.assortmentCode
+		                                WHEN a2.assortmentCode IS NOT NULL	THEN a2.assortmentCode
+		                                WHEN a3.assortmentCode IS NOT NULL	THEN a3.assortmentCode
+		                                ELSE 'Øvrige'
+	                                END AssortmentCode
+                                  FROM " + tableSales + @" 
+                                    LEFT OUTER JOIN " + tableChainCustomer + @" AS c ON " + tableSales + @".UCCUNO = c.Customer
+                                    LEFT OUTER JOIN " + tableChainAssortment + @" AS a ON a.Chain = c.Chain
+	                                LEFT OUTER JOIN " + tableChainAssortment + @" a1 ON a1.Chain = UCCHL1
+	                                LEFT OUTER JOIN " + tableChainAssortment + @" a2 ON a2.Chain = UCCHL2
+	                                LEFT OUTER JOIN " + tableChainAssortment + @" a3 ON a3.Chain = UCCHL3
+                                    WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1} ) A WHERE AssortmentCode LIKE '{2}%'", prodNumber, year, custNumber);
+
+            DataTable table = conn.QueryExWithTableReturn(query);
+            DataRowCollection rows = table.Rows;
+
+            foreach (DataRow row in rows)
+            {
+                DateTime date = DateTime.ParseExact(row["UCDLDT"].ToString(),
+                                                    "yyyyMMdd",
+                                                    CultureInfo.InvariantCulture,
+                                                    DateTimeStyles.None);
+                int quantity = (int)Convert.ToDecimal(row["UCIVQT"].ToString());
+                int week = StaticVariables.GetWeek2(date);
+                int bbd = (int)Convert.ToInt32(row["F1A130"].ToString());
+                salesRows.Add(new SalesRow()
+                {
+                    Date = date,
+                    OrderNumber = row["UCORNO"].ToString(),
+                    Quantity = quantity,
+                    Customer = row["UCCUNO"].ToString(),
+                    ItemNumber = row["UCITNO"].ToString(),
+                    Week = week,
+                    BestBeforeDate = bbd,
+                    CustomerName = row["AssortmentName"].ToString()
+                });
+            }
+            //query = query + " order by UCDLDT";
+
+            Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
+            Console.WriteLine(query);
             latestQueryTable = conn.QueryExWithTableReturn(query);
+            return salesRows;
             //throw new NotImplementedException();
+        }
+
+        [Obsolete("Not used")]
+        private void LoadRelSalg_FromM3SQL(string prodNumber, int year, List<string> custNumber)
+        {
+            conn = new NavSQLExecute();
+            string query = "";
+            query = String.Format(@"SELECT UCDLDT, UCIVQT, UCORNO, UCITNO, UCORNO, UCCUNO, AssortmentName, AssortmentCode FROM " +
+                                    StaticVariables.TableM3Sales + @" 
+                                    INNER JOIN " + StaticVariables.TableChainCustomer + @" c ON Customer = UCCUNO
+                                    LEFT OUTER JOIN " + StaticVariables.TableChainAssortment + @" AS a ON c.Chain = a.Chain 
+                                    WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1}", prodNumber, year);
+            bool first = true;
+            foreach (string customer in custNumber)
+            {
+                if (first)
+                {
+                    first = false;
+                    query = query + String.Format(" AND AssortmentCode LIKE '{0}%' ", customer);
+                }
+                else
+                {
+                    query = query + String.Format(" OR AssortmentCode LIKE '{0}%' ", customer);
+                }
+            }
+            query = query + " order by UCDLDT";
+
+            Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
+            Console.WriteLine(query);
+            latestQueryTable = conn.QueryExWithTableReturn(query);
         }
 
         internal void SetYear(int selectedYear)
@@ -777,7 +753,7 @@ namespace WindowsFormsForecastLactalis
         internal int GetCurrentWeekNBR()
         {
             DateTime tempDate = DateTime.Now;
-            double week1 = (tempDate - ClassStaticVaribles.StartDate[currentSelectedYear]).TotalDays;
+            double week1 = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
             double weekNBR = week1 / 7.0;
             int weekInt = (int)Math.Floor(weekNBR);
             weekInt = weekInt + 1;

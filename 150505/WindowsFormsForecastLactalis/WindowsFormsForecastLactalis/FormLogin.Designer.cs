@@ -48,7 +48,7 @@
             this.buttonLogIN.Margin = new System.Windows.Forms.Padding(4);
             this.buttonLogIN.Name = "buttonLogIN";
             this.buttonLogIN.Size = new System.Drawing.Size(106, 37);
-            this.buttonLogIN.TabIndex = 0;
+            this.buttonLogIN.TabIndex = 4;
             this.buttonLogIN.Text = "Log In";
             this.buttonLogIN.UseVisualStyleBackColor = false;
             this.buttonLogIN.Click += new System.EventHandler(this.buttonLogIN_Click);
@@ -59,7 +59,7 @@
             this.labelUserName.Location = new System.Drawing.Point(102, 114);
             this.labelUserName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelUserName.Name = "labelUserName";
-            this.labelUserName.Size = new System.Drawing.Size(120, 24);
+            this.labelUserName.Size = new System.Drawing.Size(98, 18);
             this.labelUserName.TabIndex = 1;
             this.labelUserName.Text = "User Name:";
             // 
@@ -69,7 +69,7 @@
             this.labelPwd.Location = new System.Drawing.Point(102, 223);
             this.labelPwd.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelPwd.Name = "labelPwd";
-            this.labelPwd.Size = new System.Drawing.Size(106, 24);
+            this.labelPwd.Size = new System.Drawing.Size(88, 18);
             this.labelPwd.TabIndex = 2;
             this.labelPwd.Text = "Password:";
             // 
@@ -77,16 +77,16 @@
             // 
             this.textBoxUserName.Location = new System.Drawing.Point(106, 156);
             this.textBoxUserName.Name = "textBoxUserName";
-            this.textBoxUserName.Size = new System.Drawing.Size(240, 28);
-            this.textBoxUserName.TabIndex = 3;
+            this.textBoxUserName.Size = new System.Drawing.Size(240, 24);
+            this.textBoxUserName.TabIndex = 0;
             // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(106, 267);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(240, 28);
-            this.textBox1.TabIndex = 4;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.Size = new System.Drawing.Size(240, 24);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
             // pictureBox1
             // 
@@ -105,17 +105,18 @@
             this.labelMessageText.Location = new System.Drawing.Point(19, 324);
             this.labelMessageText.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelMessageText.Name = "labelMessageText";
-            this.labelMessageText.Size = new System.Drawing.Size(24, 24);
+            this.labelMessageText.Size = new System.Drawing.Size(18, 18);
             this.labelMessageText.TabIndex = 6;
             this.labelMessageText.Text = "A";
             // 
             // comboBoxProdOrTest
             // 
+            this.comboBoxProdOrTest.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxProdOrTest.FormattingEnabled = true;
             this.comboBoxProdOrTest.Location = new System.Drawing.Point(308, 69);
             this.comboBoxProdOrTest.Name = "comboBoxProdOrTest";
-            this.comboBoxProdOrTest.Size = new System.Drawing.Size(155, 30);
-            this.comboBoxProdOrTest.TabIndex = 7;
+            this.comboBoxProdOrTest.Size = new System.Drawing.Size(155, 25);
+            this.comboBoxProdOrTest.TabIndex = 3;
             this.comboBoxProdOrTest.SelectedIndexChanged += new System.EventHandler(this.comboBoxProdOrTest_SelectedIndexChanged);
             // 
             // labelM3Version
@@ -123,14 +124,14 @@
             this.labelM3Version.AutoSize = true;
             this.labelM3Version.Location = new System.Drawing.Point(308, 46);
             this.labelM3Version.Name = "labelM3Version";
-            this.labelM3Version.Size = new System.Drawing.Size(116, 24);
+            this.labelM3Version.Size = new System.Drawing.Size(93, 18);
             this.labelM3Version.TabIndex = 8;
             this.labelM3Version.Text = "M3 Version";
             this.labelM3Version.Click += new System.EventHandler(this.labelM3Version_Click);
             // 
             // FormLogin
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 22F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(475, 374);
