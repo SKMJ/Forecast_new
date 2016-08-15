@@ -16,16 +16,18 @@ namespace WindowsFormsForecastLactalis
 
     public class PrognosInfoForSupply : IComparable
     {
-        public PrognosInfoForSupply(string name, string number, bool showLastYear)
+        public PrognosInfoForSupply(string name, string number, bool showLastYear, int status)
         {
             ProductName = name;
             ProductNumber = number;
             ShowLastYear = showLastYear;
+            Status = status;
         }
 
         public string ProductName = "";
         public string WareHouse = "";
         public string Supplier = "";
+        public int Status;
         public string PrepLocation = "";
         public bool InLactaFranceFile = false;
         public bool ShowLastYear = false;

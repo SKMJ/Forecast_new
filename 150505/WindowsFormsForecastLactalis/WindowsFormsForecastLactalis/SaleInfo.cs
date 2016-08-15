@@ -36,6 +36,7 @@ namespace WindowsFormsForecastLactalis
                 int quantity = 0;
                 string customer = "";
                 string bbd = "";
+                string wantedBbd = "";
                 if (row is SalesRow)
                 {
                     SalesRow m3row = (SalesRow)row;
@@ -44,6 +45,7 @@ namespace WindowsFormsForecastLactalis
                     quantity = m3row.Quantity;
                     customer = m3row.Customer;
                     bbd = "" + m3row.BestBeforeDate;
+                    wantedBbd = "" + m3row.WantedBestBeforeDate;
                 }
                 else
                 {
@@ -55,24 +57,26 @@ namespace WindowsFormsForecastLactalis
                     first = false;
                     treeNode1 = new TreeNode(String.Format("{0}", customer));
                 }*/
-                System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode(String.Format("{0,-30}\t{1,-30}\t{2,-30}\t{3,-30}\t{4,-30}",
+                System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode(String.Format("{0,-30}\t{1,-30}\t{2,-30}\t{3,-30}\t{5,-30}\t{4,-30}",
                                                                                                             date,
                                                                                                             customer,
                                                                                                             orderNumber,
                                                                                                             quantity,
-                                                                                                            bbd));
+                                                                                                            bbd,
+                                                                                                            wantedBbd));
                 if (!currentCustomer.Equals(row.CustomerName))
                 {
                     treeNode1.Text = treeNode1.Text + " - " + totalQuantity + " st";
                     totalQuantity = 0;
                     treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", row.CustomerName));
                     treeView1.Nodes.Add(treeNode1);
-                    treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("{0,-30}\t{1,-30}\t{2,-30}\t{3,-30}\t{4,-30}",
+                    treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("{0,-30}\t{1,-30}\t{2,-30}\t{3,-30}\t{5,-30}\t{4,-30}",
                                                                                             "Dato" + "                                   ",
                                                                                             "Kund" + "                               ",
                                                                                             "Order" + "                              ",
                                                                                             "Antal" + "                              ",
-                                                                                            "BBD")));
+                                                                                            "BBD" + "                              ",
+                                                                                            "Ønsket BBD")));
                     currentCustomer = row.CustomerName;
                 }
                 //System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Order     BBD       Kvantitet");

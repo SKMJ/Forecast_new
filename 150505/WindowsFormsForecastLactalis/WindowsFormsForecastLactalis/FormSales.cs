@@ -27,11 +27,14 @@ namespace WindowsFormsForecastLactalis
         TextBoxForm infoboxSales = new TextBoxForm();
         private string latestProductNumber;
         private string latestCustomerLoaded;
-        private int latestWeek;
+        private int latestClickedWeek;
+        private int latestClickedYear;
         Point latestMouseClick;
         int selectedYear;
         bool AssortmentFromM3 = true;
         StaticVariables.WritePermission OnlyLook;
+
+        int forecastNbrWeeks;
 
         private bool loadingNewProductsOngoing;
 
@@ -54,6 +57,10 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Start Form1!");
 
 
+            forecastNbrWeeks = 20;
+            latestClickedWeek = 1;
+            latestClickedYear = 1000;
+
             loadingNewProductsOngoing = false;
             //test with Coop and test customer
             FixCustomerChoices();
@@ -68,8 +75,31 @@ namespace WindowsFormsForecastLactalis
 
             dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
+
+
             StaticVariables.SetAllProductsNavDict(allProductsDict);
             StaticVariables.InitiateDate();
+
+            DateTime dateTemp = StaticVariables.GetForecastStartDateOfWeeknumber(2016, 31);
+            Console.WriteLine("Wanted day1: " + dateTemp.ToString("MMMM dd, yyyy"));
+            dateTemp = StaticVariables.GetForecastStartDateOfWeeknumber(2017, 1);
+            Console.WriteLine("Wanted day2: " + dateTemp.ToString("MMMM dd, yyyy"));
+            //DateTime monFirstWeek;
+            //for (int i = 2010; i < 2031; i++)
+            //{
+            //    monFirstWeek = StaticVariables.FirstMonYearWeakOne(i);
+            //    Console.WriteLine("First day of year: " + monFirstWeek.ToString("MMMM dd, yyyy") + "  " + monFirstWeek.DayOfWeek.ToString());
+
+            //    monFirstWeek = StaticVariables.FirstSaturdayBeforeWeakOne(i);
+            //    Console.WriteLine("First day of year: " + monFirstWeek.ToString("MMMM dd, yyyy") + "  " + monFirstWeek.DayOfWeek.ToString());
+            //}
+
+            //string s = "2016-12-28";
+            //    //string s = "2015-01-03";
+
+            //    DateTime dt =
+            //        DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            //    StaticVariables.GetForecastWeeknumberForDate(dt);
         }
 
 
@@ -97,14 +127,15 @@ namespace WindowsFormsForecastLactalis
                 comboBoxAssortment.DisplayMember = "Value";
                 comboBoxAssortment.ValueMember = "Key";
             }
-            List<int> yearList = new List<int>();
-            yearList.Add(2015);
-            yearList.Add(2016);
-            yearList.Add(2017);
+            List<string> yearList = new List<string>();
+            yearList.Add("Now");
+            yearList.Add("2015");
+            yearList.Add("2016");
+            yearList.Add("2017");
 
             comboBoxYear.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxYear.DataSource = new BindingSource(yearList, null);
-            comboBoxYear.SelectedIndex = comboBoxYear.Items.IndexOf(DateTime.Now.Year);
+            comboBoxYear.SelectedIndex = comboBoxYear.Items.IndexOf("Now");
         }
 
         //This takes a list of strings and add a row column by column
@@ -125,10 +156,93 @@ namespace WindowsFormsForecastLactalis
                 dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
                 dataGridForecastInfo.Columns[2].Name = "Type";
 
-                for (int i = 1; i < 54; i++)
+
+                if (selectedYear == 1000)
                 {
-                    string temp = i + "." + comboBoxYear.Text;
-                    dataGridForecastInfo.Columns[i + 2].Name = temp;
+                    int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
+                    if (StaticVariables.TestWeek > 0)
+                    {
+                        currentWeek = StaticVariables.TestWeek;
+                    }
+
+                    if (currentWeek > 26)
+                    {
+                        int weekNumber = currentWeek - forecastNbrWeeks;
+                        for (int i = 1; i < (forecastNbrWeeks * 2 + 2); i++)
+                        {
+                            string temp;
+                            if (weekNumber > 52)
+                            {
+                                int yearNext = DateTime.Now.Year + 1;
+                                temp = (weekNumber - 52) + "." + yearNext.ToString();
+                            }
+                            else
+                            {
+                                temp = weekNumber + "." + DateTime.Now.Year.ToString();
+                            }
+                            if (weekNumber == currentWeek)
+                            {
+                                temp = temp + " Now";
+                            }
+                            weekNumber++;
+                            dataGridForecastInfo.Columns[i + 2].Name = temp;
+                        }
+
+                        for (int i = (forecastNbrWeeks * 2 + 2); i <= 53; i++)
+                        {
+                            string temp = "XXXX";
+                            weekNumber++;
+                            dataGridForecastInfo.Columns[i + 2].Name = temp;
+                        }
+                    }
+                    else
+                    {
+                        int weekNumber = currentWeek - forecastNbrWeeks;
+                        for (int i = 1; i < (forecastNbrWeeks * 2 + 2); i++)
+                        {
+                            string temp;
+                            if (weekNumber < 1)
+                            {
+                                int yearLast = DateTime.Now.Year - 1;
+                                temp = (weekNumber + 52) + "." + yearLast.ToString();
+                            }
+                            else
+                            {
+                                temp = weekNumber + "." + DateTime.Now.Year.ToString();
+                            }
+
+                            if (weekNumber == currentWeek)
+                            {
+                                temp = temp + " Now";
+                            }
+                            weekNumber++;
+                            dataGridForecastInfo.Columns[i + 2].Name = temp;
+                        }
+
+                        for (int i = (forecastNbrWeeks * 2 + 2); i <= 53; i++)
+                        {
+                            string temp = "XXXX";
+                            weekNumber++;
+                            dataGridForecastInfo.Columns[i + 2].Name = temp;
+                        }
+                    }
+                    //selectedYear = 2016;
+                }
+                //selected year not Now
+                else
+                {
+
+                    for (int i = 1; i < 54; i++)
+                    {
+                        int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
+                        
+                        string temp = i + "." + comboBoxYear.Text;
+                        if (i == currentWeek && selectedYear == DateTime.Now.Year)
+                        {
+                            temp = temp + " Now";
+                        }
+                        dataGridForecastInfo.Columns[i + 2].Name = temp;
+                    }
                 }
 
                 foreach (DataGridViewColumn item in dataGridForecastInfo.Columns)
@@ -136,12 +250,31 @@ namespace WindowsFormsForecastLactalis
                     item.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
                 }
+
+
+                //Scroll to this week
+                int columnNow = 0;
+                for (int i = 0; i < dataGridForecastInfo.Columns.Count; i++)
+                {
+                    if (dataGridForecastInfo.Columns[i].Name.Contains("Now"))
+                    {
+                        columnNow = i;
+                        break;
+                    };
+                }
+                if (columnNow > 0)
+                {
+                    dataGridForecastInfo.FirstDisplayedScrollingColumnIndex = columnNow;
+                }
             }
         }
 
         Comparer _comparer = new Comparer(System.Globalization.CultureInfo.CurrentCulture);
         public int Compare(PrognosInfoSales x, PrognosInfoSales y)
         {
+            if (x.Status < 90 && y.Status == 90) return -1;
+            if (x.Status == 90 && y.Status < 90) return 1;
+
             string numxs = string.Concat(x.ProductNumber.TakeWhile(c => char.IsDigit(c)).ToArray());
             string numys = string.Concat(y.ProductNumber.TakeWhile(c => char.IsDigit(c)).ToArray());
 
@@ -198,120 +331,352 @@ namespace WindowsFormsForecastLactalis
                     Week = r.Key.Week,
                     Sum = r.Sum(x => x.Quantity)
                 });
-                weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 2); //+ 2 is offset from cell number to week number
-                weekProdNBR++;
-                List<object> tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Vecka");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(i);
-                    //tempList.Add(item.RealiseretSalgs_LastYear[i]);
-                }
-                AddRowFromList(tempList);
 
-                tempList = new List<object>();
-                tempList.Add(item.ProductNumber.ToString());
-                tempList.Add(item.ProductName);
-
-                tempList.Add("RealiseretSalg_LastYear");
-                for (int i = 1; i < 54; i++)
+                if (selectedYear == 1000)
                 {
-                    var sum = from line in salesLastYear
-                              where line.Week == i
-                              select line.Sum;
-                    tempList.Add(sum.FirstOrDefault());
-                    //tempList.Add(item.RealiseretSalgs_LastYear[i]);
-                }
-                AddRowFromList(tempList);
-
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("RealiseretKampagn_LastYear");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(item.RealiseretKampagn_LastYear[i]);
-                }
-                AddRowFromList(tempList);
-
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Salgsbudget_LastYear");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(item.Salgsbudget_LastYear[i]);
-                }
-                AddRowFromList(tempList);
-
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("RealiseratSalg_ThisYear");
-                for (int i = 1; i < 54; i++)
-                {
-                    var sum = from line in salesThisYear
-                              where line.Week == i
-                              select line.Sum;
-                    tempList.Add(sum.FirstOrDefault());
-                    //tempList.Add(item.RealiseratSalg_ThisYear[i]);
-                }
-                AddRowFromList(tempList);
-
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Kampagn_ThisYear");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(item.Kampagn_ThisYear[i]);
-                }
-                AddRowFromList(tempList);
-
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Salgsbudget_ThisYear");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(item.Salgsbudget_ThisYear[i]);
-                }
-                AddRowFromList(tempList);
-
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Salgsbudget_Comment");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add("");
-                }
-                AddRowFromList(tempList);
-
-                commentDict = item.Salgsbudget_Comment;
-                DataGridViewRow tempRow = dataGridForecastInfo.Rows[dataGridForecastInfo.Rows.Count - 1];
-                for (int i = 3; i < tempRow.Cells.Count; i++)
-                {
-                    string tempComment = commentDict[i - 2];
-                    if (tempComment.Length > 1 &&
-                        (!tempComment.EndsWith(" Comment:  ")))
+                    int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
+                    //currentWeek = 40;
+                    int weekNumberStart = 0;
+                    if (StaticVariables.TestWeek > 0)
                     {
-                        tempRow.Cells[i].Style = new DataGridViewCellStyle { BackColor = Color.Yellow };
+                        currentWeek = StaticVariables.TestWeek;
                     }
-                }
 
-                tempList = new List<object>();
-                tempList.Add("");
-                tempList.Add("");
-                tempList.Add("Salgsbudget_ChangeHistory");
-                for (int i = 1; i < 54; i++)
-                {
-                    tempList.Add(item.Salgsbudget_ChangeHistory[i]);
+
+                    weekNumberStart = currentWeek - forecastNbrWeeks;
+                    for (int i = 1; i < (forecastNbrWeeks * 2 + 2); i++)
+                    {
+                        if (weekNumberStart < 1)
+                        {
+                            weekNumberStart = (weekNumberStart + 52);
+                        }
+                    }
+
+
+
+                    weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 2 - weekNumberStart); //+ 2 is offset from cell number to week number
+                    weekProdNBR++;
+                    List<object> tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Vecka");
+                    int k = 0;
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2*forecastNbrWeeks +1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                            tempList.Add(k);
+
+                        //tempList.Add(item.RealiseretSalgs_LastYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add(item.ProductNumber.ToString());
+                    tempList.Add(item.ProductName);
+
+                    tempList.Add("RealiseretSalg_LastYear");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if(i>52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        var sum = from line in salesLastYear
+                                  where line.Week == k
+                                  select line.Sum;
+                        tempList.Add(sum.FirstOrDefault());
+                        //tempList.Add(item.RealiseretSalgs_LastYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("RealiseretKampagn_LastYear");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(item.RealiseretKampagn_LastYear[k]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_LastYear");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(item.Salgsbudget_LastYear[k]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("RealiseratSalg_ThisYear");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        var sum = from line in salesThisYear
+                                  where line.Week == k
+                                  select line.Sum;
+                        tempList.Add(sum.FirstOrDefault());
+                        //tempList.Add(item.RealiseratSalg_ThisYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Kampagn_ThisYear");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(item.Kampagn_ThisYear[k]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_ThisYear");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(item.Salgsbudget_ThisYear[k]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_Comment");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add("");
+                    }
+                    AddRowFromList(tempList);
+
+                    commentDict = item.Salgsbudget_Comment;
+                    DataGridViewRow tempRow = dataGridForecastInfo.Rows[dataGridForecastInfo.Rows.Count - 1];
+                    //for (int i = 3; i < tempRow.Cells.Count; i++)
+                    //{
+                    //    string tempComment = commentDict[i - 2];
+                    //    if (tempComment.Length > 1 &&
+                    //        (!tempComment.EndsWith(" Comment:  ")))
+                    //    {
+                    //        tempRow.Cells[i].Style = new DataGridViewCellStyle { BackColor = Color.Yellow };
+                    //    }
+                    //}
+                    //int weektest = 1;
+                    //int yeartest = 2016;
+                    //string strQ2 = weektest.ToString() + "." + yeartest.ToString();
+                    //var columnList = dataGridForecastInfo.Columns.Cast<DataGridViewColumn>().ToList();
+                    //int index = columnList.FindIndex(c => c.HeaderText == strQ2);
+
+                    for (int i = 3; i < tempRow.Cells.Count; i++)
+                    {
+                        String columnName = this.dataGridForecastInfo.Columns[i].Name;
+                        int weekTest = StaticVariables.GetWeekFromName(columnName);
+                        string tempComment = commentDict[weekTest];
+                        if (tempComment.Length > 1 &&
+                            (!tempComment.EndsWith(" Comment:  ")))
+                        {
+                            tempRow.Cells[i].Style = new DataGridViewCellStyle { BackColor = Color.Yellow };
+                        }
+                    }
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_ChangeHistory");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(item.Salgsbudget_ChangeHistory[k]);
+                    }
+                    AddRowFromList(tempList);
+                    commentDict = item.Salgsbudget_Comment;
                 }
-                AddRowFromList(tempList);
-                commentDict = item.Salgsbudget_Comment;
+                else
+                {
+                    weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 2); //+ 2 is offset from cell number to week number
+                    weekProdNBR++;
+                    List<object> tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Vecka");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(i);
+                        //tempList.Add(item.RealiseretSalgs_LastYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add(item.ProductNumber.ToString());
+                    tempList.Add(item.ProductName);
+
+                    tempList.Add("RealiseretSalg_LastYear");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        var sum = from line in salesLastYear
+                                  where line.Week == i
+                                  select line.Sum;
+                        tempList.Add(sum.FirstOrDefault());
+                        //tempList.Add(item.RealiseretSalgs_LastYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("RealiseretKampagn_LastYear");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(item.RealiseretKampagn_LastYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_LastYear");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(item.Salgsbudget_LastYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("RealiseratSalg_ThisYear");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        var sum = from line in salesThisYear
+                                  where line.Week == i
+                                  select line.Sum;
+                        tempList.Add(sum.FirstOrDefault());
+                        //tempList.Add(item.RealiseratSalg_ThisYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Kampagn_ThisYear");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(item.Kampagn_ThisYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_ThisYear");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(item.Salgsbudget_ThisYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_Comment");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add("");
+                    }
+                    AddRowFromList(tempList);
+
+                    commentDict = item.Salgsbudget_Comment;
+                    DataGridViewRow tempRow = dataGridForecastInfo.Rows[dataGridForecastInfo.Rows.Count - 1];
+                    for (int i = 3; i < tempRow.Cells.Count; i++)
+                    {
+                        string tempComment = commentDict[i - 2];
+                        if (tempComment.Length > 1 &&
+                            (!tempComment.EndsWith(" Comment:  ")))
+                        {
+                            tempRow.Cells[i].Style = new DataGridViewCellStyle { BackColor = Color.Yellow };
+                        }
+                    }
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Salgsbudget_ChangeHistory");
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(item.Salgsbudget_ChangeHistory[i]);
+                    }
+                    AddRowFromList(tempList);
+                    commentDict = item.Salgsbudget_Comment;
+                }
             }
 
             weekProdNBR = 0;
@@ -347,7 +712,6 @@ namespace WindowsFormsForecastLactalis
 
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
-                    row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
                     row.Cells[2].ReadOnly = true;
                     row.Cells[2].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                     for (int i = 3; i < row.Cells.Count; i++)
@@ -417,11 +781,11 @@ namespace WindowsFormsForecastLactalis
         private void CreateProducts()
         {
             string tempCustNumber = StaticVariables.AssortmentDictionaryNav[comboBoxAssortment.Text];
-            PrognosInfoSales product1 = new PrognosInfoSales(GetNameFromLoadedProducts("2432"), "2432", tempCustNumber);
-            PrognosInfoSales product2 = new PrognosInfoSales(GetNameFromLoadedProducts("1442"), "1442", tempCustNumber);
-            PrognosInfoSales product3 = new PrognosInfoSales(GetNameFromLoadedProducts("1238"), "1238", tempCustNumber);
-            PrognosInfoSales product4 = new PrognosInfoSales(GetNameFromLoadedProducts("2442"), "2442", tempCustNumber);
-            PrognosInfoSales product5 = new PrognosInfoSales(GetNameFromLoadedProducts("2735"), "2735", tempCustNumber);
+            PrognosInfoSales product1 = new PrognosInfoSales(GetNameFromLoadedProducts("2432"), "2432", tempCustNumber, 20);
+            PrognosInfoSales product2 = new PrognosInfoSales(GetNameFromLoadedProducts("1442"), "1442", tempCustNumber, 20);
+            PrognosInfoSales product3 = new PrognosInfoSales(GetNameFromLoadedProducts("1238"), "1238", tempCustNumber, 20);
+            PrognosInfoSales product4 = new PrognosInfoSales(GetNameFromLoadedProducts("2442"), "2442", tempCustNumber, 20);
+            PrognosInfoSales product5 = new PrognosInfoSales(GetNameFromLoadedProducts("2735"), "2735", tempCustNumber, 20);
 
             latestCustomerLoaded = tempCustNumber;
             SetStatus("Products loading 1/5");
@@ -492,7 +856,15 @@ namespace WindowsFormsForecastLactalis
         private void button1_Click(object sender, EventArgs e)
         {
             StaticVariables.AbortLoad = false;
-            selectedYear = (int)comboBoxYear.SelectedItem;
+            if (comboBoxYear.SelectedItem != null && comboBoxYear.SelectedItem != "Now")
+            {
+                selectedYear = (int)Convert.ToInt32(comboBoxYear.SelectedItem);
+            }
+            else
+            {
+                selectedYear = 1000;
+            }
+
 
             labelStatus.Visible = true;
             dataGridForecastInfo.Visible = false;
@@ -530,14 +902,18 @@ namespace WindowsFormsForecastLactalis
                         foreach (string item in productList)
                         {
                             //Avbryt hämtning av fler artiklar om användaren trycker på Escape
-                            if(StaticVariables.AbortLoad)
+                            if (StaticVariables.AbortLoad)
                             {
                                 StaticVariables.AbortLoad = false;
                                 break;
                             }
                             i++;
                             string temp = GetNameFromLoadedProducts(item.ToString());
-                            PrognosInfoSales product1 = new PrognosInfoSales(temp, item, tempString);
+                            int status = 0;
+                            if(StaticVariables.dictItemStatus.ContainsKey(item)) {
+                                status = StaticVariables.dictItemStatus[item];
+                            }
+                            PrognosInfoSales product1 = new PrognosInfoSales(temp, item, tempString, status);
                             product1.FillNumbers(selectedYear);
                             Products.Add(product1);
                             SetStatus("Products Loading " + i + "/" + nbrItems);
@@ -565,7 +941,7 @@ namespace WindowsFormsForecastLactalis
         //Set comment from outside this form (textbox)
         public void SetProductComment(string comment)
         {
-            dataGridForecastInfo.Rows[latestCommentRow].Cells[latestWeek + 2].Value = comment;
+            dataGridForecastInfo.Rows[latestCommentRow].Cells[latestClickedWeek + 2].Value = comment;
         }
 
         public void SetProductCommentImmediately(string comment)
@@ -577,17 +953,19 @@ namespace WindowsFormsForecastLactalis
             cleanComment = thisDate + ": " + cleanComment;
             string tempCustNumber = StaticVariables.GetCustNavCodeFirst(latestCustomerLoaded); ;
             string productNumber = GetProductNumberFromRow(latestCommentRow);
-            int week = latestWeek;
-            DateTime tempDate = DateTime.Parse(StaticVariables.StartDate[selectedYear].ToString());
-            DateTime answer = tempDate.AddDays((week - 1) * 7);
+            DateTime tempDate = StaticVariables.FirstSaturdayBeforeWeakOne(latestClickedYear);
+
+            DateTime dateForComment = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
+            dateForComment = dateForComment.AddDays(2); //Monday
+            //DateTime answer = tempDate.AddDays((week - 1) * 7+2);
             string format = "yyyy-MM-dd HH:mm:ss";
             DateTime time = DateTime.Now;
             Console.WriteLine("TasteDato: " + time.ToString(format));
             string inputNow = time.ToString(format);
             string tempAssortment = comboBoxAssortment.Text;
             NavSQLExecute conn = new NavSQLExecute();
-            conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), 0, inputNow, cleanComment);
-            this.SetCommentWithoutForecastValue(week, productNumber, cleanComment);
+            conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, dateForComment.ToString(format), 0, inputNow, cleanComment);
+            this.SetCommentWithoutForecastValue(latestClickedWeek, productNumber, cleanComment);
         }
 
 
@@ -628,7 +1006,7 @@ namespace WindowsFormsForecastLactalis
             {
                 int i;
                 string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
-                int week = columnIndex - 2;
+                int week = columnIndex - 2; //Christofer todo var används den....
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
                     e.Cancel = true;
@@ -649,15 +1027,33 @@ namespace WindowsFormsForecastLactalis
                         {
                             if (item.ProductNumber.ToString() == productNumber)
                             {
+                                String columnName = this.dataGridForecastInfo.Columns[columnIndex].Name;
+                                int weekTest = StaticVariables.GetWeekFromName(columnName);
+                                int yearTest = StaticVariables.GetYearFromName(columnName);
                                 //here a new budget_line post should be added to the database
-                                int ammount = Convert.ToInt32(e.FormattedValue) - item.Salgsbudget_ThisYear[week];
+                                int ammount = Convert.ToInt32(e.FormattedValue) - item.Salgsbudget_ThisYear[weekTest];
                                 if (ammount != 0)
                                 {
-
+                                    DateTime budgetDate = DateTime.Now;
                                     string tempCustNumber = StaticVariables.GetCustNavCodeFirst(latestCustomerLoaded); ;
+                                    if (selectedYear > 2000)
+                                    {
+                                        DateTime tempDate = DateTime.Parse(StaticVariables.StartDate[selectedYear].ToString());
+                                        budgetDate = tempDate.AddDays((week - 1) * 7);
 
-                                    DateTime tempDate = DateTime.Parse(StaticVariables.StartDate[selectedYear].ToString());
-                                    DateTime answer = tempDate.AddDays((week - 1) * 7);
+                                        //DateTime budgetDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
+                                        budgetDate = budgetDate.AddDays(2); //monday
+                                    }
+
+
+                                    DateTime budgetDate2 = StaticVariables.GetForecastStartDateOfWeeknumber(yearTest, weekTest);
+                                    budgetDate2 = budgetDate2.AddDays(2); //monday
+
+                                    if (selectedYear > 2000)
+                                    {
+                                        Console.WriteLine("Budget date old: " + budgetDate.ToString() + "   Budget date new: " + budgetDate2.ToString());
+
+                                    }
                                     string format = "yyyy-MM-dd HH:mm:ss";    // modify the format depending upon input required in the column in database 
                                     string tempAssortment = comboBoxAssortment.Text;
                                     DateTime time = DateTime.Now;              // Use current time
@@ -675,17 +1071,17 @@ namespace WindowsFormsForecastLactalis
                                         System.Threading.ThreadPool.QueueUserWorkItem(delegate
                                         {
                                             NavSQLExecute conn = new NavSQLExecute();
-                                            conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow, "");
+                                            conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, budgetDate2.ToString(format), ammount, inputNow, "");
                                         }, null);
                                     }
                                     else
                                     {
                                         newCommentProdNBR = productNumber;
                                         NavSQLExecute conn = new NavSQLExecute();
-                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, answer.ToString(format), ammount, inputNow, cleanComment);
+                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, budgetDate2.ToString(format), ammount, inputNow, cleanComment);
                                     }
 
-                                    SetKöpsbudget(week, productNumber, Convert.ToInt32(e.FormattedValue), cleanComment, ammount);
+                                    SetKöpsbudget(weekTest, productNumber, Convert.ToInt32(e.FormattedValue), cleanComment, ammount);
                                 }
                             }
                         }
@@ -717,7 +1113,16 @@ namespace WindowsFormsForecastLactalis
             int columnIndex = e.ColumnIndex;
             int rowIndex = e.RowIndex;
 
-            selectedYear = (int)comboBoxYear.SelectedItem;
+            String columnName = this.dataGridForecastInfo.Columns[e.ColumnIndex].Name;
+
+            if (comboBoxYear.SelectedItem != null && comboBoxYear.SelectedItem != "Now")
+            {
+                selectedYear = (int)Convert.ToInt32(comboBoxYear.SelectedItem);
+            }
+            else
+            {
+                selectedYear = 1000;
+            }
 
             latestMouseClick = System.Windows.Forms.Cursor.Position;
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
@@ -730,19 +1135,20 @@ namespace WindowsFormsForecastLactalis
                     {
                         latestCommentRow = rowIndex;
                         string temp = GetValueFromGridAsString(rowIndex, columnIndex);
-                        latestWeek = columnIndex - 2;
+                        latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
+                        latestClickedYear = StaticVariables.GetYearFromName(columnName);//columnIndex - 2;
                         latestProductNumber = GetProductNumberFromRow(rowIndex);
 
                         foreach (PrognosInfoSales item in Products)
                         {
                             if (item.ProductNumber.ToString() == latestProductNumber)
                             {
-                                temp = item.Salgsbudget_Comment[latestWeek];
+                                temp = item.Salgsbudget_Comment[latestClickedWeek];
                             }
                         }
-                        infoboxSales.SetInfoText(this, "", " Product: " + latestProductNumber + " Week: " + latestWeek);
+                        infoboxSales.SetInfoText(this, "", " Product: " + latestProductNumber + " Week: " + latestClickedWeek);
                         infoboxSales.SetOldInfo(temp);
-                        infoboxSales.IsReadOnly(CellIsReadOnly(rowIndex-1, columnIndex));
+                        infoboxSales.IsReadOnly(CellIsReadOnly(rowIndex - 1, columnIndex));
                         infoboxSales.TopMost = true;
 
                         //First time it is showed needs special handling
@@ -767,11 +1173,12 @@ namespace WindowsFormsForecastLactalis
                 {
                     if (!infoboxSales.Visible)
                     {
-                        latestWeek = columnIndex - 2;
+                        latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
+                        latestClickedYear = StaticVariables.GetYearFromName(columnName);
                         string message = "";
                         string productNumber = GetProductNumberFromRow(rowIndex);
                         PrognosInfoSales prognosInfo = Products.FirstOrDefault(p => p.ProductNumber == productNumber);
-                        var result = from rows in prognosInfo.PromotionLines where rows.Week == latestWeek select rows;
+                        var result = from rows in prognosInfo.PromotionLines where (rows.Week == latestClickedWeek && rows.Year == latestClickedYear) select rows;
 
                         GetFromM3 m3 = new GetFromM3();
                         ChainStructureHandler chainHandler = new ChainStructureHandler();
@@ -791,9 +1198,9 @@ namespace WindowsFormsForecastLactalis
                             //This if statement checks if the campaign is connected to this assortment
                             //if (KadjeNiva.Intersect(StaticVariables.AssortmentM3_toKedjor[value]).Any())
                             int num = (from asch in StaticVariables.AssortmentM3_toKedjor[value]
-                                           from ch in KadjeNiva
-                                           where ch.StartsWith(asch)
-                                           select ch).Count();
+                                       from ch in KadjeNiva
+                                       where ch.StartsWith(asch)
+                                       select ch).Count();
                             if (num > 0)
                             {
                                 message = String.Format("{0, -30}\t{1, -20}\t{2, -20}\t{3, -20}{4}",
@@ -804,7 +1211,8 @@ namespace WindowsFormsForecastLactalis
                                     Environment.NewLine) + message;
                             }
                         }
-                        if (message.Length > 0) {
+                        if (message.Length > 0)
+                        {
                             message = String.Format("{0, -30}\t{1, -20}\t{2, -20}\t{3, -20}{4}",
                                     "Kampagn             ",
                                     "Produkt",
@@ -821,7 +1229,7 @@ namespace WindowsFormsForecastLactalis
                     {
                         string prodNBRTemp = GetProductNumberFromRow(rowIndex);
                         string tempNewName = prodNBRTemp;
-                        int latestWeek = columnIndex - 2;
+                        int latestWeek = StaticVariables.GetWeekFromName(columnName);
                         string temp = "";
 
                         SQLCallsSalesCustomerInfo sqlConnection = new SQLCallsSalesCustomerInfo();
@@ -839,30 +1247,32 @@ namespace WindowsFormsForecastLactalis
                 }
                 else if (GetValueFromGridAsString(rowIndex, 2).Contains("RealiseratSalg_ThisYear"))
                 {
-                    if (!infoboxSales.Visible)
+                    if (!infoboxSales.Visible && GetValueFromGridAsString(rowIndex, columnIndex)!= "0")
                     {
-                        latestWeek = columnIndex - 2;
+                        latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
+                        latestClickedYear = StaticVariables.GetYearFromName(columnName);
                         string productNumber = GetProductNumberFromRow(rowIndex);
                         PrognosInfoSales prognosInfo = Products.FirstOrDefault(p => p.ProductNumber == productNumber);
-                        Console.WriteLine(" Product: " + productNumber + " Week: " + latestWeek);
+                        Console.WriteLine(" Product: " + productNumber + " Week: " + latestClickedWeek);
                         SaleInfo sf = new SaleInfo();
-                        sf.LoadSaleInfo(prognosInfo.SalesRowsThisYear, latestWeek);
+                        sf.LoadSaleInfo(prognosInfo.SalesRowsThisYear, latestClickedWeek);
                         sf.Show();
                     }
                 }
                 else if (GetValueFromGridAsString(rowIndex, 2).Contains("RealiseretSalg_LastYear"))
                 {
-                        if (!infoboxSales.Visible)
-                        {
-                            latestWeek = columnIndex - 2;
-                            string productNumber = GetProductNumberFromRow(rowIndex);
-                            PrognosInfoSales prognosInfo = Products.FirstOrDefault(p => p.ProductNumber == productNumber);
-                            Console.WriteLine(" Product: " + productNumber + " Week: " + latestWeek);
+                    if (!infoboxSales.Visible)
+                    {
+                        latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
+                        latestClickedYear = StaticVariables.GetYearFromName(columnName);
+                        string productNumber = GetProductNumberFromRow(rowIndex);
+                        PrognosInfoSales prognosInfo = Products.FirstOrDefault(p => p.ProductNumber == productNumber);
+                        Console.WriteLine(" Product: " + productNumber + " Week: " + latestClickedWeek);
 
-                            SaleInfo sf = new SaleInfo();
-                            sf.LoadSaleInfo(prognosInfo.SalesRowsLastYear, latestWeek);
-                            sf.Show();
-                        }
+                        SaleInfo sf = new SaleInfo();
+                        sf.LoadSaleInfo(prognosInfo.SalesRowsLastYear, latestClickedWeek);
+                        sf.Show();
+                    }
                 }
             }
         }
@@ -916,7 +1326,15 @@ namespace WindowsFormsForecastLactalis
 
         private void comboBoxYear_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedYear = (int)comboBoxYear.SelectedItem;
+
+            if (comboBoxYear.SelectedItem != null && comboBoxYear.SelectedItem != "Now")
+            {
+                selectedYear = (int)Convert.ToInt32(comboBoxYear.SelectedItem);
+            }
+            else
+            {
+                selectedYear = 1000;
+            }
         }
 
         private void buttonGetProductByNumber_Click(object sender, EventArgs e)
@@ -943,7 +1361,7 @@ namespace WindowsFormsForecastLactalis
             string tempCustNumber = tempString;
             string temp = GetNameFromLoadedProducts(prodNMBR);
 
-            PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber);
+            PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber, 20);
             latestCustomerLoaded = tempCustNumber;
             product1.FillNumbers(selectedYear);
             Products.Add(product1);
@@ -1062,9 +1480,9 @@ namespace WindowsFormsForecastLactalis
 
         internal void SetProdOrTestHeading(bool prod)
         {
-            if(prod)
+            if (prod)
             {
-                this.Text = "Forecast Sales Production Environment  "+ Application.ProductVersion;
+                this.Text = "Forecast Sales Production Environment  " + Application.ProductVersion;
             }
             else
             {
@@ -1084,7 +1502,7 @@ namespace WindowsFormsForecastLactalis
         private void FormSales_KeyPress(object sender, KeyPressEventArgs e)
         {
             //Om Escape trycks ned vid hämtning av produkter på kund avbryts hämtningen
-            if(e.KeyChar == (char)27)
+            if (e.KeyChar == (char)27)
             {
                 StaticVariables.AbortLoad = true;
             }

@@ -84,7 +84,11 @@ namespace WindowsFormsForecastLactalis
             startDateStrings.Add(2016, @"2016/01/04");
             endDateStrings.Add(2016, @"2017/01/01");
             startDateStrings.Add(2017, @"2017/01/02");
-            endDateStrings.Add(2017, @"2018/01/01");
+            endDateStrings.Add(2017, @"2017/12/31");
+            startDateStrings.Add(2018, @"2018/01/01");
+            endDateStrings.Add(2018, @"2018/12/31");
+            startDateStrings.Add(2019, @"2018/12/31");
+            endDateStrings.Add(2019, @"2019/12/30");
 
             for (int k = 0; k < 54; k++)
             {
@@ -141,10 +145,9 @@ namespace WindowsFormsForecastLactalis
                     string levKedja = row["Navn_DebBogfGr"].ToString();
 
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-                    double weekNBR = week / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt + 1;
+
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
                     if (weekInt > 0 && weekInt < 54)
                     {
                         if (intType == (int)TypeEnum.SalgsBudget)
@@ -205,11 +208,10 @@ namespace WindowsFormsForecastLactalis
                     string levKedja = row["Navn_DebBogfGr"].ToString();
                     string comment = row["Kommentar"].ToString();
 
+                    
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week1 = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-                    double weekNBR = week1 / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt + 1;
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
 
                     if (intType == (int)TypeEnum.SalgsBudget && weekInt == week)
                     {
@@ -275,10 +277,8 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear - 1]).TotalDays;
-                    double weekNBR = week / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
 
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     if (weekInt > 0 && weekInt < 54)
                     {
@@ -351,9 +351,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
-                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-                    double weekNBR = week / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
 
 
@@ -380,9 +378,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Dato"].ToString());
-                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-                    double weekNBR = week / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     Beskrivelse = row["Beskrivelse"].ToString();
 
@@ -426,12 +422,10 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
                     string levKedja = row["Kæde_Kilde"].ToString();
                     //string comment = row["Kommentar"].ToString();
-
+                   
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
-                    double week1 = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-                    double weekNBR = week1 / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt + 1;
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
 
                     if (weekInt == week)
                     {
@@ -482,7 +476,7 @@ namespace WindowsFormsForecastLactalis
             {
                 salesRows.AddRange(LoadRelSalg_FromSQL(year, currentProdNumber));
             }
-            if (year > 2015)
+            if (year > 2015 || year < 2000)
             {
                 salesRows.AddRange(LoadRealizedSalesFromM3Sales(year, currentProdNumber));
             }
@@ -512,14 +506,9 @@ namespace WindowsFormsForecastLactalis
 
         private int GetWeek(DateTime date, int year)
         {
-            double dayOFYear = 0;
-            int week;
-            dayOFYear = (date - StaticVariables.StartDate[year]).TotalDays;
+            int weekInt = StaticVariables.GetForecastWeeknumberForDate(date);
+            return weekInt;
 
-            double weekNBR = dayOFYear / 7.0;
-            week = (int)Math.Floor(weekNBR);
-            week = week + 1;
-            return week;
         }
 
         private List<ISalesRow> LoadRelSalg_FromSQL(int year, string ItemNumber)
@@ -546,15 +535,12 @@ namespace WindowsFormsForecastLactalis
                 int postType = Convert.ToInt32(row["Posttype"].ToString());
                 DateTime date = (DateTime)row["Bogføringsdato"];
                 int week = GetWeek(date, year);
+        
                 DateTime tempDate = DateTime.Parse(row["Bogføringsdato"].ToString());
-                double dayOFYear = 0;
-
-                dayOFYear = (tempDate - StaticVariables.StartDate[year]).TotalDays;
-
-                double weekNBR = dayOFYear / 7.0;
-                int weekInt = (int)Math.Floor(weekNBR);
-                weekInt = weekInt + 1;
+                
+                int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
                 double quantity = Convert.ToDouble(row["Styk_antal"].ToString());
+
                 if (levEgetLager && postType == 2)
                 {
                     if (lokKode.Equals("8") || lokKode.Equals("100"))
@@ -589,6 +575,15 @@ namespace WindowsFormsForecastLactalis
 
         private List<ISalesRow> LoadRealizedSalesFromM3Sales(int year, String itemNumber)
         {
+            int salesYear = year;
+            if(salesYear == 1000)
+            {
+                salesYear = DateTime.Now.Year;
+            }
+            else if (salesYear == 999)
+            {
+                salesYear = DateTime.Now.Year -1 ;
+            }
             List<ISalesRow> salesRows = new List<ISalesRow>();
             string tableSales = StaticVariables.TableM3Sales;
             string tableChainAssortment = StaticVariables.TableChainAssortment;
@@ -598,11 +593,12 @@ namespace WindowsFormsForecastLactalis
             query = String.Format(@"SELECT 
 	                                    [UCORNO],
 	                                    [UCDLDT],
-                                        [UCIVQT],
+                                        [MTTRQT],
 	                                    [UCORNO],
 	                                    [UCITNO],
 	                                    [UCCUNO],
                                         [F1A130],
+                                        [LMEXPI],
 	                                    CASE 
 		                                    WHEN a.assortmentName IS NOT NULL	THEN a.assortmentName
 		                                    WHEN a1.assortmentName IS NOT NULL	THEN a1.assortmentName
@@ -616,7 +612,7 @@ namespace WindowsFormsForecastLactalis
 	                                    LEFT OUTER JOIN " + tableChainAssortment + @" a1 ON a1.Chain = UCCHL1
 	                                    LEFT OUTER JOIN " + tableChainAssortment + @" a2 ON a2.Chain = UCCHL2
 	                                    LEFT OUTER JOIN " + tableChainAssortment + @" a3 ON a3.Chain = UCCHL3
-                                        WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1}", itemNumber, year);
+                                        WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1}", itemNumber, salesYear);
             Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
             Console.WriteLine(query);
             DataTable table = conn.QueryExWithTableReturn(query);
@@ -629,8 +625,11 @@ namespace WindowsFormsForecastLactalis
                                                     CultureInfo.InvariantCulture,
                                                     DateTimeStyles.None);
                 int quantity = (int)Convert.ToDecimal(row["UCIVQT"].ToString());
-                int week = GetWeek(date, year);
-                int bbd = (int)Convert.ToInt32(row["F1A130"].ToString());
+                int week = GetWeek(date, salesYear);
+                int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
+                int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
+            
+
                 salesRows.Add(new SalesRow()
                 {
                     Date = date,
@@ -640,6 +639,7 @@ namespace WindowsFormsForecastLactalis
                     ItemNumber = row["UCITNO"].ToString(),
                     Week = week,
                     BestBeforeDate = bbd,
+                    WantedBestBeforeDate = wantedbbd,
                     CustomerName = row["AssortmentName"].ToString()
                 });
             }
@@ -748,10 +748,9 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Forventet_modtdato"].ToString());
-                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-                    double weekNBR = week / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt + 1;
+
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
 
 
                     if (weekInt > 0 && weekInt < 54)
@@ -776,10 +775,9 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
                     DateTime tempDate = DateTime.Parse(row["Forventet_modtdato"].ToString());
-                    double week = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-                    double weekNBR = week / 7.0;
-                    int weekInt = (int)Math.Floor(weekNBR);
-                    weekInt = weekInt + 1;
+
+                    int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
 
 
                     if (weekInt > 0 && weekInt < 54)
@@ -1003,10 +1001,7 @@ namespace WindowsFormsForecastLactalis
         internal int GetCurrentWeekNBR()
         {
             DateTime tempDate = DateTime.Now;
-            double week1 = (tempDate - StaticVariables.StartDate[currentSelectedYear]).TotalDays;
-            double weekNBR = week1 / 7.0;
-            int weekInt = (int)Math.Floor(weekNBR);
-            weekInt = weekInt + 1;
+            int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
             return weekInt;
         }
 

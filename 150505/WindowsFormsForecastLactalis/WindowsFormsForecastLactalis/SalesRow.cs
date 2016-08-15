@@ -20,6 +20,7 @@ namespace WindowsFormsForecastLactalis
         public int Quantity { get; set; }
         public int Week { get; set; }
         public int BestBeforeDate { get; set; }
+        public int WantedBestBeforeDate { get; set; }
 
         public string CustomerName { get; set; }
         /*Bogføringsdato, Faktureret_antal, LeverandørlagerOrdre, Posttype, Lokationskode*/

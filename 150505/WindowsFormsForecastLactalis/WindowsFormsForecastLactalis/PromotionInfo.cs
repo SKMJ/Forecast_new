@@ -11,6 +11,7 @@ namespace WindowsFormsForecastLactalis
         public string Description { get; set; }
         public string ItemNumber { get; set; }
         public int Week { get; set; }
+        public int Year { get; set; }
         public int Quantity { get; set; }
         public string Division { get; set; }
 

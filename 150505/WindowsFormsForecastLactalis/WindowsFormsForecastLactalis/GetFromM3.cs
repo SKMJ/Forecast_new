@@ -25,6 +25,7 @@ namespace WindowsFormsForecastLactalis
         String userPsw = "MIPGM99";
 
         Dictionary<string, List<string>> dictSupplier;
+        
 
         /// <summary>
         /// This function is just to test M3 Connection
@@ -619,6 +620,7 @@ namespace WindowsFormsForecastLactalis
             //Catrin helps to get this new code
             Dictionary<string, string> dictItems = new Dictionary<string, string>();
             dictSupplier = new Dictionary<string, List<string>>();
+            StaticVariables.dictItemStatus = new Dictionary<string, int>();
             {
                 SERVER_ID sid = new SERVER_ID();
                 uint rc;
@@ -652,7 +654,7 @@ namespace WindowsFormsForecastLactalis
                     }
 
                     string itemName = MvxSock.GetField(ref sid, "ITDS");// + "\t\t";
-
+                    int status = int.Parse(MvxSock.GetField(ref sid, "STAT"));
 
                     string itemSupplier = MvxSock.GetField(ref sid, "SUNO");// + "\t\t";
                     if (itemSupplier.Length > 0) // && Convert.ToInt32(itemSupplier) > 99) SUNO är ej ett numeriskt fält
@@ -673,6 +675,11 @@ namespace WindowsFormsForecastLactalis
                         else
                         {
                             dictSupplier[itemSupplier].Add(itemNBR);
+                        }
+                        //Lägg till artikelstatus
+                        if(!StaticVariables.dictItemStatus.ContainsKey(itemSupplier))
+                        {
+                            StaticVariables.dictItemStatus.Add(itemNBR, status);
                         }
                     }
                     //Mooves to next row
@@ -754,14 +761,39 @@ namespace WindowsFormsForecastLactalis
         internal List<PromotionInfo> GetPromotionForAllCustomerAsListv2(string itno, int year)
         {
             List<PromotionInfo> promotionList = new List<PromotionInfo>();
-            promotionList.AddRange(GetPromotionForAllCustomerAsListv2(itno, year, "310"));
-            promotionList.AddRange(GetPromotionForAllCustomerAsListv2(itno, year, "320"));
-            promotionList.AddRange(GetPromotionForAllCustomerAsListv2(itno, year, "710"));
-            promotionList.AddRange(GetPromotionForAllCustomerAsListv2(itno, year, "720"));
+            if (year > 2000)
+            { 
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "310"));
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "320"));
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "710"));
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "720"));
+            }           
+            else if (year < 2000)
+            {
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "310"));
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "320"));
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "710"));
+                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "720"));
+                if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) > 32)
+                {
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "310"));
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "320"));
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "710"));
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "720"));
+                }
+                else if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) < 21)
+                {
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "310"));
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "320"));
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "710"));
+                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "720"));
+                }
+            }
+
             return promotionList;
         }
 
-        internal List<PromotionInfo> GetPromotionForAllCustomerAsListv2(string itno, int year, string division)
+        internal List<PromotionInfo> GetPromotionForAllCustomerByDiv(string itno, int year, string division)
         {
             List<PromotionInfo> answerList = new List<PromotionInfo>();
             SERVER_ID sid = new SERVER_ID();
@@ -811,7 +843,8 @@ namespace WindowsFormsForecastLactalis
                             Quantity = Antal,
                             ItemNumber = itno,
                             Id = promotionId,
-                            Division = division
+                            Division = division,
+                            Year = year
                         });
                     }
                 }

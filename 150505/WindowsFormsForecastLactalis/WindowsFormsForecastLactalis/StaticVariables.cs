@@ -15,6 +15,7 @@ namespace WindowsFormsForecastLactalis
     {
         public static Dictionary<string, string> AssortmentDictionaryNav;
         public static Dictionary<string, string> AssortmentDictionaryM3;
+        public static Dictionary<string, int> dictItemStatus;
 
         // private bool loadingNewProductsOngoing;
 
@@ -50,6 +51,7 @@ namespace WindowsFormsForecastLactalis
 
         private static bool CustDictionaryFirst = true;
         private static bool StartDateFirst = true;
+        public static int TestWeek = 0;
 
         public enum WritePermission { Read = 1, Write = 2, SaleWrite = 3, SupplWrite = 4};
 
@@ -262,7 +264,7 @@ namespace WindowsFormsForecastLactalis
                 //startDate.Add(2016, DateTime.Parse(st));
                 //st = "01/02/2017";
                 //s = "2017-01-02";
-                s = "2017-12-31";
+                s = "2016-12-31";
                 dt =
                     DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2017, dt);
@@ -371,14 +373,8 @@ namespace WindowsFormsForecastLactalis
 
         public static int GetWeek(DateTime date, int year)
         {
-            double dayOFYear = 0;
-            int week;
-            dayOFYear = (date - StaticVariables.StartDate[year]).TotalDays;
-
-            double weekNBR = dayOFYear / 7.0;
-            week = (int)Math.Floor(weekNBR);
-            week = week + 1;
-            return week;
+            int weekInt = StaticVariables.GetForecastWeeknumberForDate(date);
+            return weekInt;
         }
 
         public static int GetWeek2(DateTime date)
@@ -441,6 +437,96 @@ namespace WindowsFormsForecastLactalis
         public static string TableDebitorBudgetLinjePost
         {
             get { return Production ? "Debitor_Budgetlinjepost" : "Debitor_Budgetlinjepost_Test"; }
+        }
+
+        internal static DateTime FirstMonYearWeakOne(int wantedYear)
+        {
+            string year = wantedYear.ToString();
+
+            string s = year + "-01-04";
+            //string s = "2015-01-03";
+
+            DateTime dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+
+            int loopError = 0;
+            while (dt.DayOfWeek != DayOfWeek.Monday && loopError < 10)
+            {
+                dt = dt.AddDays(-1);
+                loopError++;
+            }
+
+
+            if (loopError > 7)
+            {   
+                //Error: start year with 4th jan
+                Console.WriteLine("Loop Error day");
+                dt =
+                DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+
+            return dt;
+        }
+
+        internal static DateTime FirstSaturdayBeforeWeakOne(int wantedYear)
+        {
+            DateTime dt = FirstMonYearWeakOne(wantedYear);
+            dt = dt.AddDays(-2);
+            return dt;
+        }
+
+        internal static int GetForecastWeeknumberForDate(DateTime inputDate)
+        {
+
+            int year = inputDate.Year;
+            DateTime dtFirst = FirstSaturdayBeforeWeakOne(year);
+
+            if((inputDate - dtFirst).TotalDays<0)
+            {
+                dtFirst = FirstSaturdayBeforeWeakOne(year-1);
+            }
+
+            double week1 = (inputDate - dtFirst).TotalDays;
+            double weekNBR = week1 / 7.0;
+            int weekInt = (int)Math.Floor(weekNBR);
+            weekInt = weekInt + 1;
+
+            return weekInt;
+        }
+
+
+        internal static DateTime GetForecastStartDateOfWeeknumber(int year, int week)
+        {
+
+            
+            DateTime dtFirst = FirstSaturdayBeforeWeakOne(year);
+
+            dtFirst = dtFirst.AddDays(7*(week-1));
+
+            return dtFirst;
+        }
+
+        internal static int GetWeekFromName(string columnName)
+        {
+            int weekNbr = 0;
+            if (columnName.Contains(".") && columnName.Contains("20"))
+            {
+                string[] temp = columnName.Split('.');
+                weekNbr = Convert.ToInt32(temp[0]);
+            }
+            return weekNbr;
+        }
+
+        internal static int GetYearFromName(string columnName)
+        {
+            int yearNbr = 0;
+            string[] temp = columnName.Split('.');
+            string yearString = temp[1];
+            yearString = yearString.Substring(0, 4);
+            yearNbr = Convert.ToInt32(yearString);
+
+            return yearNbr;
         }
     }
 }

@@ -54,14 +54,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WindowsFormsForecastLactalis.exe" size="949680">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WindowsFormsForecastLactalis.exe" size="958896">
       <assemblyIdentity name="WindowsFormsForecastLactalis" version="1.8.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Ow6xepsLRgns8fnv+ze3/6bd4avDcQjc37Oys4C/BsU=</dsig:DigestValue>
+        <dsig:DigestValue>ALxw9XnGR8vwT3obIQpZsZmVanrl18YYLaSPzYlNoKc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

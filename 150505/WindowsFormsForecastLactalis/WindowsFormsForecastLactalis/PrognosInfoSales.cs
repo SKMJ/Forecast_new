@@ -16,12 +16,13 @@ namespace WindowsFormsForecastLactalis
 {
     public class PrognosInfoSales : IComparable
     {
-        public PrognosInfoSales(string name, string number, string customerNumber)
+        public PrognosInfoSales(string name, string number, string customerNumber, int status)
         {
             ProductName = name;
             ProductNumber = number;
             CustomerNumberM3 = customerNumber;
             CustomerCodeNav = StaticVariables.GetCustNavCodes(customerNumber);
+            Status = status;
         }
 
         public string ProductName = "";
@@ -29,6 +30,7 @@ namespace WindowsFormsForecastLactalis
         public string CustomerNumberM3 = "";
         public List<string> CustomerCodeNav = new List<string>();
         public int WeekToLockFrom = 0;
+        public int Status;
 
         public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();
@@ -95,7 +97,9 @@ namespace WindowsFormsForecastLactalis
                 KampagnTY.Add(i, 0);
             }
 
-            if (selectedYear > 2015)
+           
+
+            if (selectedYear > 2015 ||selectedYear<2000)
             {
                 GetFromM3 m3 = new GetFromM3();
                 PromotionLines = m3.GetPromotionForAllCustomerAsListv2(ProductNumber, selectedYear);
@@ -119,11 +123,24 @@ namespace WindowsFormsForecastLactalis
                                 select ch).Count();
                     if(num > 0)
                     {
-                        KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
+                        if (selectedYear < 2000)
+                        {
+                            DateTime tempKampagnDay = StaticVariables.GetForecastStartDateOfWeeknumber(item.Year, item.Week);
+                            TimeSpan span = tempKampagnDay.Subtract(DateTime.Now);
+                            int daysDifference = (int)Math.Abs(span.TotalDays);
+                            if (21 * 7 > daysDifference) //only witihin 20 weeks count
+                            {
+                                KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
+                            }
+                        }
+                        else
+                        {
+                            KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
+                        }
                     }
                 }
             }
-            if(selectedYear < 2017)
+            if (selectedYear < 2017)
             {
                 Dictionary<int, int> promotions = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerCodeNav);
                 foreach(var promotionItems in promotions)
@@ -136,7 +153,7 @@ namespace WindowsFormsForecastLactalis
 
             //Load Sales data
             SalesRowsThisYear.AddRange(sqlSalesCalls.GetRealizedSalesByYear(selectedYear, ProductNumber, CustomerNumberM3, CustomerCodeNav));
-            SalesRowsLastYear.AddRange(sqlSalesCalls.GetRealizedSalesByYear(selectedYear-1, ProductNumber, CustomerNumberM3, CustomerCodeNav));
+            SalesRowsLastYear.AddRange(sqlSalesCalls.GetRealizedSalesByYear(selectedYear - 1, ProductNumber, CustomerNumberM3, CustomerCodeNav));
             Console.WriteLine("Time7: " + stopwatch2.ElapsedMilliseconds);
             if (ProductName.Length < 2)
             {
