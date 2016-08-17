@@ -19,6 +19,7 @@ namespace WindowsFormsForecastLactalis
 
         public void LoadSaleInfo(List<ISalesRow> salesRowList, int week)
         {
+            this.Text = "Sale Info Week " + week.ToString();
             string currentCustomer = "-";
             int totalQuantity = 0;
             var salesRows = from row in salesRowList
@@ -110,6 +111,11 @@ namespace WindowsFormsForecastLactalis
                     */
             }
             treeNode1.Text = treeNode1.Text + " - " + totalQuantity + " st";
+
+        }
+
+        private void SaleInfo_Load(object sender, EventArgs e)
+        {
 
         }
     }

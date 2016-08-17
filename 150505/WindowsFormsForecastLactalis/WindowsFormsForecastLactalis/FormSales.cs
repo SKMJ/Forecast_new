@@ -84,22 +84,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Wanted day1: " + dateTemp.ToString("MMMM dd, yyyy"));
             dateTemp = StaticVariables.GetForecastStartDateOfWeeknumber(2017, 1);
             Console.WriteLine("Wanted day2: " + dateTemp.ToString("MMMM dd, yyyy"));
-            //DateTime monFirstWeek;
-            //for (int i = 2010; i < 2031; i++)
-            //{
-            //    monFirstWeek = StaticVariables.FirstMonYearWeakOne(i);
-            //    Console.WriteLine("First day of year: " + monFirstWeek.ToString("MMMM dd, yyyy") + "  " + monFirstWeek.DayOfWeek.ToString());
 
-            //    monFirstWeek = StaticVariables.FirstSaturdayBeforeWeakOne(i);
-            //    Console.WriteLine("First day of year: " + monFirstWeek.ToString("MMMM dd, yyyy") + "  " + monFirstWeek.DayOfWeek.ToString());
-            //}
-
-            //string s = "2016-12-28";
-            //    //string s = "2015-01-03";
-
-            //    DateTime dt =
-            //        DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            //    StaticVariables.GetForecastWeeknumberForDate(dt);
         }
 
 
@@ -264,7 +249,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 if (columnNow > 0)
                 {
-                    dataGridForecastInfo.FirstDisplayedScrollingColumnIndex = columnNow;
+                    dataGridForecastInfo.FirstDisplayedScrollingColumnIndex = columnNow-2;
                 }
             }
         }
@@ -514,20 +499,6 @@ namespace WindowsFormsForecastLactalis
 
                     commentDict = item.Salgsbudget_Comment;
                     DataGridViewRow tempRow = dataGridForecastInfo.Rows[dataGridForecastInfo.Rows.Count - 1];
-                    //for (int i = 3; i < tempRow.Cells.Count; i++)
-                    //{
-                    //    string tempComment = commentDict[i - 2];
-                    //    if (tempComment.Length > 1 &&
-                    //        (!tempComment.EndsWith(" Comment:  ")))
-                    //    {
-                    //        tempRow.Cells[i].Style = new DataGridViewCellStyle { BackColor = Color.Yellow };
-                    //    }
-                    //}
-                    //int weektest = 1;
-                    //int yeartest = 2016;
-                    //string strQ2 = weektest.ToString() + "." + yeartest.ToString();
-                    //var columnList = dataGridForecastInfo.Columns.Cast<DataGridViewColumn>().ToList();
-                    //int index = columnList.FindIndex(c => c.HeaderText == strQ2);
 
                     for (int i = 3; i < tempRow.Cells.Count; i++)
                     {
@@ -560,6 +531,7 @@ namespace WindowsFormsForecastLactalis
                     AddRowFromList(tempList);
                     commentDict = item.Salgsbudget_Comment;
                 }
+                //Selected week not now
                 else
                 {
                     weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 2); //+ 2 is offset from cell number to week number
@@ -856,7 +828,7 @@ namespace WindowsFormsForecastLactalis
         private void button1_Click(object sender, EventArgs e)
         {
             StaticVariables.AbortLoad = false;
-            if (comboBoxYear.SelectedItem != null && comboBoxYear.SelectedItem != "Now")
+            if (comboBoxYear.SelectedItem != null && comboBoxYear.SelectedItem.ToString() != "Now")
             {
                 selectedYear = (int)Convert.ToInt32(comboBoxYear.SelectedItem);
             }
@@ -941,7 +913,28 @@ namespace WindowsFormsForecastLactalis
         //Set comment from outside this form (textbox)
         public void SetProductComment(string comment)
         {
-            dataGridForecastInfo.Rows[latestCommentRow].Cells[latestClickedWeek + 2].Value = comment;
+            int startYear = DateTime.Now.Year;
+            int weeknumber = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
+            //weeknumber = 40;
+
+            if (StaticVariables.TestWeek > 0)
+            {
+                weeknumber = StaticVariables.TestWeek;
+            }
+
+            int startWeek = weeknumber - 20;
+            if (startWeek < 1)
+            {
+                startYear = startYear - 1;
+                startWeek = startWeek + 52;
+            }
+
+            int ClickedColumn = latestClickedWeek - startWeek + 3;
+            if (ClickedColumn < 1)
+            {
+                ClickedColumn = ClickedColumn + 52;
+            }
+            dataGridForecastInfo.Rows[latestCommentRow].Cells[ClickedColumn].Value = comment;
         }
 
         public void SetProductCommentImmediately(string comment)

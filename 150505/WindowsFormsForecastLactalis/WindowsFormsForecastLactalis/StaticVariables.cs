@@ -521,12 +521,27 @@ namespace WindowsFormsForecastLactalis
         internal static int GetYearFromName(string columnName)
         {
             int yearNbr = 0;
-            string[] temp = columnName.Split('.');
-            string yearString = temp[1];
-            yearString = yearString.Substring(0, 4);
-            yearNbr = Convert.ToInt32(yearString);
+            if (columnName.Contains(".") && columnName.Contains("20"))
+            {
+                string[] temp = columnName.Split('.');
+                string yearString = temp[1];
+                yearString = yearString.Substring(0, 4);
+                yearNbr = Convert.ToInt32(yearString);
+            }
 
             return yearNbr;
+        }
+
+        internal static bool DateWithinNowForecastLimit(DateTime tempDate)
+        {
+            bool returnBool = false;
+            TimeSpan span = tempDate.Subtract(DateTime.Now);
+            int daysDifference = (int)Math.Abs(span.TotalDays);
+            if (21 * 7 > daysDifference) //only witihin 20 weeks count
+            {
+                returnBool = true;
+            }
+            return returnBool;
         }
     }
 }

@@ -109,10 +109,12 @@ namespace WindowsFormsForecastLactalis
         //Load the sales budget numbers from SQL Database
         private void LoadSalesBudgetTYFromSQL()
         {
+            string firstD = GetStartDate(currentSelectedYear);
+            string endD = GetEndDate(currentSelectedYear);
             conn = new NavSQLExecute();
 
             string query = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from " +
-                StaticVariables.TableDebitorBudgetLinjePost + " where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by TasteDato";
+                StaticVariables.TableDebitorBudgetLinjePost + " where Varenr='XXXX' and startdato >= '" + firstD + "' and startdato < '" + endD + "' order by TasteDato";
             query = query.Replace("XXXX", currentProdNumber);
             Console.WriteLine("Load Sales Budget Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(query);
@@ -230,7 +232,12 @@ namespace WindowsFormsForecastLactalis
                     }
                 }
                 string infoString = "";
-                foreach (KeyValuePair<string, int> kvp in infoDict)
+                string currentLine = String.Format("{0, -20}\t{1, -80}\t{2}", "Value", "Customer", Environment.NewLine);
+                infoString = infoString + currentLine;
+                var items = from pair in infoDict
+                            orderby pair.Key ascending
+                            select pair;
+                foreach (KeyValuePair<string, int> kvp in items)
                 {
                     string temp = kvp.Key;
 
@@ -239,7 +246,13 @@ namespace WindowsFormsForecastLactalis
                         temp = temp.Substring(1, temp.Length - 1);
                     }
 
-                    infoString = infoString + "\n " + temp + "  " + kvp.Value;
+
+                    currentLine = String.Format("{0, -20}\t{1, -80}\t{2}", kvp.Value, temp, Environment.NewLine);
+    
+                    //infoString = infoString + "\n " + temp + "  " + kvp.Value;
+                    infoString = infoString  + currentLine;
+                    
+
                 }
                 returnString = infoString;
             }
@@ -251,8 +264,10 @@ namespace WindowsFormsForecastLactalis
         private void LoadRealiseretKampagnLY_FromSQL()
         {
             conn = new NavSQLExecute();
+            string firstD = GetStartDate(currentSelectedYear-1);
+            string endD = GetEndDate(currentSelectedYear-1);
 
-            string query = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear - 1] + "' and startdato < '" + endDateStrings[currentSelectedYear - 1] + "' order by startdato";
+            string query = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + firstD + "' and startdato < '" + endD + "' order by startdato";
             query = query.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadRealiseretKampagnLY Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(query);
@@ -297,10 +312,10 @@ namespace WindowsFormsForecastLactalis
 
         internal Dictionary<int, int> GetKampagnTY()
         {
-            if (currentSelectedYear > 2015)
+            if (currentSelectedYear > 2015 || currentSelectedYear < 2000)
             {
                 GetFromM3 m3 = new GetFromM3();
-                Dictionary<int, int> promotions = m3.GetPromotionsOfProducts(currentProdNumber, currentSelectedYear, "");
+                Dictionary<int, int> promotions = m3.GetPromotionsOfProducts(currentProdNumber, currentSelectedYear);
                 foreach (var promotionItem in promotions)
                 {
                     kampagn_TY[promotionItem.Key] += promotionItem.Value;
@@ -319,13 +334,15 @@ namespace WindowsFormsForecastLactalis
         private void LoadKampagnTY_FromSQL()
         {
             conn = new NavSQLExecute();
+            string firstD = GetStartDate(currentSelectedYear);
+            string endD = GetEndDate(currentSelectedYear);
 
-            string query = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
+            string query = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where Varenr='XXXX' and startdato >= '" + firstD + "' and startdato < '" + endD + "' order by startdato";
             query = query.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKampagnTY1 Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(query);
 
-            query = @"select Dato, Antal_Budget, Beskrivelse  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '" + startDateStrings[currentSelectedYear] + "' and Dato < '" + endDateStrings[currentSelectedYear] + "' order by Dato";
+            query = @"select Dato, Antal_Budget, Beskrivelse  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '" + firstD + "' and Dato < '" + endD + "' order by Dato";
             query = query.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKampagnTY2 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(query);
@@ -395,9 +412,10 @@ namespace WindowsFormsForecastLactalis
         public string GetKampagnWeekInfo(int week, int prodNumber)
         {
             conn = new NavSQLExecute();
+            string firstD = GetStartDate(currentSelectedYear);
+            string endD = GetEndDate(currentSelectedYear);
 
-
-            string query = @"select *  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '" + startDateStrings[currentSelectedYear] + "' and Dato < '" + endDateStrings[currentSelectedYear] + "' order by Dato";
+            string query = @"select *  from Kampagnelinier_Fordelt where Varenr='XXXX' and Dato >= '" + firstD + "' and Dato < '" + endD + "' order by Dato";
             query = query.Replace("XXXX", prodNumber.ToString());
             Console.WriteLine("LoadKampagnTY3 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(query);
@@ -624,8 +642,10 @@ namespace WindowsFormsForecastLactalis
                                                     "yyyyMMdd",
                                                     CultureInfo.InvariantCulture,
                                                     DateTimeStyles.None);
-                int quantity = (int)Convert.ToDecimal(row["UCIVQT"].ToString());
-                int week = GetWeek(date, salesYear);
+                string mttrqt = row["MTTRQT"].ToString();
+
+                int quantity = (int)Convert.ToDecimal(mttrqt);
+                int week = GetWeek(date, year);
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
             
@@ -717,12 +737,15 @@ namespace WindowsFormsForecastLactalis
         {
             conn = new NavSQLExecute();
 
-            string query = @"select Forventet_modtdato, Udestående_antal_basis  from Købslinie where Nummer='XXXX' and Forventet_modtdato >= '" + startDateStrings[currentSelectedYear] + "' and Forventet_modtdato < '" + endDateStrings[currentSelectedYear] + "' order by Forventet_modtdato";
+            string firstD = GetStartDate(currentSelectedYear);
+            string endD = GetEndDate(currentSelectedYear);
+
+            string query = @"select Forventet_modtdato, Udestående_antal_basis  from Købslinie where Nummer='XXXX' and Forventet_modtdato >= '" + firstD + "' and Forventet_modtdato < '" + endD + "' order by Forventet_modtdato";
             query = query.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKopsorder1 Query: ");
             latestQueryTable = conn.QueryExWithTableReturn(query);
 
-            query = @"select Forventet_modtdato, Antal_basis  from dbo.Købsleverancelinie where Nummer='XXXX' and Forventet_modtdato >= '" + startDateStrings[currentSelectedYear] + "' and Forventet_modtdato < '" + endDateStrings[currentSelectedYear] + "' order by Forventet_modtdato";
+            query = @"select Forventet_modtdato, Antal_basis  from dbo.Købsleverancelinie where Nummer='XXXX' and Forventet_modtdato >= '" + firstD + "' and Forventet_modtdato < '" + endD + "' order by Forventet_modtdato";
             query = query.Replace("XXXX", currentProdNumber);
             Console.WriteLine("LoadKopsorder2 Query: ");
             latestQueryTable2 = conn.QueryExWithTableReturn(query);
@@ -1010,6 +1033,106 @@ namespace WindowsFormsForecastLactalis
             LoadKopesBudgetForFileFromSQL();
             PrepareLoadedKopesBudgetForFile();
             return kopesBudget_ForFile;
+        }
+
+        private string GetEndDate(int year)
+        {
+            string endDate = "";
+            int endYear = DateTime.Now.Year;
+            int weeknumber = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
+            //weeknumber = 40;
+            if (StaticVariables.TestWeek > 0)
+            {
+                weeknumber = StaticVariables.TestWeek;
+            }
+            if (endDateStrings.ContainsKey(year))
+            {
+                endDate = endDateStrings[year];
+
+            }
+            else
+            {
+                int endWeek = weeknumber + 20;
+                if (endWeek > 52)
+                {
+                    endYear = endYear + 1;
+                    endWeek = endWeek - 52;
+                }
+
+                if (year == 1000)
+                {
+                    DateTime endDatedate = StaticVariables.GetForecastStartDateOfWeeknumber(endYear, endWeek);
+                    endDatedate = endDatedate.AddDays(7);
+                    string date = endDatedate.ToString("yyyy/MM/dd");
+                    date = date.Replace("-", @"/");
+                    endDateStrings.Add(year, date);
+                    endDate = date;
+                }
+                else if (year == 999)
+                {
+                    DateTime endDatedate = StaticVariables.GetForecastStartDateOfWeeknumber(endYear - 1, endWeek);
+                    endDatedate = endDatedate.AddDays(7);
+                    string date = endDatedate.ToString("yyyy/MM/dd");
+                    date = date.Replace("-", @"/");
+                    endDateStrings.Add(year, date);
+                    endDate = date;
+                }
+
+
+            }
+
+            return endDate;
+        }
+
+        private string GetStartDate(int year)
+        {
+
+            int weeknumber;
+            string startDate = "";
+
+            if (startDateStrings.ContainsKey(year))
+            {
+                startDate = startDateStrings[year];
+
+            }
+            else
+            {
+                int startYear = DateTime.Now.Year;
+                weeknumber = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
+                //weeknumber = 40;
+
+                if (StaticVariables.TestWeek > 0)
+                {
+                    weeknumber = StaticVariables.TestWeek;
+                }
+
+                int startWeek = weeknumber - 20;
+                if (startWeek < 1)
+                {
+                    startYear = startYear - 1;
+                    startWeek = startWeek + 52;
+                }
+
+
+                if (year == 1000)
+                {
+                    DateTime stDate = StaticVariables.GetForecastStartDateOfWeeknumber(startYear, startWeek);
+                    string date = stDate.ToString("yyyy/MM/dd");
+                    date = date.Replace("-", @"/");
+                    startDateStrings.Add(year, date);
+                    startDate = date;
+                }
+                else if (year == 999)
+                {
+                    DateTime stDate = StaticVariables.GetForecastStartDateOfWeeknumber(startYear - 1, startWeek);
+                    string date = stDate.ToString("yyyy/MM/dd");
+                    date = date.Replace("-", @"/");
+                    startDateStrings.Add(year, date);
+                    startDate = date;
+                }
+
+            }
+            return startDate;
         }
     }
 }

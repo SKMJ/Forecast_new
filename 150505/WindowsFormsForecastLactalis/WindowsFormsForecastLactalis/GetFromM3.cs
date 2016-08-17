@@ -105,7 +105,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        public Dictionary<int, int> GetPromotionsOfProducts(string itno, int year, string customer)
+        public Dictionary<int, int> GetPromotionsOfProducts(string itno, int year)
         {
             Dictionary<int, int> promotions = new Dictionary<int, int>();
             for (int i = 0; i < 54; i++)
@@ -113,14 +113,42 @@ namespace WindowsFormsForecastLactalis
                 promotions.Add(i, 0);
             }
 
-            promotions = GetPromotionsOfProductsByDivision(itno, year, customer, "310", promotions);
-            promotions = GetPromotionsOfProductsByDivision(itno, year, customer, "320", promotions);
-            promotions = GetPromotionsOfProductsByDivision(itno, year, customer, "710", promotions);
-            promotions = GetPromotionsOfProductsByDivision(itno, year, customer, "720", promotions);
+            int yearExtra = 0;
+
+            if (year > 2000)
+            {
+                promotions = GetPromotionsOfProductsByDivision(itno, year, "310", promotions, false);
+                promotions = GetPromotionsOfProductsByDivision(itno, year, "320", promotions, false);
+                promotions = GetPromotionsOfProductsByDivision(itno, year, "710", promotions, false);
+                promotions = GetPromotionsOfProductsByDivision(itno, year, "720", promotions, false);
+            }
+            else if (year < 2000)
+            {
+                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "310", promotions, true);
+                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "320", promotions, true);
+                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "710", promotions, true);
+                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "720", promotions, true);
+                if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) > 32)
+                {
+                    yearExtra = DateTime.Now.Year + 1;
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "310", promotions, true);
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "320", promotions, true);
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "710", promotions, true);
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "720", promotions, true);
+                }
+                else if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) < 21)
+                {
+                    yearExtra = DateTime.Now.Year - 1;
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "310", promotions, true);
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "320", promotions, true);
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "710", promotions, true);
+                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "720", promotions, true);
+                }
+            }
             return promotions;
         }
 
-        public Dictionary<int, int> GetPromotionsOfProductsByDivision(string itno, int year, string customer, string division, Dictionary<int, int> promotions)
+        public Dictionary<int, int> GetPromotionsOfProductsByDivision(string itno, int year, string division, Dictionary<int, int> promotions, bool nowSelected)
         {
             SERVER_ID sid = new SERVER_ID();
 
@@ -166,10 +194,19 @@ namespace WindowsFormsForecastLactalis
                     int weekInt = StaticVariables.GetWeek2(tempDate);
                     if (weekInt > 0 && weekInt < 54)
                     {
-                        if (customer.Length == 0 || customer == tempCampCuse)
+                        if (nowSelected)
+                        {
+                            bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempDate);
+                            if (withinLimit) //only witihin 20 weeks count
+                            {
+                                promotions[weekInt] = promotions[weekInt] + Antal;
+                            }
+                        }
+                        else
                         {
                             promotions[weekInt] = promotions[weekInt] + Antal;
                         }
+                                                    
                     }
                 }
                 catch(Exception e)
@@ -894,10 +931,6 @@ namespace WindowsFormsForecastLactalis
         internal Dictionary<string, List<PurchaseOrderLine>> GetKopsorderFromM3(string Warehouse, string itemNumber, int year, Dictionary<string, int> unitToNBR)
         {
             Stopwatch stopwatch2 = Stopwatch.StartNew();
-            if (itemNumber == "1095")
-            {
-                Console.WriteLine(itemNumber);
-            }
             List<PurchaseOrderLine> poLineList = new List<PurchaseOrderLine>();
             List<PurchaseOrderLine> expPoLineList = new List<PurchaseOrderLine>();
             SERVER_ID sid = new SERVER_ID();
@@ -964,8 +997,12 @@ namespace WindowsFormsForecastLactalis
                         confirmedDate = rcdt;
                         isReceived = true;
                     }
-                    if(plannedDate.Substring(0,4).Equals(year.ToString())) {
-                        
+
+                    DateTime tempDate = DateTime.ParseExact(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                    if (plannedDate.Substring(0, 4).Equals(year.ToString()) ||
+                        year < 2000 && StaticVariables.DateWithinNowForecastLimit(tempDate))
+                    {                        
                         //Räkna om till grundenhet ST 
                         int nbrPerUnit = 1; 
                         if(unitToNBR.ContainsKey("ANT"))
@@ -983,7 +1020,7 @@ namespace WindowsFormsForecastLactalis
                         int quantiyExpected = Convert.ToInt32(temp[0]) * nbrPerUnit;
                         Console.WriteLine("Datum: " + rcdt + " antal: " + quantity);
 
-                        DateTime tempDate = DateTime.ParseExact(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                        tempDate = DateTime.ParseExact(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                         tempDate = tempDate.AddMinutes(10);
                         int weekInt = StaticVariables.GetWeek2(tempDate);
 
@@ -999,19 +1036,24 @@ namespace WindowsFormsForecastLactalis
                                 Warehouse = miWarehouse
                             };
                             expPoLineList.Add(poExpLine);
-                            if (isReceived && confirmedDate.Substring(0, 4).Equals(year.ToString()))
+
+                            if (isReceived && confirmedDate.Length > 7)
                             {
                                 tempDate = DateTime.ParseExact(confirmedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-                                var poLine = new PurchaseOrderLine()
+                                bool nowAndWithLimit = (year < 2000 && StaticVariables.DateWithinNowForecastLimit(tempDate));
+                                if (confirmedDate.Substring(0, 4).Equals(year.ToString()) || (nowAndWithLimit))
                                 {
-                                    PONumber = orderNumber,
-                                    Quantity = quantityReceived,
-                                    Date = tempDate.Date,
-                                    Week = weekInt,
-                                    ItemNumber = itemNumber,
-                                    Warehouse = miWarehouse
-                                };
-                                poLineList.Add(poLine);
+                                    var poLine = new PurchaseOrderLine()
+                                    {
+                                        PONumber = orderNumber,
+                                        Quantity = quantityReceived,
+                                        Date = tempDate.Date,
+                                        Week = weekInt,
+                                        ItemNumber = itemNumber,
+                                        Warehouse = miWarehouse
+                                    };
+                                    poLineList.Add(poLine);
+                                }
                             }
                             
                         }

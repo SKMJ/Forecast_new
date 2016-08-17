@@ -126,9 +126,8 @@ namespace WindowsFormsForecastLactalis
                         if (selectedYear < 2000)
                         {
                             DateTime tempKampagnDay = StaticVariables.GetForecastStartDateOfWeeknumber(item.Year, item.Week);
-                            TimeSpan span = tempKampagnDay.Subtract(DateTime.Now);
-                            int daysDifference = (int)Math.Abs(span.TotalDays);
-                            if (21 * 7 > daysDifference) //only witihin 20 weeks count
+                            bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempKampagnDay);
+                            if (withinLimit) //only witihin 20 weeks count
                             {
                                 KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
                             }

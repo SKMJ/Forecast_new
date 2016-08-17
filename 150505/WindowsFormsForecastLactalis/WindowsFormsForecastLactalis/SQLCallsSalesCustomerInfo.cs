@@ -93,8 +93,11 @@ namespace WindowsFormsForecastLactalis
         {
             conn = new NavSQLExecute();
 
+            string firstD = GetStartDate(currentSelectedYear);
+            string endD = GetEndDate(currentSelectedYear);
+
             string query = @"select Navn_DebBogfGr, DebitorBogføringsruppe  from " +
-                StaticVariables.TableDebitorBudgetLinjePost + " where  startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by Navn_DebBogfGr";
+                StaticVariables.TableDebitorBudgetLinjePost + " where  startdato >= '" + firstD + "' and startdato < '" + endD + "' order by Navn_DebBogfGr";
             Console.WriteLine("Load All Customers: ");
             latestQueryTable = conn.QueryExWithTableReturn(query);
             conn.Close();
@@ -397,6 +400,10 @@ namespace WindowsFormsForecastLactalis
         {
             conn = new NavSQLExecute();
 
+
+            string firstD = GetStartDate(currentSelectedYear);
+            string endD = GetEndDate(currentSelectedYear);
+
             string query = @"select startdato, Antal_Realiseret  from Afsl__Kampagnelinier where ";
             bool first = true;
             foreach (string item in custNumber)
@@ -411,7 +418,7 @@ namespace WindowsFormsForecastLactalis
                     query = query + @" or Debitorbogføringsgruppe='" + item + "' ";
                 }
             }
-            query = query + @")  and Varenr='XXXX' and startdato >= '" + startDateStrings[currentSelectedYear] + "' and startdato < '" + endDateStrings[currentSelectedYear] + "' order by startdato";
+            query = query + @")  and Varenr='XXXX' and startdato >= '" + firstD + "' and startdato < '" + endD + "' order by startdato";
             query = query.Replace("XXXX", prodNumber.ToString());
             //queryString = queryString.Replace("YYYY", custNumber[0]);
             Console.WriteLine("LoadKampagnTY1 Query: ");
@@ -431,7 +438,7 @@ namespace WindowsFormsForecastLactalis
                     query = query + @" or Debitorbogføringsgruppe='" + item + "' ";
                 }
             }
-            query = query + @")  and Varenr='XXXX' and Dato >= '" + startDateStrings[currentSelectedYear] + "' and Dato < '" + endDateStrings[currentSelectedYear] + "' order by Dato";
+            query = query + @")  and Varenr='XXXX' and Dato >= '" + firstD + "' and Dato < '" + endD + "' order by Dato";
             query = query.Replace("XXXX", prodNumber.ToString());
             //queryString = queryString.Replace("YYYY", custNumber[0]);
             Console.WriteLine("LoadKampagnTY2 Query: ");
