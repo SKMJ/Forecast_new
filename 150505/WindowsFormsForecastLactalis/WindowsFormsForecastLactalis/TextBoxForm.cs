@@ -29,6 +29,21 @@ namespace WindowsFormsForecastLactalis
             InitializeComponent();
             MaximizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
+
+            //if (formInstance.GetType() == typeof(FormSales))
+            //{
+            //    isSupplyComment = false;
+            //    saveImmediateBtn.Visible = true;
+            //    buttonSaveInfo.Visible = false;
+            //    FormSalesInstance = (FormSales)formInstance;
+            //}
+            //else
+            //{
+            //    saveImmediateBtn.Visible = false;
+            //    buttonSaveInfo.Visible = true;
+            //    isSupplyComment = true;
+            //    FormSupplyInstance = (FormSupply)formInstance;
+            //}
         }
 
         private void Form2_Load(object sender, System.EventArgs e)
@@ -48,10 +63,14 @@ namespace WindowsFormsForecastLactalis
             if(formInstance.GetType() == typeof(FormSales))
             {
                 isSupplyComment = false;
+                saveImmediateBtn.Visible = true;
+                buttonSaveInfo.Visible = false;
                 FormSalesInstance = (FormSales)formInstance;
             }
             else
             {
+                saveImmediateBtn.Visible = false;
+                buttonSaveInfo.Visible = true;
                 isSupplyComment = true;
                 FormSupplyInstance = (FormSupply)formInstance;
             }
@@ -75,6 +94,7 @@ namespace WindowsFormsForecastLactalis
             {
                 if (isSupplyComment)
                 {
+
                     FormSupplyInstance.SetProductRegComment(richTextBoxInfo.Text);                    
                 }
                 else
@@ -102,8 +122,22 @@ namespace WindowsFormsForecastLactalis
             Load += new EventHandler(Form2_Load);
         }
 
-        public void FocusTextBox()
+        public void FocusTextBox(Object formInstance)
         {
+            if (formInstance.GetType() == typeof(FormSales))
+            {
+                isSupplyComment = false;
+                saveImmediateBtn.Visible = true;
+                buttonSaveInfo.Visible = false;
+                FormSalesInstance = (FormSales)formInstance;
+            }
+            else
+            {
+                saveImmediateBtn.Visible = false;
+                buttonSaveInfo.Visible = true;
+                isSupplyComment = true;
+                FormSupplyInstance = (FormSupply)formInstance;
+            }
             richTextBoxInfo.Focus();
             if (richTextBoxInfo.Text == "Comment")
             {

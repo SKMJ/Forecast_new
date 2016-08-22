@@ -543,5 +543,22 @@ namespace WindowsFormsForecastLactalis
             }
             return returnBool;
         }
+
+        internal static string ReturnDanishFormat(string tempDate)
+        {
+            string outDate = tempDate.Replace("-","");
+            string year;
+            string month;
+            string day;
+            if (outDate.StartsWith("20") && outDate.Length == 8)
+            {
+                year = outDate.Substring(0, 4);
+                month = outDate.Substring(4, 2);
+                day = outDate.Substring(6, 2);
+                outDate = day + "-" + month + "-" + year;
+
+            }
+            return outDate;
+        }
     }
 }

@@ -714,7 +714,7 @@ namespace WindowsFormsForecastLactalis
                             dictSupplier[itemSupplier].Add(itemNBR);
                         }
                         //Lägg till artikelstatus
-                        if(!StaticVariables.dictItemStatus.ContainsKey(itemSupplier))
+                        if (!StaticVariables.dictItemStatus.ContainsKey(itemNBR))
                         {
                             StaticVariables.dictItemStatus.Add(itemNBR, status);
                         }

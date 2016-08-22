@@ -874,6 +874,19 @@ namespace WindowsFormsForecastLactalis
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Red;
+                    //for (int i = 3; i < row.Cells.Count; i++)
+                    //{
+                    //    if (weekToLock[weekProdNBR] < i)
+                    //    {
+                    //        row.Cells[i].ReadOnly = false;
+                    //        row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };
+                    //    }
+                    //    else
+                    //    {
+                    //        row.Cells[i].ReadOnly = true;
+                    //        row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
+                    //    }
+                    //}
                     //row.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Regular);
                     row.ReadOnly = true;
                 }
@@ -935,7 +948,7 @@ namespace WindowsFormsForecastLactalis
                     col.DefaultCellStyle.Font = new Font("Tahoma", 8, FontStyle.Bold);
                     col.DefaultCellStyle.ForeColor = Color.Black;
                 }
-                if (colNBR < 3)
+                if (colNBR < 3 || !col.Name.Contains("20"))
                 {
                     col.ReadOnly = true;
                 }
@@ -1084,255 +1097,258 @@ namespace WindowsFormsForecastLactalis
             int rowIndex = e.RowIndex;
             Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
             latestMouseClick = System.Windows.Forms.Cursor.Position;
-            String columnName = this.dataGridForecastInfo.Columns[e.ColumnIndex].Name;
-            latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
-            latestClickedYear = StaticVariables.GetYearFromName(columnName);//columnIndex - 2;
-
-            //for the Sales info forecast show extra info
-            if (GetValueFromGridAsString(rowIndex, columnIndex).Contains("lager") && columnIndex == 1)
+            if (columnIndex >=0)
             {
-                if (!infoboxSupply.Visible)
+                String columnName = this.dataGridForecastInfo.Columns[e.ColumnIndex].Name;
+                latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
+                latestClickedYear = StaticVariables.GetYearFromName(columnName);//columnIndex - 2;
+
+                //for the Sales info forecast show extra info
+                if (GetValueFromGridAsString(rowIndex, columnIndex).Contains("lager") && columnIndex == 1)
                 {
-                    string itemNumber = GetProductNumberFromRow(rowIndex);
-                    string message = "";
-                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(itemNumber);
-
-                    Console.WriteLine(" Product: " + itemNumber + " Week: " + latestClickedWeek);
-
-                    List<BalanceId> balanceIdentities = tempInfo.GetStockInfo();
-
-                    if (balanceIdentities == null)
+                    if (!infoboxSupply.Visible)
                     {
-                        MessageBox.Show("Kunde inte hämta lagersaldo. Försök igen");
-                        return;
-                    }
-                    if (balanceIdentities.Count > 0)
-                    {
-                        var balanceIds = balanceIdentities.GroupBy(r => new
+                        string itemNumber = GetProductNumberFromRow(rowIndex);
+                        string message = "";
+                        PrognosInfoForSupply tempInfo = GetProductInfoByNumber(itemNumber);
+
+                        Console.WriteLine(" Product: " + itemNumber + " Week: " + latestClickedWeek);
+
+                        List<BalanceId> balanceIdentities = tempInfo.GetStockInfo();
+
+                        if (balanceIdentities == null)
                         {
-                            r.Warehouse,
-                            r.ItemNumber,
-                            r.BestBeforeDate
-                        })
-                        .OrderBy(x => x.Key.Warehouse)
-                        .ThenBy(x => x.Key.BestBeforeDate)
-                        .Select(r => new
-                        {
-                            Item = r.Key.ItemNumber,
-                            Warehouse = r.Key.Warehouse,
-                            BestBeforeDate = r.Key.BestBeforeDate,
-                            AllocatableQuantity = r.Sum(x => x.AllocatableQuantity),
-                            AllocatedQuantity = r.Sum(x => x.AllocatedQuantity),
-                            OnHandBalance = r.Sum(x => x.OnHandBalance)
-                        });
-                        message = String.Format("{0}\t{1}\t{2}\t{3}\t{4}{5}",
-                                "BBD            ",
-                                "Lager",
-                                "Alk.bar",
-                                "Resvt",
-                                "Lager",
-                                Environment.NewLine
-                                );
-                        foreach (var balanceId in balanceIds)
-                        {
-                            message = message + String.Format("{0}\t{1}\t{2}\t{3}\t{4}{5}",
-                                balanceId.BestBeforeDate.ToShortDateString(),
-                                balanceId.OnHandBalance,
-                                balanceId.AllocatableQuantity,
-                                balanceId.AllocatedQuantity,
-                                balanceId.Warehouse,
-                                Environment.NewLine);
+                            MessageBox.Show("Kunde inte hämta lagersaldo. Försök igen");
+                            return;
                         }
-                    }
-                    else
-                    {
-                        message = "In Stock: 0  Nothing in stock!";
-                    }
-                    MessageBox.Show(message);
-                }
-                else
-                {
-                    MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
-                }
-            }
-            if ((GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear") && columnIndex > 2)
-            {
-                if (!infoboxSupply.Visible)
-                {
-                    string temp2 = GetProductNumberFromRow(rowIndex);
-                    string tempNewName = temp2;
-                    int latestWeek = latestClickedWeek;
-                    latestClickedYear = StaticVariables.GetYearFromName(columnName);//columnIndex - 2;;
-                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(temp2);
-                    Console.WriteLine(" Product: " + temp2 + " Week: " + latestWeek);
-
-                    string temp = "";
-                    NavSQLSupplyInformation sqlConnection = new NavSQLSupplyInformation(selectedYear, temp2);
-                    temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek);
-
-                    temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
-                    MessageBox.Show(temp);
-                }
-                else
-                {
-                    MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
-                }
-            }
-            else if ((GetValueFromGridAsString(rowIndex, 2) == "Kampagn_ThisYear") && columnIndex > 2)
-            {
-                if (!infoboxSupply.Visible)
-                {
-                    string tempProdNBR = GetProductNumberFromRow(rowIndex);
-                    string tempNewName = tempProdNBR;
-                    int latestWeek = latestClickedWeek;
-                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
-                    Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
-
-                    string infoText = "";
-                    GetFromM3 m3Connection = new GetFromM3();
-                    List<PromotionInfo> promotionLines = m3Connection.GetPromotionForAllCustomerAsListv2(tempProdNBR, selectedYear);
-
-                    var result = from rows in promotionLines where rows.Week == latestWeek select rows;
-                    NavSQLExecute sqlconn = new NavSQLExecute();
-                    foreach (PromotionInfo line in result)
-                    {
-                        infoText = String.Format("{0, -30}\t{1, -20}\t{2, -20}\t{3, -20}{4}",
-                            line.Id + ". " + line.Description,
-                            line.ItemNumber,
-                            line.Week,
-                            line.Quantity,
-                            Environment.NewLine) + infoText;
-                    }
-                    if (infoText.Length > 0)
-                    {
-                        infoText = String.Format("{0, -30}\t{1, -20}\t{2, -20}\t{3, -20}{4}",
-                            "Kampagn",
-                            "Produkt",
-                            "Vecka",
-                            "Antal",
-                            Environment.NewLine) + infoText;
-                        MessageBox.Show(infoText);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
-                }
-            }
-            else if ((GetValueFromGridAsString(rowIndex, 2) == "RealiseratSalg_ThisYear") && columnIndex > 2)
-            {
-                if (!infoboxSupply.Visible)
-                {
-                    string tempProdNBR = GetProductNumberFromRow(rowIndex);
-                    int productNumber = Convert.ToInt32(tempProdNBR);
-                    int latestWeek = latestClickedWeek;
-                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
-
-                    Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
-                    SaleInfo sf = new SaleInfo();
-                    sf.LoadSaleInfo(tempInfo.SalesRowsThisYear, latestWeek);
-                    sf.Show();
-                }
-            }
-            else if ((GetValueFromGridAsString(rowIndex, 2) == "RealiseretSalg_LastYear") && columnIndex > 2)
-            {
-                if (!infoboxSupply.Visible)
-                {
-                    string tempProdNBR = GetProductNumberFromRow(rowIndex);
-                    int productNumber = Convert.ToInt32(tempProdNBR);
-                    int latestWeek = latestClickedWeek;
-                    PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
-
-                    Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
-                    SaleInfo sf = new SaleInfo();
-                    sf.LoadSaleInfo(tempInfo.SalesRowsLastYear, latestWeek);
-                    sf.Show();
-                }
-            }
-            else if (GetValueFromGridAsString(rowIndex, 2).Contains("Comment"))
-            {
-                if (!infoboxSupply.Visible)
-                {
-
-                    string temp = "";
-                    string tempNewComment = GetValueFromGridAsString(rowIndex, columnIndex);
-
-
-
-                    latestRow = rowIndex;
-                    //latestClickedWeek = columnIndex - 2;
-                    latestProductNumber = GetProductNumberFromRow(rowIndex);
-                    string tempNewName = latestProductNumber;
-                    if (latestClickedWeek > 0)
-                    {
-                        temp = Products.Where(x => x.ProductNumber.Equals(latestProductNumber)).Select(x => x.SalgsbudgetReguleret_Comment).First()[latestClickedWeek];
-                        //temp = SupplierProducts[latestProductNumber].SalgsbudgetReguleret_Comment[latestWeek];
-
-                        infoboxSupply.SetInfoText(this, tempNewComment, "Reguleret Product: " + tempNewName + " Week: " + latestClickedWeek);
-                        infoboxSupply.SetOldInfo(temp);
-                        infoboxSupply.TopMost = true;
-
-
-                        if (infoboxSupply.desiredStartLocationX == 0 && infoboxSupply.desiredStartLocationY == 0)
+                        if (balanceIdentities.Count > 0)
                         {
-                            infoboxSupply.SetNextLocation(latestMouseClick);
+                            var balanceIds = balanceIdentities.GroupBy(r => new
+                            {
+                                r.Warehouse,
+                                r.ItemNumber,
+                                r.BestBeforeDate
+                            })
+                            .OrderBy(x => x.Key.Warehouse)
+                            .ThenBy(x => x.Key.BestBeforeDate)
+                            .Select(r => new
+                            {
+                                Item = r.Key.ItemNumber,
+                                Warehouse = r.Key.Warehouse,
+                                BestBeforeDate = r.Key.BestBeforeDate,
+                                AllocatableQuantity = r.Sum(x => x.AllocatableQuantity),
+                                AllocatedQuantity = r.Sum(x => x.AllocatedQuantity),
+                                OnHandBalance = r.Sum(x => x.OnHandBalance)
+                            });
+                            message = String.Format("{0}\t{1}\t{2}\t{3}\t{4}{5}",
+                                    "BBD            ",
+                                    "Lager",
+                                    "Alk.bar",
+                                    "Resvt",
+                                    "Lager",
+                                    Environment.NewLine
+                                    );
+                            foreach (var balanceId in balanceIds)
+                            {
+                                message = message + String.Format("{0}\t{1}\t{2}\t{3}\t{4}{5}",
+                                    balanceId.BestBeforeDate.ToShortDateString(),
+                                    balanceId.OnHandBalance,
+                                    balanceId.AllocatableQuantity,
+                                    balanceId.AllocatedQuantity,
+                                    balanceId.Warehouse,
+                                    Environment.NewLine);
+                            }
                         }
                         else
                         {
-                            infoboxSupply.Location = latestMouseClick;
+                            message = "In Stock: 0  Nothing in stock!";
                         }
-                        infoboxSupply.Show();
-                        infoboxSupply.FocusTextBox();
+                        MessageBox.Show(message);
+                    }
+                    else
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
                     }
                 }
-                else
+                if ((GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear") && columnIndex > 2 && columnName.Contains("20"))
                 {
-                    MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before open a new one!");
-                }
-            }
-            else if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear" || GetValueFromGridAsString(rowIndex, 2) == "InkommandeKöpsorder_ThisYear")
-              && columnIndex > 2)
-            {
-                bool received = GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear";
-                string message = "";
-                //latestClickedWeek = latestClickedWeek;
-                latestProductNumber = GetProductNumberFromRow(rowIndex);
-
-                if (latestClickedWeek > 0)
-                {
-                    if (received)
+                    if (!infoboxSupply.Visible)
                     {
-                        var lines = from line in StaticVariables.PurchaseOrderLinesM3
-                                    where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
-                                    select line;
-                        foreach (var line in lines)
+                        string temp2 = GetProductNumberFromRow(rowIndex);
+                        string tempNewName = temp2;
+                        int latestWeek = latestClickedWeek;
+                        latestClickedYear = StaticVariables.GetYearFromName(columnName);//columnIndex - 2;;
+                        PrognosInfoForSupply tempInfo = GetProductInfoByNumber(temp2);
+                        Console.WriteLine(" Product: " + temp2 + " Week: " + latestWeek);
+
+                        string temp = "";
+                        NavSQLSupplyInformation sqlConnection = new NavSQLSupplyInformation(selectedYear, temp2);
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek);
+
+                        temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
+                        MessageBox.Show(temp);
+                    }
+                    else
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
+                    }
+                }
+                else if ((GetValueFromGridAsString(rowIndex, 2) == "Kampagn_ThisYear") && columnIndex > 2 && columnName.Contains("20"))
+                {
+                    if (!infoboxSupply.Visible)
+                    {
+                        string tempProdNBR = GetProductNumberFromRow(rowIndex);
+                        string tempNewName = tempProdNBR;
+                        int latestWeek = latestClickedWeek;
+                        PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
+                        Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
+
+                        string infoText = "";
+                        GetFromM3 m3Connection = new GetFromM3();
+                        List<PromotionInfo> promotionLines = m3Connection.GetPromotionForAllCustomerAsListv2(tempProdNBR, selectedYear);
+
+                        var result = from rows in promotionLines where rows.Week == latestWeek select rows;
+                        NavSQLExecute sqlconn = new NavSQLExecute();
+                        foreach (PromotionInfo line in result)
                         {
-                            message = message + String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}",
-                            line.Warehouse,
-                            line.Date.ToShortDateString(),
-                            line.PONumber,
-                            line.Quantity,
-                            Environment.NewLine);
+                            infoText = String.Format("{0, -30}\t{1, -20}\t{2, -20}\t{3, -20}{4}",
+                                line.Id + ". " + line.Description,
+                                line.ItemNumber,
+                                line.Week,
+                                line.Quantity,
+                                Environment.NewLine) + infoText;
+                        }
+                        if (infoText.Length > 0)
+                        {
+                            infoText = String.Format("{0, -30}\t{1, -20}\t{2, -20}\t{3, -20}{4}",
+                                "Kampagn",
+                                "Produkt",
+                                "Vecka",
+                                "Antal",
+                                Environment.NewLine) + infoText;
+                            MessageBox.Show(infoText);
                         }
                     }
                     else
                     {
-                        var lines = from line in StaticVariables.ExpectedPurchaseOrderLinesM3
-                                    where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
-                                    select line;
-                        foreach (var line in lines)
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
+                    }
+                }
+                else if ((GetValueFromGridAsString(rowIndex, 2) == "RealiseratSalg_ThisYear") && columnIndex > 2 && columnName.Contains("20"))
+                {
+                    if (!infoboxSupply.Visible)
+                    {
+                        string tempProdNBR = GetProductNumberFromRow(rowIndex);
+                        int productNumber = Convert.ToInt32(tempProdNBR);
+                        int latestWeek = latestClickedWeek;
+                        PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
+
+                        Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
+                        SaleInfo sf = new SaleInfo();
+                        sf.LoadSaleInfo(tempInfo.SalesRowsThisYear, latestWeek);
+                        sf.Show();
+                    }
+                }
+                else if ((GetValueFromGridAsString(rowIndex, 2) == "RealiseretSalg_LastYear") && columnIndex > 2 && columnName.Contains("20"))
+                {
+                    if (!infoboxSupply.Visible)
+                    {
+                        string tempProdNBR = GetProductNumberFromRow(rowIndex);
+                        int productNumber = Convert.ToInt32(tempProdNBR);
+                        int latestWeek = latestClickedWeek;
+                        PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
+
+                        Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
+                        SaleInfo sf = new SaleInfo();
+                        sf.LoadSaleInfo(tempInfo.SalesRowsLastYear, latestWeek);
+                        sf.Show();
+                    }
+                }
+                else if (GetValueFromGridAsString(rowIndex, 2).Contains("Comment") && columnName.Contains("20"))
+                {
+                    if (!infoboxSupply.Visible)
+                    {
+
+                        string temp = "";
+                        string tempNewComment = GetValueFromGridAsString(rowIndex, columnIndex);
+
+
+
+                        latestRow = rowIndex;
+                        //latestClickedWeek = columnIndex - 2;
+                        latestProductNumber = GetProductNumberFromRow(rowIndex);
+                        string tempNewName = latestProductNumber;
+                        if (latestClickedWeek > 0)
                         {
-                            message = message + String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}",
-                            line.Warehouse + "   ",
-                            line.Date.ToShortDateString(),
-                            line.PONumber,
-                            line.Quantity,
-                            Environment.NewLine);
+                            temp = Products.Where(x => x.ProductNumber.Equals(latestProductNumber)).Select(x => x.SalgsbudgetReguleret_Comment).First()[latestClickedWeek];
+                            //temp = SupplierProducts[latestProductNumber].SalgsbudgetReguleret_Comment[latestWeek];
+
+                            infoboxSupply.SetInfoText(this, tempNewComment, "Reguleret Product: " + tempNewName + " Week: " + latestClickedWeek);
+                            infoboxSupply.SetOldInfo(temp);
+                            infoboxSupply.TopMost = true;
+
+
+                            if (infoboxSupply.desiredStartLocationX == 0 && infoboxSupply.desiredStartLocationY == 0)
+                            {
+                                infoboxSupply.SetNextLocation(latestMouseClick);
+                            }
+                            else
+                            {
+                                infoboxSupply.Location = latestMouseClick;
+                            }
+                            infoboxSupply.Show();
+                            infoboxSupply.FocusTextBox(this);
                         }
                     }
-                    message = String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}", "Lager", "Dato", "Order", "Antal",
-                                Environment.NewLine) + message;
-                    MessageBox.Show(message);
+                    else
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before open a new one!");
+                    }
+                }
+                else if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear" || GetValueFromGridAsString(rowIndex, 2) == "InkommandeKöpsorder_ThisYear" && columnName.Contains("20"))
+                  && columnIndex > 2)
+                {
+                    bool received = GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear";
+                    string message = "";
+                    //latestClickedWeek = latestClickedWeek;
+                    latestProductNumber = GetProductNumberFromRow(rowIndex);
+
+                    if (latestClickedWeek > 0)
+                    {
+                        if (received)
+                        {
+                            var lines = from line in StaticVariables.PurchaseOrderLinesM3
+                                        where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
+                                        select line;
+                            foreach (var line in lines)
+                            {
+                                message = message + String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}",
+                                line.Warehouse,
+                                StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
+                                line.PONumber,
+                                line.Quantity,
+                                Environment.NewLine);
+                            }
+                        }
+                        else
+                        {
+                            var lines = from line in StaticVariables.ExpectedPurchaseOrderLinesM3
+                                        where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
+                                        select line;
+                            foreach (var line in lines)
+                            {
+                                message = message + String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}",
+                                line.Warehouse + "   ",
+                                StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
+                                line.PONumber,
+                                line.Quantity,
+                                Environment.NewLine);
+                            }
+                        }
+                        message = String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}", "Lager", "Dato", "Order", "Antal",
+                                    Environment.NewLine) + message;
+                        MessageBox.Show(message);
+                    }
                 }
             }
         }
@@ -1382,7 +1398,7 @@ namespace WindowsFormsForecastLactalis
                 return;
             }
 
-            if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsbudget_ThisYear") && columnIndex > 2) // 1 should be your column index
+            if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsbudget_ThisYear") && columnIndex > 2 && columnName.Contains("20")) // 1 should be your column index
             {
                 int i;
                 string productNumber = GetProductNumberFromRow(rowIndex);
@@ -1431,7 +1447,7 @@ namespace WindowsFormsForecastLactalis
                     }
                 }
             }
-            else if ((GetValueFromGridAsString(rowIndex, 2) == "SalgsbudgetReguleret_TY") && columnIndex > 2) // 1 should be your column index
+            else if ((GetValueFromGridAsString(rowIndex, 2) == "SalgsbudgetReguleret_TY") && columnIndex > 2 && columnName.Contains("20")) // 1 should be your column index
             {
                 int i;
                 string productNumber = GetProductNumberFromRow(rowIndex);
