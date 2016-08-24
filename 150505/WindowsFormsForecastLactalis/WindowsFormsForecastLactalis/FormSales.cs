@@ -22,6 +22,7 @@ namespace WindowsFormsForecastLactalis
     {
         private static List<PrognosInfoSales> Products = new List<PrognosInfoSales>();
         public FormSupply supplyViewInstance;
+        public ScrollToProdNumber scrollInfoInstance;
         private string latestComboBoxText = "";
         GetFromM3 m3Info = new GetFromM3();
         TextBoxForm infoboxSales = new TextBoxForm();
@@ -75,6 +76,9 @@ namespace WindowsFormsForecastLactalis
 
             dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
+
+            labelCalculator.Location = new System.Drawing.Point(10, this.Height - 70); ;
+            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70); 
 
 
             StaticVariables.SetAllProductsNavDict(allProductsDict);
@@ -135,15 +139,13 @@ namespace WindowsFormsForecastLactalis
         {
             if (comboBoxYear.Text != latestComboBoxText)
             {
-                latestComboBoxText = comboBoxYear.Text;
-                dataGridForecastInfo.ColumnCount = 56;
-                dataGridForecastInfo.Columns[0].Name = "VareNr";
-                dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
-                dataGridForecastInfo.Columns[2].Name = "Type";
-
-
                 if (selectedYear == 1000)
                 {
+                    latestComboBoxText = comboBoxYear.Text;
+                    dataGridForecastInfo.ColumnCount = 44;
+                    dataGridForecastInfo.Columns[0].Name = "VareNr";
+                    dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
+                    dataGridForecastInfo.Columns[2].Name = "Type";
                     int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
                     if (StaticVariables.TestWeek > 0)
                     {
@@ -173,7 +175,7 @@ namespace WindowsFormsForecastLactalis
                             dataGridForecastInfo.Columns[i + 2].Name = temp;
                         }
 
-                        for (int i = (forecastNbrWeeks * 2 + 2); i <= 53; i++)
+                        for (int i = (forecastNbrWeeks * 2 + 2); i <= dataGridForecastInfo.Columns.Count -3; i++)
                         {
                             string temp = "XXXX";
                             weekNumber++;
@@ -204,7 +206,7 @@ namespace WindowsFormsForecastLactalis
                             dataGridForecastInfo.Columns[i + 2].Name = temp;
                         }
 
-                        for (int i = (forecastNbrWeeks * 2 + 2); i <= 53; i++)
+                        for (int i = (forecastNbrWeeks * 2 + 2); i <= dataGridForecastInfo.Columns.Count; i++)
                         {
                             string temp = "XXXX";
                             weekNumber++;
@@ -216,7 +218,11 @@ namespace WindowsFormsForecastLactalis
                 //selected year not Now
                 else
                 {
-
+                    latestComboBoxText = comboBoxYear.Text;
+                    dataGridForecastInfo.ColumnCount = 56;
+                    dataGridForecastInfo.Columns[0].Name = "VareNr";
+                    dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
+                    dataGridForecastInfo.Columns[2].Name = "Type";
                     for (int i = 1; i < 54; i++)
                     {
                         int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
@@ -238,19 +244,25 @@ namespace WindowsFormsForecastLactalis
 
 
                 //Scroll to this week
-                int columnNow = 0;
-                for (int i = 0; i < dataGridForecastInfo.Columns.Count; i++)
+                FocusNowColumn();
+            }
+        }
+
+        private void FocusNowColumn()
+        {
+            //Scroll to this week
+            int columnNow = 0;
+            for (int i = 0; i < dataGridForecastInfo.Columns.Count; i++)
+            {
+                if (dataGridForecastInfo.Columns[i].Name.Contains("Now"))
                 {
-                    if (dataGridForecastInfo.Columns[i].Name.Contains("Now"))
-                    {
-                        columnNow = i;
-                        break;
-                    };
-                }
-                if (columnNow > 0)
-                {
-                    dataGridForecastInfo.FirstDisplayedScrollingColumnIndex = columnNow-2;
-                }
+                    columnNow = i;
+                    break;
+                };
+            }
+            if (columnNow > 0)
+            {
+                dataGridForecastInfo.FirstDisplayedScrollingColumnIndex = columnNow - 2;
             }
         }
 
@@ -385,23 +397,23 @@ namespace WindowsFormsForecastLactalis
                     }
                     AddRowFromList(tempList);
 
-                    tempList = new List<object>();
-                    tempList.Add("");
-                    tempList.Add("");
-                    tempList.Add("RealiseretKampagn_LastYear");
-                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
-                    {
-                        if (i > 52)
-                        {
-                            k = i - 52;
-                        }
-                        else
-                        {
-                            k = i;
-                        }
-                        tempList.Add(item.RealiseretKampagn_LastYear[k]);
-                    }
-                    AddRowFromList(tempList);
+                    //tempList = new List<object>();
+                    //tempList.Add("");
+                    //tempList.Add("");
+                    //tempList.Add("RealiseretKampagn_LastYear");
+                    //for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    //{
+                    //    if (i > 52)
+                    //    {
+                    //        k = i - 52;
+                    //    }
+                    //    else
+                    //    {
+                    //        k = i;
+                    //    }
+                    //    tempList.Add(item.RealiseretKampagn_LastYear[k]);
+                    //}
+                    //AddRowFromList(tempList);
 
                     tempList = new List<object>();
                     tempList.Add("");
@@ -562,15 +574,15 @@ namespace WindowsFormsForecastLactalis
                     }
                     AddRowFromList(tempList);
 
-                    tempList = new List<object>();
-                    tempList.Add("");
-                    tempList.Add("");
-                    tempList.Add("RealiseretKampagn_LastYear");
-                    for (int i = 1; i < 54; i++)
-                    {
-                        tempList.Add(item.RealiseretKampagn_LastYear[i]);
-                    }
-                    AddRowFromList(tempList);
+                    //tempList = new List<object>();
+                    //tempList.Add("");
+                    //tempList.Add("");
+                    //tempList.Add("RealiseretKampagn_LastYear");
+                    //for (int i = 1; i < 54; i++)
+                    //{
+                    //    tempList.Add(item.RealiseretKampagn_LastYear[i]);
+                    //}
+                    //AddRowFromList(tempList);
 
                     tempList = new List<object>();
                     tempList.Add("");
@@ -874,7 +886,7 @@ namespace WindowsFormsForecastLactalis
                         foreach (string item in productList)
                         {
                             //Avbryt hämtning av fler artiklar om användaren trycker på Escape
-                            if (StaticVariables.AbortLoad)
+                            if (StaticVariables.AbortLoad || labelStatus.Visible == false)
                             {
                                 StaticVariables.AbortLoad = false;
                                 break;
@@ -888,6 +900,10 @@ namespace WindowsFormsForecastLactalis
                             PrognosInfoSales product1 = new PrognosInfoSales(temp, item, tempString, status);
                             product1.FillNumbers(selectedYear);
                             Products.Add(product1);
+                            if (i == 1 || i == 10 || i == 3)
+                            {
+                                ShowFirstTen();
+                            }
                             SetStatus("Products Loading " + i + "/" + nbrItems);
                         }
                         FillSalesGUIInfo();
@@ -907,6 +923,7 @@ namespace WindowsFormsForecastLactalis
             double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Load all Customers Sales! Time (s): " + timeConnectSeconds);
             LoadingReady();
+            FocusNowColumn();
         }
 
 
@@ -943,7 +960,11 @@ namespace WindowsFormsForecastLactalis
             string cleanComment = System.Text.RegularExpressions.Regex.Replace(tempComment, "[áàäâãåÁÀÄÂÃÅ]", "a");
             cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
             string thisDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            cleanComment = thisDate + ": " + cleanComment;
+            cleanComment = ": " + cleanComment;
+            if (cleanComment.Length > 49)
+            {
+                cleanComment = cleanComment.Substring(0, 49);
+            }
             string tempCustNumber = StaticVariables.GetCustNavCodeFirst(latestCustomerLoaded); ;
             string productNumber = GetProductNumberFromRow(latestCommentRow);
             DateTime tempDate = StaticVariables.FirstSaturdayBeforeWeakOne(latestClickedYear);
@@ -996,7 +1017,8 @@ namespace WindowsFormsForecastLactalis
             String columnName = this.dataGridForecastInfo.Columns[e.ColumnIndex].Name;
 
             //Do not validate while new products is loading
-            if (!loadingNewProductsOngoing && GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2 && columnName.Contains("20"))//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
+            //if (!loadingNewProductsOngoing && GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2 && columnName.Contains("20"))//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
+            if (GetValueFromGridAsString(rowIndex, 2) == "Salgsbudget_ThisYear" && columnIndex > 2 && columnName.Contains("20"))//(rowIndex % 7 == 5 && columnIndex > 2) // 1 should be your column index
             {
                 int i;
                 string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
@@ -1059,7 +1081,11 @@ namespace WindowsFormsForecastLactalis
                                     string cleanComment = System.Text.RegularExpressions.Regex.Replace(tempComment, "[áàäâãåÁÀÄÂÃÅ]", "a");
                                     cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
                                     string thisDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                    cleanComment = thisDate + ": " + cleanComment;
+                                    cleanComment = thisDate.Substring(5,11) + ": " + cleanComment;
+                                    if(cleanComment.Length >49)
+                                    {
+                                        cleanComment = cleanComment.Substring(0, 49);
+                                    }
                                     if (tempComment.Length <= 1)
                                     {
                                         System.Threading.ThreadPool.QueueUserWorkItem(delegate
@@ -1072,10 +1098,10 @@ namespace WindowsFormsForecastLactalis
                                     {
                                         newCommentProdNBR = productNumber;
                                         NavSQLExecute conn = new NavSQLExecute();
-                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, budgetDate2.ToString(format), ammount, inputNow, cleanComment);
+                                        conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, budgetDate2.ToString(format), ammount, inputNow, "");
                                     }
 
-                                    SetKöpsbudget(weekTest, productNumber, Convert.ToInt32(e.FormattedValue), cleanComment, ammount);
+                                    SetKöpsbudget(weekTest, productNumber, Convert.ToInt32(e.FormattedValue), "", ammount);
                                 }
                             }
                         }
@@ -1123,6 +1149,18 @@ namespace WindowsFormsForecastLactalis
 
                 latestMouseClick = System.Windows.Forms.Cursor.Position;
                 Console.WriteLine("Value clicked... Column index: " + columnIndex + "  rowIndex: " + rowIndex);
+                if (columnIndex == 0)
+                {
+                    Console.WriteLine("Here We are");
+                    if (scrollInfoInstance != null)
+                    {
+                        scrollInfoInstance.Close();
+                    }
+                    scrollInfoInstance = new ScrollToProdNumber(this, true);
+                    scrollInfoInstance.StartPosition = FormStartPosition.Manual;
+                    scrollInfoInstance.Location = latestMouseClick;
+                    scrollInfoInstance.Show();
+                }
                 if (columnIndex > 2 && columnName.Contains("20"))
                 {
                     if (GetValueFromGridAsString(rowIndex, 2).Contains("Comment"))
@@ -1306,7 +1344,7 @@ namespace WindowsFormsForecastLactalis
                 if (item.ProductNumber.ToString() == productNumber)
                 {
                     item.Salgsbudget_ThisYear[week] = Convert.ToInt32(value);
-                    item.Salgsbudget_Comment[week] = item.Salgsbudget_Comment[week] + "\n " + Convert.ToInt32(changeValue) + ' ' + comment;
+                    //item.Salgsbudget_Comment[week] = item.Salgsbudget_Comment[week] + "\n " + Convert.ToInt32(changeValue) + ' ' + comment;
                 }
             }
         }
@@ -1365,6 +1403,7 @@ namespace WindowsFormsForecastLactalis
             Products.Add(product1);
             FillSalesGUIInfo();
             LoadingReady();
+            FocusNowColumn();
         }
 
         private void LoadingReady()
@@ -1424,6 +1463,10 @@ namespace WindowsFormsForecastLactalis
 
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
+
+            
+            labelCalculator.Location = new System.Drawing.Point(10, this.Height - 70); 
+            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70); 
             dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
         }
@@ -1497,6 +1540,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+
         private void FormSales_KeyPress(object sender, KeyPressEventArgs e)
         {
             //Om Escape trycks ned vid hämtning av produkter på kund avbryts hämtningen
@@ -1504,6 +1548,73 @@ namespace WindowsFormsForecastLactalis
             {
                 StaticVariables.AbortLoad = true;
             }
+        }
+
+
+        private void ShowFirstTen()
+        {
+            FillSalesGUIInfo();
+            dataGridForecastInfo.Visible = true;
+            FocusNowColumn();
+        }
+
+        internal void ScrollToNumber(string number)
+        {
+            string tempNumber = number;
+
+            number = number.Trim();
+
+            for(int i = 0; i < dataGridForecastInfo.RowCount; i++)
+            {
+                string value = GetValueFromGridAsString(i, 0);
+                if (value.Contains(number))
+                {
+                    dataGridForecastInfo.FirstDisplayedScrollingRowIndex = i;
+                    return;
+                }
+
+            }
+
+        }
+
+        private void textBoxCalculator_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CountExpression(string calcString)
+        {
+            try
+            {
+                var loDataTable = new DataTable();
+                var loDataColumn = new DataColumn("Eval", typeof(double), calcString);
+                loDataTable.Columns.Add(loDataColumn);
+                loDataTable.Rows.Add(0);
+                double tempD = (double)loDataTable.Rows[0]["Eval"];
+                tempD = Math.Floor(tempD);
+                int answer = Convert.ToInt32(tempD);
+                string temp = answer.ToString(); 
+                textBoxCalculator.Text = temp;
+                return;
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        private void textBoxCalculator_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+            {
+                string temp = sender.GetType().ToString();
+                if (temp.Contains("TextBox"))
+                {
+                    CountExpression(textBoxCalculator.Text);
+                }
+                //if (e.GetType() == System.Windows.Forms.TextBox)
+            }
+            
         }
     }
 }

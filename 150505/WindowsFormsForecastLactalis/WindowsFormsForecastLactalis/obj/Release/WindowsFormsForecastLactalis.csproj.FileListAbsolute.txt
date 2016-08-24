@@ -522,3 +522,4 @@ C:\Users\chhe1226\Desktop\Forecast Jlui2016\v.1.8.0.0 160709\WindowsFormsForecas
 C:\Users\chhe1226\Desktop\Forecast Jlui2016\v.1.8.0.0 160709\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.application
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.FormSales.resources
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.SaleInfo.resources
+C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.ScrollToProdNumber.resources

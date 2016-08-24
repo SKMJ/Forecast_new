@@ -98,6 +98,12 @@ namespace WindowsFormsForecastLactalis
             //bw.WorkerReportsProgress = true;
             //bw.WorkerSupportsCancellation = true;
 
+            if (comment.Length > 49)
+            {
+                comment = comment.Substring(0, 49);
+            }
+           
+
             using (SqlCommand command = new SqlCommand())
             {
                 //string cleanComment = System.Text.RegularExpressions.Regex.Replace(comment, "[áàäâãåÁÀÄÂÃÅ]", "a");
@@ -126,6 +132,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 catch (SqlException ex)
                 {
+                    System.Windows.Forms.MessageBox.Show(" Send this info to Christofer:  custnumber: " + custNumber + " Name: " + custName + " prodNumber: " + prodNumber + " startdato: " + startdato + " ammount: " + ammount + " nowString: " + nowString + " comment: " + comment);
                     System.Windows.Forms.MessageBox.Show("Info can not be added to database     " + ex.Message);
                 }
             }

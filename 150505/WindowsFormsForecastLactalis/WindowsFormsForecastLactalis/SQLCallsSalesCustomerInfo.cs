@@ -288,6 +288,13 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
                     int Antal2 = Convert.ToInt32(row["Antal"]);
                     string comment = row["Kommentar"].ToString();
+                    string temp = "2016-11-11 11:11:11";
+                    if (comment.StartsWith("2016-") && temp.Length < comment.Length)
+                    {
+
+                        comment = comment.Substring(temp.Length);
+                    }
+                    string dateforNumber = row["Tastedato"].ToString();
                     //string levKedja = row["Navn_DebBogfGr"].ToString();
 
                     
@@ -301,7 +308,7 @@ namespace WindowsFormsForecastLactalis
                             salesBudgetTY[weekInt] = salesBudgetTY[weekInt] + Antal;
                             if (comment.Length > 0)
                             {
-                                Salgsbudget_Comment[weekInt] = Salgsbudget_Comment[weekInt] + " \n " + Antal + "  " + comment;
+                                Salgsbudget_Comment[weekInt] = Salgsbudget_Comment[weekInt] + " \n " + Antal + " "+ dateforNumber + " " + comment;
                             }
                         }
                         else if (year == currentSelectedYear - 1)

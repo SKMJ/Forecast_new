@@ -57,6 +57,10 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
 
+
+            labelCalculator.Location = new System.Drawing.Point(10, this.Height - 70);
+            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70); 
+
             if (StaticVariables.Production)
             {
                 this.Text = "Forecast Supply Production Environment  " + Application.ProductVersion;
@@ -141,15 +145,17 @@ namespace WindowsFormsForecastLactalis
         {
             if (comboBoxYear.Text != latestComboBoxText)
             {
-                latestComboBoxText = comboBoxYear.Text;
-                dataGridForecastInfo.ColumnCount = 56;
-                dataGridForecastInfo.Columns[0].Name = "VareNr";
-                dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
-                dataGridForecastInfo.Columns[2].Name = "Type";
+
 
 
                 if (selectedYear == 1000)
                 {
+                    latestComboBoxText = comboBoxYear.Text;
+                    dataGridForecastInfo.ColumnCount = 44;
+                    dataGridForecastInfo.Columns[0].Name = "VareNr";
+                    dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
+                    dataGridForecastInfo.Columns[2].Name = "Type";
+
                     int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
                     if (StaticVariables.TestWeek > 0)
                     {
@@ -179,7 +185,7 @@ namespace WindowsFormsForecastLactalis
                             dataGridForecastInfo.Columns[i + 2].Name = temp;
                         }
 
-                        for (int i = (forecastNbrWeeks * 2 + 2); i <= 53; i++)
+                        for (int i = (forecastNbrWeeks * 2 + 2); i <= dataGridForecastInfo.Columns.Count - 3; i++)
                         {
                             string temp = "XXXX";
                             weekNumber++;
@@ -210,7 +216,7 @@ namespace WindowsFormsForecastLactalis
                             dataGridForecastInfo.Columns[i + 2].Name = temp;
                         }
 
-                        for (int i = (forecastNbrWeeks * 2 + 2); i <= 53; i++)
+                        for (int i = (forecastNbrWeeks * 2 + 2); i <= dataGridForecastInfo.Columns.Count - 3; i++)
                         {
                             string temp = "XXXX";
                             weekNumber++;
@@ -222,7 +228,11 @@ namespace WindowsFormsForecastLactalis
                 //selected year not Now
                 else
                 {
-
+                    latestComboBoxText = comboBoxYear.Text;
+                    dataGridForecastInfo.ColumnCount = 56;
+                    dataGridForecastInfo.Columns[0].Name = "VareNr";
+                    dataGridForecastInfo.Columns[1].Name = "Beskrivelse";
+                    dataGridForecastInfo.Columns[2].Name = "Type";
                     for (int i = 1; i < 54; i++)
                     {
                         int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
@@ -338,6 +348,10 @@ namespace WindowsFormsForecastLactalis
 
                 product1.FillNumbers(selectedYear);
                 Products.Add(product1);
+                if (i == 1 || i == 10 || i == 3)
+                {
+                    ShowFirstTen();
+                }
             }
             Products.Sort(Compare);
             SetStatus("Products Preparing For User Interface. Will soon be ready to view.");
@@ -1045,7 +1059,7 @@ namespace WindowsFormsForecastLactalis
         {
             labelStatus.Text = status;
             labelStatus.Visible = true;
-            dataGridForecastInfo.Visible = false;
+            //dataGridForecastInfo.Visible = false;
             buttonGetProductByNumber.Enabled = false;
             buttonGetProductsBySupplier.Enabled = false;
             buttonGetSupplierFromNBR.Enabled = false;
@@ -1102,7 +1116,19 @@ namespace WindowsFormsForecastLactalis
                 String columnName = this.dataGridForecastInfo.Columns[e.ColumnIndex].Name;
                 latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
                 latestClickedYear = StaticVariables.GetYearFromName(columnName);//columnIndex - 2;
+                if (columnIndex == 0)
+                {
+                    Console.WriteLine("Here We are");
 
+                    if (formSalesInstance.scrollInfoInstance != null)
+                    {
+                        formSalesInstance.scrollInfoInstance.Close();
+                    }
+                    formSalesInstance.scrollInfoInstance = new ScrollToProdNumber(formSalesInstance, false);
+                    formSalesInstance.scrollInfoInstance.StartPosition = FormStartPosition.Manual;
+                    formSalesInstance.scrollInfoInstance.Location = latestMouseClick;
+                    formSalesInstance.scrollInfoInstance.Show();
+                }
                 //for the Sales info forecast show extra info
                 if (GetValueFromGridAsString(rowIndex, columnIndex).Contains("lager") && columnIndex == 1)
                 {
@@ -1897,6 +1923,9 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
 
+            labelCalculator.Location = new System.Drawing.Point(10, this.Height - 70);
+            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70); 
+
         }
 
         private void dataGridForecastInfo_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
@@ -1945,6 +1974,87 @@ namespace WindowsFormsForecastLactalis
             if (e.KeyChar == (char)27)
             {
                 StaticVariables.AbortLoad = true;
+            }
+        }
+
+        private void ShowFirstTen()
+        {
+            PrepareGUI();
+            dataGridForecastInfo.Visible = true;
+            FocusNowColumn();
+            Application.DoEvents();
+        }
+
+        internal void ScrollToNumber(string number)
+        {
+            string tempNumber = number;
+
+            number = number.Trim();
+
+            for (int i = 0; i < dataGridForecastInfo.RowCount; i++)
+            {
+                string value = GetValueFromGridAsString(i, 0);
+                if (value.Contains(number))
+                {
+                    dataGridForecastInfo.FirstDisplayedScrollingRowIndex = i;
+                    return;
+                }
+
+            }
+
+        }
+
+        private void FocusNowColumn()
+        {
+            //Scroll to this week
+            int columnNow = 0;
+            for (int i = 0; i < dataGridForecastInfo.Columns.Count; i++)
+            {
+                if (dataGridForecastInfo.Columns[i].Name.Contains("Now"))
+                {
+                    columnNow = i;
+                    break;
+                };
+            }
+            if (columnNow > 0)
+            {
+                dataGridForecastInfo.FirstDisplayedScrollingColumnIndex = columnNow - 2;
+            }
+        }
+
+
+        private void textBoxCalculator_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)13)
+            {
+                string temp = sender.GetType().ToString();
+                if (temp.Contains("TextBox"))
+                {
+                    CountExpression(textBoxCalculator.Text);
+                }
+                //if (e.GetType() == System.Windows.Forms.TextBox)
+            }
+        }
+
+
+        private void CountExpression(string calcString)
+        {
+            try
+            {
+                var loDataTable = new DataTable();
+                var loDataColumn = new DataColumn("Eval", typeof(double), calcString);
+                loDataTable.Columns.Add(loDataColumn);
+                loDataTable.Rows.Add(0);
+                double tempD = (double)loDataTable.Rows[0]["Eval"];
+                tempD = Math.Floor(tempD);
+                int answer = Convert.ToInt32(tempD);
+                string temp = answer.ToString();
+                textBoxCalculator.Text = temp;
+                return;
+            }
+            catch
+            {
+                return;
             }
         }
     }

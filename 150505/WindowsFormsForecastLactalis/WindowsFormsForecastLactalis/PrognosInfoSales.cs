@@ -32,7 +32,7 @@ namespace WindowsFormsForecastLactalis
         public int WeekToLockFrom = 0;
         public int Status;
 
-        public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
+        //public Dictionary<int, int> RealiseretKampagn_LastYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kampagn_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_LastYear = new Dictionary<int, int>();
@@ -147,7 +147,7 @@ namespace WindowsFormsForecastLactalis
                     KampagnTY[promotionItems.Key] += promotionItems.Value;
                 }
             }
-            Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerCodeNav);
+            //Dictionary<int, int> realiseretKampagnLY = sqlSalesCalls.GetRealiseretKampagnLY(ProductNumber, CustomerCodeNav);
             Console.WriteLine("Time6: " + stopwatch2.ElapsedMilliseconds);
 
             //Load Sales data
@@ -164,7 +164,7 @@ namespace WindowsFormsForecastLactalis
             {
                 Salgsbudget_LastYear[i] = salesBudgetLY[i];
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
-                RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
+                //RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
                 Kampagn_ThisYear[i] = KampagnTY[i];
                 Salgsbudget_Comment[i] = Sales_CommentTY[i];
                 Salgsbudget_ChangeHistory[i] = "";
