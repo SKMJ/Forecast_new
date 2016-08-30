@@ -563,7 +563,7 @@ namespace WindowsFormsForecastLactalis
 
         private void SetMaxList(SERVER_ID sid, int maxInt)
         {
-            Console.WriteLine("SetMaxList: " + maxInt);
+            //Console.WriteLine("SetMaxList: " + maxInt);
             StringBuilder ret2 = new StringBuilder(1024);
             uint size2 = (uint)ret2.Capacity;
 

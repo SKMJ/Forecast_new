@@ -603,6 +603,7 @@ namespace WindowsFormsForecastLactalis
                 salesYear = DateTime.Now.Year -1 ;
             }
             List<ISalesRow> salesRows = new List<ISalesRow>();
+            List<ISalesRow> salesRowsLast = new List<ISalesRow>();
             string tableSales = StaticVariables.TableM3Sales;
             string tableChainAssortment = StaticVariables.TableChainAssortment;
             string tableChainCustomer = StaticVariables.TableChainCustomer;
@@ -630,9 +631,9 @@ namespace WindowsFormsForecastLactalis
 	                                    LEFT OUTER JOIN " + tableChainAssortment + @" a1 ON a1.Chain = UCCHL1
 	                                    LEFT OUTER JOIN " + tableChainAssortment + @" a2 ON a2.Chain = UCCHL2
 	                                    LEFT OUTER JOIN " + tableChainAssortment + @" a3 ON a3.Chain = UCCHL3
-                                        WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1}", itemNumber, salesYear);
-            Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
-            Console.WriteLine(query);
+                                        WHERE UCITNO = '{0}' AND (LEFT(UCDLDT, 4) = {1} OR LEFT(UCDLDT, 4) = {2})", itemNumber, salesYear, salesYear-1);
+            //Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
+            //Console.WriteLine(query);
             DataTable table = conn.QueryExWithTableReturn(query);
             DataRowCollection rows = table.Rows;
 
@@ -648,24 +649,46 @@ namespace WindowsFormsForecastLactalis
                 int week = GetWeek(date, year);
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
-            
 
-                salesRows.Add(new SalesRow()
+                if (date.Year == salesYear)
                 {
-                    Date = date,
-                    OrderNumber = row["UCORNO"].ToString(),
-                    Quantity = quantity,
-                    Customer = row["UCCUNO"].ToString(),
-                    ItemNumber = row["UCITNO"].ToString(),
-                    Week = week,
-                    BestBeforeDate = bbd,
-                    WantedBestBeforeDate = wantedbbd,
-                    CustomerName = row["AssortmentName"].ToString()
-                });
+                    salesRows.Add(new SalesRow()
+                    {
+                        Date = date,
+                        OrderNumber = row["UCORNO"].ToString(),
+                        Quantity = quantity,
+                        Customer = row["UCCUNO"].ToString(),
+                        ItemNumber = row["UCITNO"].ToString(),
+                        Week = week,
+                        BestBeforeDate = bbd,
+                        WantedBestBeforeDate = wantedbbd,
+                        CustomerName = row["AssortmentName"].ToString()
+                    });
+                }
+                if (date.Year == (salesYear - 1))
+                {
+
+                    salesRowsLast.Add(new SalesRow()
+                    {
+                        Date = date,
+                        OrderNumber = row["UCORNO"].ToString(),
+                        Quantity = quantity,
+                        Customer = row["UCCUNO"].ToString(),
+                        ItemNumber = row["UCITNO"].ToString(),
+                        Week = week,
+                        BestBeforeDate = bbd,
+                        WantedBestBeforeDate = wantedbbd,
+                        CustomerName = row["AssortmentName"].ToString()
+                    });
+                }
+                
             }
+            Console.WriteLine("Last year sales row: " + salesRowsLast.Count + " This year Sales Row: " + salesRows.Count);
 
             return salesRows;
         }
+
+
 
         internal Dictionary<string, Dictionary<int, int>> GetKopsorder_TY()
         {

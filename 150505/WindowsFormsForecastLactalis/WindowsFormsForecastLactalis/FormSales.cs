@@ -795,6 +795,8 @@ namespace WindowsFormsForecastLactalis
         {
             labelStatus.Text = status;
             buttonSupplyView.Enabled = false;
+            button1.Enabled = false;
+            buttonGetProductByNumber.Enabled = false;
             comboBoxYear.Enabled = false;
             labelStatus.Invalidate();
             labelStatus.Update();
@@ -1397,13 +1399,24 @@ namespace WindowsFormsForecastLactalis
             string tempCustNumber = tempString;
             string temp = GetNameFromLoadedProducts(prodNMBR);
 
-            PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber, 20);
-            latestCustomerLoaded = tempCustNumber;
-            product1.FillNumbers(selectedYear);
-            Products.Add(product1);
-            FillSalesGUIInfo();
-            LoadingReady();
-            FocusNowColumn();
+            List<string> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
+
+            if (productList.Contains(prodNMBR))
+            {
+
+                PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber, 20);
+                latestCustomerLoaded = tempCustNumber;
+                product1.FillNumbers(selectedYear);
+                Products.Add(product1);
+                FillSalesGUIInfo();
+                LoadingReady();
+                FocusNowColumn();
+            }
+            else
+            {
+                MessageBox.Show("Product not in Assortment for this customer");
+                LoadingReady();
+            }
         }
 
         private void LoadingReady()
@@ -1412,6 +1425,8 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Visible = true;
             labelStatus.Visible = false;
             buttonSupplyView.Enabled = true;
+            button1.Enabled = true;
+            buttonGetProductByNumber.Enabled = true;
             comboBoxYear.Enabled = true;
         }
 

@@ -29,6 +29,8 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
 
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
+        List<ISalesRow> lastYearRowsM3 = new List<ISalesRow>();
+        List<ISalesRow> lastYearRowsNAV = new List<ISalesRow>();
 
         Dictionary<string, string> infoDict = new Dictionary<string, string>();
         int currentSelectedYear = 2015;
@@ -162,7 +164,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 else if (year == 999)
                 {
-                    DateTime endDatedate = StaticVariables.GetForecastStartDateOfWeeknumber(endYear-1, endWeek);
+                    DateTime endDatedate = StaticVariables.GetForecastStartDateOfWeeknumber(endYear - 1, endWeek);
                     endDatedate = endDatedate.AddDays(7);
                     string date = endDatedate.ToString("yyyy/MM/dd");
                     date = date.Replace("-", @"/");
@@ -180,7 +182,7 @@ namespace WindowsFormsForecastLactalis
         {
 
             int weeknumber;
-            string startDate ="";
+            string startDate = "";
 
             if (startDateStrings.ContainsKey(year))
             {
@@ -197,7 +199,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     weeknumber = StaticVariables.TestWeek;
                 }
-                
+
                 int startWeek = weeknumber - 20;
                 if (startWeek < 1)
                 {
@@ -206,7 +208,7 @@ namespace WindowsFormsForecastLactalis
                 }
 
 
-                if(year == 1000)
+                if (year == 1000)
                 {
                     DateTime stDate = StaticVariables.GetForecastStartDateOfWeeknumber(startYear, startWeek);
                     string date = stDate.ToString("yyyy/MM/dd");
@@ -216,7 +218,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 else if (year == 999)
                 {
-                    DateTime stDate = StaticVariables.GetForecastStartDateOfWeeknumber(startYear-1, startWeek);
+                    DateTime stDate = StaticVariables.GetForecastStartDateOfWeeknumber(startYear - 1, startWeek);
                     string date = stDate.ToString("yyyy/MM/dd");
                     date = date.Replace("-", @"/");
                     startDateStrings.Add(year, date);
@@ -249,7 +251,7 @@ namespace WindowsFormsForecastLactalis
             bool first = true;
             foreach (string item in customerName)
             {
-                if(first)
+                if (first)
                 {
                     first = false;
                     query = query + @"( Debitorbogføringsruppe='" + item + "' ";
@@ -297,7 +299,7 @@ namespace WindowsFormsForecastLactalis
                     string dateforNumber = row["Tastedato"].ToString();
                     //string levKedja = row["Navn_DebBogfGr"].ToString();
 
-                    
+
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
@@ -308,7 +310,7 @@ namespace WindowsFormsForecastLactalis
                             salesBudgetTY[weekInt] = salesBudgetTY[weekInt] + Antal;
                             if (comment.Length > 0)
                             {
-                                Salgsbudget_Comment[weekInt] = Salgsbudget_Comment[weekInt] + " \n " + Antal + " "+ dateforNumber + " " + comment;
+                                Salgsbudget_Comment[weekInt] = Salgsbudget_Comment[weekInt] + " \n " + Antal + " " + dateforNumber + " " + comment;
                             }
                         }
                         else if (year == currentSelectedYear - 1)
@@ -383,7 +385,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal_Realiseret"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                   
+
                     DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
@@ -533,7 +535,7 @@ namespace WindowsFormsForecastLactalis
                     string comment = row["Kommentar"].ToString();
                     string dateforNumber = row["Tastedato"].ToString();
 
-                    
+
                     DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
@@ -569,16 +571,41 @@ namespace WindowsFormsForecastLactalis
         public List<ISalesRow> GetRealizedSalesByYear(int year, string itemNumber, String customerNumber, List<string> customerNumberNav)
         {
             List<ISalesRow> salesRows = new List<ISalesRow>();
-            if (year < 2017)
+            int callyear = year;
+            if (year < 2000)
+            {
+                if(year == 1000)
+                {
+                    callyear = DateTime.Now.Year;
+                }
+                else if(year == 999)
+                {
+                    callyear = DateTime.Now.Year-1;
+                }
+                
+            }
+            if (callyear <= 2017)
             {
                 salesRows.AddRange(LoadRelSalg_FromSQL(itemNumber, year, customerNumberNav));
             }
-            if (year > 2015 || year < 2000)
+            if (callyear > 2015)
             {
                 salesRows.AddRange(LoadRealizedSalesFromM3Sales(itemNumber, year, customerNumber));
             }
             return salesRows;
         }
+
+        public List<ISalesRow> GetLoadedLastYearSalesByYear()
+        {
+            List<ISalesRow> salesRows = new List<ISalesRow>();
+
+            salesRows.AddRange(GetLastSalesFromNav());
+
+            salesRows.AddRange(GetRealizedSalesLastYear());
+
+            return salesRows;
+        }
+
 
         //public void LoadRelSalg_FromQlick(string prodNumber, int year, string custNumber)
         //{
@@ -670,6 +697,7 @@ namespace WindowsFormsForecastLactalis
         private List<ISalesRow> LoadRelSalg_FromSQL(string prodNumber, int year, List<string> custNumber)
         {
             conn = new NavSQLExecute();
+            lastYearRowsNAV = new List<ISalesRow>();
             string query = "";
             query = @"select DISTINCT Løbenr, Bogføringsdato, ISNULL(Styk_antal, Faktureret_antal) Styk_antal, LeverandørlagerOrdre, Posttype, Lokationskode, Varenr, AssortmentName
                         from  Varepost_Skyggetabel vs
@@ -689,20 +717,28 @@ namespace WindowsFormsForecastLactalis
                     query = query + @" or Bogfgruppe='" + item + "' ";
                 }
             }
-            query = query + @")  and Varenr='XXXX' and Bogføringsdato >= '" + startDateStrings[year] + "' and Bogføringsdato < '" + endDateStrings[year] + "' order by Bogføringsdato";
+            query = query + @")  and Varenr='XXXX' and Bogføringsdato >= '" + startDateStrings[year-1] + "' and Bogføringsdato < '" + endDateStrings[year] + "' order by Bogføringsdato";
             query = query.Replace("XXXX", prodNumber.ToString());
             Console.WriteLine("LoadRelSalgsbudget Query: ");
 
             List<ISalesRow> salesRows = new List<ISalesRow>();
             DataTable table = conn.QueryExWithTableReturn(query);
             DataRowCollection rows = table.Rows;
+            string tempDate = GetStartDate(year).Replace(@"/", "");
+            DateTime tempDateThisStart = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            tempDate = GetEndDate(year).Replace(@"/", "");
+            DateTime tempDateThisEnd = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            tempDate = GetStartDate(year - 1).Replace(@"/", "");
+            DateTime tempDateLastStart = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            tempDate = GetEndDate(year - 1).Replace(@"/", "");
+            DateTime tempDateLastEnd = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             foreach (DataRow row in rows)
             {
                 bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
                 string lokKode = row["Lokationskode"].ToString();
                 int postType = Convert.ToInt32(row["Posttype"].ToString());
                 DateTime date = (DateTime)row["Bogføringsdato"];
-                int week = GetWeek(date, year);
+                int week = GetWeek(date);
                 double quantity = Convert.ToDouble(row["Styk_antal"].ToString());
                 if (levEgetLager && postType == 2)
                 {
@@ -721,22 +757,46 @@ namespace WindowsFormsForecastLactalis
                 }
                 if (quantity > 0)
                 {
-                    salesRows.Add(new SalesRowNavision()
+                    
+
+                    if (date > tempDateThisStart && tempDateThisEnd > date)
                     {
-                        Date = (DateTime)row["Bogføringsdato"],
-                        SupplyOwnStock = (bool)row["LeverandørlagerOrdre"],
-                        Quantity = (int)Math.Round(quantity, 0),
-                        Posttype = Convert.ToInt32(row["Posttype"].ToString()),
-                        ItemNumber = row["Varenr"].ToString(),
-                        Week = week,
-                        CustomerName = row["AssortmentName"].ToString(),
-                    });
+                        salesRows.Add(new SalesRowNavision()
+                        {
+                            Date = (DateTime)row["Bogføringsdato"],
+                            SupplyOwnStock = (bool)row["LeverandørlagerOrdre"],
+                            Quantity = (int)Math.Round(quantity, 0),
+                            Posttype = Convert.ToInt32(row["Posttype"].ToString()),
+                            ItemNumber = row["Varenr"].ToString(),
+                            Week = week,
+                            CustomerName = row["AssortmentName"].ToString(),
+                        });
+                    }
+
+                    if (date > tempDateLastStart && tempDateLastEnd > date)
+                    {
+                        lastYearRowsNAV.Add(new SalesRowNavision()
+                        {
+                            Date = (DateTime)row["Bogføringsdato"],
+                            SupplyOwnStock = (bool)row["LeverandørlagerOrdre"],
+                            Quantity = (int)Math.Round(quantity, 0),
+                            Posttype = Convert.ToInt32(row["Posttype"].ToString()),
+                            ItemNumber = row["Varenr"].ToString(),
+                            Week = week,
+                            CustomerName = row["AssortmentName"].ToString(),
+                        });
+                    }
                 }
             }
             return salesRows;
         }
 
-        public int GetWeek(DateTime date, int year)
+        private List<ISalesRow> GetLastSalesFromNav()
+        {
+            return lastYearRowsNAV;
+        }
+
+        public int GetWeek(DateTime date)
         {
 
             int weekInt = StaticVariables.GetForecastWeeknumberForDate(date);
@@ -756,6 +816,7 @@ namespace WindowsFormsForecastLactalis
             }
             conn = new NavSQLExecute();
             List<ISalesRow> salesRows = new List<ISalesRow>();
+            List<ISalesRow> salesRowsLast = new List<ISalesRow>();
             string query = "";
             string tableSales = StaticVariables.TableM3Sales;
             string tableChainCustomer = StaticVariables.TableChainCustomer;
@@ -788,7 +849,7 @@ namespace WindowsFormsForecastLactalis
 	                                LEFT OUTER JOIN " + tableChainAssortment + @" a1 ON a1.Chain = UCCHL1
 	                                LEFT OUTER JOIN " + tableChainAssortment + @" a2 ON a2.Chain = UCCHL2
 	                                LEFT OUTER JOIN " + tableChainAssortment + @" a3 ON a3.Chain = UCCHL3
-                                    WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1} ) A WHERE AssortmentCode LIKE '{2}%'", prodNumber, salesYear, custNumber);
+                                    WHERE UCITNO = '{0}' AND (LEFT(UCDLDT, 4) = {1} OR LEFT(UCDLDT, 4) = {3})) A WHERE AssortmentCode LIKE '{2}%'", prodNumber, salesYear, custNumber, salesYear - 1);
 
             DataTable table = conn.QueryExWithTableReturn(query);
             DataRowCollection rows = table.Rows;
@@ -803,57 +864,86 @@ namespace WindowsFormsForecastLactalis
                 int week = StaticVariables.GetWeek2(date);
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
-                salesRows.Add(new SalesRow()
+                if (date.Year == salesYear)
                 {
-                    Date = date,
-                    OrderNumber = row["UCORNO"].ToString(),
-                    Quantity = quantity,
-                    Customer = row["UCCUNO"].ToString(),
-                    ItemNumber = row["UCITNO"].ToString(),
-                    Week = week,
-                    BestBeforeDate = bbd,
-                    WantedBestBeforeDate = wantedbbd,
-                    CustomerName = row["AssortmentName"].ToString()
-                });
+                    salesRows.Add(new SalesRow()
+                    {
+                        Date = date,
+                        OrderNumber = row["UCORNO"].ToString(),
+                        Quantity = quantity,
+                        Customer = row["UCCUNO"].ToString(),
+                        ItemNumber = row["UCITNO"].ToString(),
+                        Week = week,
+                        BestBeforeDate = bbd,
+                        WantedBestBeforeDate = wantedbbd,
+                        CustomerName = row["AssortmentName"].ToString()
+                    });
+                }
+
+                if (date.Year == salesYear - 1)
+                {
+                    lastYearRowsM3.Add(new SalesRow()
+                    {
+                        Date = date,
+                        OrderNumber = row["UCORNO"].ToString(),
+                        Quantity = quantity,
+                        Customer = row["UCCUNO"].ToString(),
+                        ItemNumber = row["UCITNO"].ToString(),
+                        Week = week,
+                        BestBeforeDate = bbd,
+                        WantedBestBeforeDate = wantedbbd,
+                        CustomerName = row["AssortmentName"].ToString()
+                    });
+                }
+
             }
             //query = query + " order by UCDLDT";
 
-            Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
-            Console.WriteLine(query);
+            //Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
+            //Console.WriteLine(query);
             latestQueryTable = conn.QueryExWithTableReturn(query);
+            Console.WriteLine("Last year sales row: " + lastYearRowsM3.Count + " This year Sales Row: " + salesRows.Count);
             return salesRows;
             //throw new NotImplementedException();
         }
 
-        [Obsolete("Not used")]
-        private void LoadRelSalg_FromM3SQL(string prodNumber, int year, List<string> custNumber)
+        private List<ISalesRow> GetRealizedSalesLastYear()
         {
-            conn = new NavSQLExecute();
-            string query = "";
-            query = String.Format(@"SELECT UCDLDT, UCIVQT, UCORNO, UCITNO, UCORNO, UCCUNO, AssortmentName, AssortmentCode FROM " +
-                                    StaticVariables.TableM3Sales + @" 
-                                    INNER JOIN " + StaticVariables.TableChainCustomer + @" c ON Customer = UCCUNO
-                                    LEFT OUTER JOIN " + StaticVariables.TableChainAssortment + @" AS a ON c.Chain = a.Chain 
-                                    WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1}", prodNumber, year);
-            bool first = true;
-            foreach (string customer in custNumber)
-            {
-                if (first)
-                {
-                    first = false;
-                    query = query + String.Format(" AND AssortmentCode LIKE '{0}%' ", customer);
-                }
-                else
-                {
-                    query = query + String.Format(" OR AssortmentCode LIKE '{0}%' ", customer);
-                }
-            }
-            query = query + " order by UCDLDT";
-
-            Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
-            Console.WriteLine(query);
-            latestQueryTable = conn.QueryExWithTableReturn(query);
+            return lastYearRowsM3;
         }
+
+
+        //
+        //        private void LoadRelSalg_FromM3SQL(string prodNumber, int year, List<string> custNumber)
+        //        {
+        //            conn = new NavSQLExecute();
+        //            string query = "";
+        //            query = String.Format(@"SELECT UCDLDT, UCIVQT, UCORNO, UCITNO, UCORNO, UCCUNO, AssortmentName, AssortmentCode FROM " +
+        //                                    StaticVariables.TableM3Sales + @" 
+        //                                    INNER JOIN " + StaticVariables.TableChainCustomer + @" c ON Customer = UCCUNO
+        //                                    LEFT OUTER JOIN " + StaticVariables.TableChainAssortment + @" AS a ON c.Chain = a.Chain 
+        //                                    WHERE UCITNO = '{0}' AND LEFT(UCDLDT, 4) = {1}", prodNumber, year);
+        //            bool first = true;
+        //            foreach (string customer in custNumber)
+        //            {
+        //                if (first)
+        //                {
+        //                    first = false;
+        //                    query = query + String.Format(" AND AssortmentCode LIKE '{0}%' ", customer);
+        //                }
+        //                else
+        //                {
+        //                    query = query + String.Format(" OR AssortmentCode LIKE '{0}%' ", customer);
+        //                }
+        //            }
+        //            query = query + " order by UCDLDT";
+
+        //            Console.WriteLine("LoadRelSalg_FromM3SQL Query: ");
+        //            Console.WriteLine(query);
+        //            latestQueryTable = conn.QueryExWithTableReturn(query);
+        //        }
+
+
         internal void SetYear(int selectedYear)
         {
 

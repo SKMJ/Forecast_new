@@ -370,6 +370,9 @@ namespace WindowsFormsForecastLactalis
             Random randomNumber = new Random();
             Dictionary<int, string> commentDict = new Dictionary<int, string>();
 
+            this.dataGridForecastInfo.DataSource = null;
+
+            this.dataGridForecastInfo.Rows.Clear();
 
             // Loop through keys.
             foreach (PrognosInfoForSupply item in Products)
@@ -1052,7 +1055,9 @@ namespace WindowsFormsForecastLactalis
                 MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before changing Supplier!");
             }
             dataGridForecastInfo.Visible = true;
+            FocusNowColumn();
             LoadReadyStatus();
+            
         }
 
         private void SetStatus(string status)
@@ -1657,6 +1662,7 @@ namespace WindowsFormsForecastLactalis
                     MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window before changing Supplier!");
                 }
                 dataGridForecastInfo.Visible = true;
+                FocusNowColumn();
                 LoadReadyStatus();
             }
             else
@@ -1697,6 +1703,7 @@ namespace WindowsFormsForecastLactalis
             AddProductByNumber(prodNMBR);
             PrepareGUI();
             dataGridForecastInfo.Visible = true;
+            FocusNowColumn(); 
             LoadReadyStatus();
         }
 

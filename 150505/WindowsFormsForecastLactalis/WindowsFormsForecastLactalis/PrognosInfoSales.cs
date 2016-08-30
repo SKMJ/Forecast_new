@@ -97,9 +97,9 @@ namespace WindowsFormsForecastLactalis
                 KampagnTY.Add(i, 0);
             }
 
-           
 
-            if (selectedYear > 2015 ||selectedYear<2000)
+
+            if (selectedYear > 2015 || selectedYear < 2000)
             {
                 GetFromM3 m3 = new GetFromM3();
                 PromotionLines = m3.GetPromotionForAllCustomerAsListv2(ProductNumber, selectedYear);
@@ -108,20 +108,21 @@ namespace WindowsFormsForecastLactalis
                     List<string> KadjeNiva = new List<string>();
 
                     //Get which chain the promotion is connected to
-                    if (item.PromotionType == PromotionInfo.PromotionTypeEnum.CHAIN) {
+                    if (item.PromotionType == PromotionInfo.PromotionTypeEnum.CHAIN)
+                    {
                         KadjeNiva = m3.GetAllKampaignLevelsByCuse(item.Chain);
                     }
-                    else if(item.PromotionType == PromotionInfo.PromotionTypeEnum.CUSTOMER)
+                    else if (item.PromotionType == PromotionInfo.PromotionTypeEnum.CUSTOMER)
                     {
                         KadjeNiva = new ChainStructureHandler().GetChainsFromCustomer(item.Customer);
                     }
-                    
+
                     //This if statement checks if the campaign is connected to this assortment
                     int num = (from asch in StaticVariables.AssortmentM3_toKedjor[CustomerNumberM3]
-                                from ch in KadjeNiva
-                                where ch.StartsWith(asch)
-                                select ch).Count();
-                    if(num > 0)
+                               from ch in KadjeNiva
+                               where ch.StartsWith(asch)
+                               select ch).Count();
+                    if (num > 0)
                     {
                         if (selectedYear < 2000)
                         {
@@ -142,7 +143,7 @@ namespace WindowsFormsForecastLactalis
             if (selectedYear < 2017)
             {
                 Dictionary<int, int> promotions = sqlSalesCalls.GetKampagnTY(ProductNumber, CustomerCodeNav);
-                foreach(var promotionItems in promotions)
+                foreach (var promotionItems in promotions)
                 {
                     KampagnTY[promotionItems.Key] += promotionItems.Value;
                 }
@@ -152,7 +153,7 @@ namespace WindowsFormsForecastLactalis
 
             //Load Sales data
             SalesRowsThisYear.AddRange(sqlSalesCalls.GetRealizedSalesByYear(selectedYear, ProductNumber, CustomerNumberM3, CustomerCodeNav));
-            SalesRowsLastYear.AddRange(sqlSalesCalls.GetRealizedSalesByYear(selectedYear - 1, ProductNumber, CustomerNumberM3, CustomerCodeNav));
+            SalesRowsLastYear.AddRange(sqlSalesCalls.GetLoadedLastYearSalesByYear());
             Console.WriteLine("Time7: " + stopwatch2.ElapsedMilliseconds);
             if (ProductName.Length < 2)
             {

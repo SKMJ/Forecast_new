@@ -40,7 +40,6 @@ namespace WindowsFormsForecastLactalis
                 conn = new SqlConnection("Data Source=210.2.250.9,1433;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
                 //conn = new SqlConnection("Data Source=210.2.250.9,1433;Network Library=DBMSSOCN;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");
                 //conn = new OdbcConnection("Dsn=Sto;uid=sto;Pwd=sto; app=Microsoft® Visual Studio® 2013;wsid=SM0676L;database=NAV-ForecastData;network=DBMSSOCN; ");
-
                 conn.Open();
                 stopwatch.Stop();
                 double timeConnectSeconds = stopwatch.ElapsedMilliseconds / 1000.0;
