@@ -52,6 +52,7 @@
             this.textBoxProdNBR = new System.Windows.Forms.TextBox();
             this.labelCalculator = new System.Windows.Forms.Label();
             this.textBoxCalculator = new System.Windows.Forms.TextBox();
+            this.checkBoxKampgn = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSupplyNBR)).BeginInit();
@@ -125,7 +126,7 @@
             // buttonGetProductsBySupplier
             // 
             this.buttonGetProductsBySupplier.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonGetProductsBySupplier.Location = new System.Drawing.Point(328, 146);
+            this.buttonGetProductsBySupplier.Location = new System.Drawing.Point(328, 126);
             this.buttonGetProductsBySupplier.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonGetProductsBySupplier.Name = "buttonGetProductsBySupplier";
             this.buttonGetProductsBySupplier.Size = new System.Drawing.Size(101, 27);
@@ -138,7 +139,7 @@
             // labelSupplier
             // 
             this.labelSupplier.AutoSize = true;
-            this.labelSupplier.Location = new System.Drawing.Point(328, 97);
+            this.labelSupplier.Location = new System.Drawing.Point(328, 79);
             this.labelSupplier.Name = "labelSupplier";
             this.labelSupplier.Size = new System.Drawing.Size(60, 17);
             this.labelSupplier.TabIndex = 8;
@@ -147,7 +148,7 @@
             // comboBoxSupplier
             // 
             this.comboBoxSupplier.FormattingEnabled = true;
-            this.comboBoxSupplier.Location = new System.Drawing.Point(328, 121);
+            this.comboBoxSupplier.Location = new System.Drawing.Point(328, 98);
             this.comboBoxSupplier.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxSupplier.Name = "comboBoxSupplier";
             this.comboBoxSupplier.Size = new System.Drawing.Size(263, 24);
@@ -254,6 +255,7 @@
             this.checkBoxLastYear.TabIndex = 19;
             this.checkBoxLastYear.Text = "Load LastYear";
             this.checkBoxLastYear.UseVisualStyleBackColor = true;
+            this.checkBoxLastYear.CheckedChanged += new System.EventHandler(this.checkBoxLastYear_CheckedChanged);
             this.checkBoxLastYear.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.buttonGetProductsBySupplier_KeyPress);
             // 
             // labelStatus
@@ -306,12 +308,24 @@
             this.textBoxCalculator.TabIndex = 24;
             this.textBoxCalculator.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxCalculator_KeyPress);
             // 
+            // checkBoxKampgn
+            // 
+            this.checkBoxKampgn.AutoSize = true;
+            this.checkBoxKampgn.Location = new System.Drawing.Point(436, 125);
+            this.checkBoxKampgn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBoxKampgn.Name = "checkBoxKampgn";
+            this.checkBoxKampgn.Size = new System.Drawing.Size(137, 21);
+            this.checkBoxKampgn.TabIndex = 26;
+            this.checkBoxKampgn.Text = "Load Promotions";
+            this.checkBoxKampgn.UseVisualStyleBackColor = true;
+            // 
             // FormSupply
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaGreen;
             this.ClientSize = new System.Drawing.Size(1483, 855);
+            this.Controls.Add(this.checkBoxKampgn);
             this.Controls.Add(this.labelCalculator);
             this.Controls.Add(this.textBoxCalculator);
             this.Controls.Add(this.textBoxProdNBR);
@@ -372,5 +386,6 @@
         private System.Windows.Forms.TextBox textBoxProdNBR;
         private System.Windows.Forms.Label labelCalculator;
         private System.Windows.Forms.TextBox textBoxCalculator;
+        private System.Windows.Forms.CheckBox checkBoxKampgn;
     }
 }

@@ -16,11 +16,10 @@ namespace WindowsFormsForecastLactalis
 
     public class PrognosInfoForSupply : IComparable
     {
-        public PrognosInfoForSupply(string name, string number, bool showLastYear, int status)
+        public PrognosInfoForSupply(string name, string number, int status)
         {
             ProductName = name;
             ProductNumber = number;
-            ShowLastYear = showLastYear;
             Status = status;
         }
 
@@ -31,6 +30,8 @@ namespace WindowsFormsForecastLactalis
         public string PrepLocation = "";
         public bool InLactaFranceFile = false;
         public bool ShowLastYear = false;
+        public bool ShowCampaign = false;
+        public int WeekToLockFrom = 0;
 
         public int NBRonStock = 0;
 
@@ -69,6 +70,12 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+        public void SetWhatToLoad(bool lastY, bool Campaign)
+        {
+            ShowCampaign = Campaign;
+            ShowLastYear = lastY;
+        }
+
         public void FillNumbers(int selectedYear)
         {
             Console.WriteLine("Fill info For Product Number: " + ProductNumber);
@@ -98,7 +105,11 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Time4: " + stopwatch2.ElapsedMilliseconds);
 
             // Load Promotions
-            Dictionary<int, int> KampagnTY = sqlSupplyCalls.GetKampagnTY();
+            Dictionary<int, int> KampagnTY = new Dictionary<int, int>();
+            if (ShowCampaign)
+            {
+                KampagnTY = sqlSupplyCalls.GetKampagnTY();
+            }
             Dictionary<int, int> realiseretKampagnLY = new Dictionary<int, int>();
             if (ShowLastYear)
             {
@@ -127,7 +138,10 @@ namespace WindowsFormsForecastLactalis
                 {
                     RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
                 }
-                Kampagn_ThisYear[i] = KampagnTY[i];
+                if (ShowCampaign)
+                {
+                    Kampagn_ThisYear[i] = KampagnTY[i];
+                }
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
                 SalgsbudgetReguleret_ThisYear[i] = salesBudget_REG_TY[i];
                 Kopsbudget_ThisYear[i] = kopesBudgetTY[i];
@@ -145,6 +159,8 @@ namespace WindowsFormsForecastLactalis
             {
                 ProductName = ProductNameTemp;
             }
+            int weektemp = sqlSupplyCalls.GetCurrentWeekNBR();
+            LockWeeksInfoFromM3(m3ProdNumber, weektemp);
             stopwatch2.Stop();
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
@@ -192,6 +208,7 @@ namespace WindowsFormsForecastLactalis
                     {
                         weekPartPercentage = sqlSupply.GetPercentageWeekArray();
                     }
+
                 });
                 Console.WriteLine("SpecialFileds Completed: " + Completed + " lap: " + laps);
                 if (!Completed)
@@ -275,5 +292,58 @@ namespace WindowsFormsForecastLactalis
             string m3ProdNumber = GetM3ProdNumber();
             return GetM3StockInfo(m3ProdNumber);
         }
+
+        /// <summary>
+        /// Load from m3 is timebound since it sometimes hangs 
+        /// If it hangs redo after one second
+        /// </summary>
+        /// <param name="m3ProdNumber"></param>
+        /// <param name="weektemp"></param>
+        private void LockWeeksInfoFromM3(string m3ProdNumber, int currWeek)
+        {
+            GetFromM3 m3Info = new GetFromM3();
+
+            bool Completed = false;
+            int laps = 1;
+            while (!Completed && laps < 3)
+            {
+                Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(1000), () =>
+                {
+                    //
+                    // Write your time bounded code here
+                    // 
+                    Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
+                    if (info != null && info.Count > 0 && Convert.ToInt32(info["FCLockSale"]) > 0)
+                    {
+                        int tempDaysLock = Convert.ToInt32(info["FCLockSale"]);
+
+                        if (tempDaysLock <= 0)
+                        {
+                            //Todo get weeks to lock from for supplier
+                            tempDaysLock = Convert.ToInt32(m3Info.GetSalesWeekLockFromSupplier(GetSupplierFromProduct()));
+
+                        }
+                        int tempWeeksToLOCK = tempDaysLock / 7;
+                        WeekToLockFrom = tempWeeksToLOCK + currWeek;
+                    }
+                    else
+                    {
+                        int tempDaysLock = 0;
+                        if (tempDaysLock <= 0)
+                        {
+                            //Todo get weeks to lock from for supplier
+                            tempDaysLock = Convert.ToInt32(m3Info.GetSalesWeekLockFromSupplier(GetSupplierFromProduct()));
+
+                        }
+                        int tempWeeksToLOCK = tempDaysLock / 7;
+                        WeekToLockFrom = tempWeeksToLOCK + currWeek; 
+                    }
+                });
+
+                Console.WriteLine("Completed: " + Completed + " lap: " + laps);
+                laps++;
+            }
+        }
+
     }
 }

@@ -146,7 +146,7 @@ namespace WindowsFormsForecastLactalis
 
                     string levKedja = row["Navn_DebBogfGr"].ToString();
 
-                    DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Startdato"].ToString());
 
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
@@ -211,7 +211,7 @@ namespace WindowsFormsForecastLactalis
                     string comment = row["Kommentar"].ToString();
 
                     
-                    DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
 
@@ -291,7 +291,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal_Realiseret"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                    DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["startdato"].ToString());
 
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
@@ -367,7 +367,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal_Realiseret"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                    DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
 
@@ -394,7 +394,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal_Budget"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                    DateTime tempDate = DateTime.Parse(row["Dato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Dato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     Beskrivelse = row["Beskrivelse"].ToString();
@@ -441,7 +441,7 @@ namespace WindowsFormsForecastLactalis
                     string levKedja = row["Kæde_Kilde"].ToString();
                     //string comment = row["Kommentar"].ToString();
                    
-                    DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
 
@@ -554,7 +554,7 @@ namespace WindowsFormsForecastLactalis
                 DateTime date = (DateTime)row["Bogføringsdato"];
                 int week = GetWeek(date, year);
         
-                DateTime tempDate = DateTime.Parse(row["Bogføringsdato"].ToString());
+                DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Bogføringsdato"].ToString());
                 
                 int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
                 double quantity = Convert.ToDouble(row["Styk_antal"].ToString());
@@ -639,10 +639,9 @@ namespace WindowsFormsForecastLactalis
 
             foreach (DataRow row in rows)
             {
-                DateTime date = DateTime.ParseExact(row["UCDLDT"].ToString(),
+                DateTime date = StaticVariables.ParseExactStringToDate(row["UCDLDT"].ToString(),
                                                     "yyyyMMdd",
-                                                    CultureInfo.InvariantCulture,
-                                                    DateTimeStyles.None);
+                                                    CultureInfo.InvariantCulture);
                 string mttrqt = row["MTTRQT"].ToString();
 
                 int quantity = (int)Convert.ToDecimal(mttrqt);
@@ -793,7 +792,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Udestående_antal_basis"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                    DateTime tempDate = DateTime.Parse(row["Forventet_modtdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Forventet_modtdato"].ToString());
 
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
@@ -820,7 +819,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal_basis"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                    DateTime tempDate = DateTime.Parse(row["Forventet_modtdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Forventet_modtdato"].ToString());
 
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
@@ -1003,7 +1002,7 @@ namespace WindowsFormsForecastLactalis
                     {
 
 
-                        DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                        DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Startdato"].ToString());
                         double week = (tempDate - dateNextMonday).TotalDays;
                         double weekNBR = week / 7.0;
                         int weekNBRfromNowInt = (int)Math.Floor(weekNBR);

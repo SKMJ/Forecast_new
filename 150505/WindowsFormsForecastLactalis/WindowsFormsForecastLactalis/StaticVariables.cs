@@ -242,7 +242,7 @@ namespace WindowsFormsForecastLactalis
                 //string s = "2015-01-03";
 
                 DateTime dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2015, dt);
                 //MessageBox.Show("after");
 
@@ -250,7 +250,7 @@ namespace WindowsFormsForecastLactalis
                 //s = "2013-12-28";
 
                 dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2014, dt);
 
                 //st = "01/04/2016";
@@ -258,15 +258,15 @@ namespace WindowsFormsForecastLactalis
                 s = "2016-01-03";
 
                 dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2016, dt);
 
-                //startDate.Add(2016, DateTime.Parse(st));
+                //startDate.Add(2016, StaticVariables.GetDateTimeFromString(st));
                 //st = "01/02/2017";
                 //s = "2017-01-02";
                 s = "2016-12-31";
                 dt =
-                    DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2017, dt);
             }
         }
@@ -447,7 +447,7 @@ namespace WindowsFormsForecastLactalis
             //string s = "2015-01-03";
 
             DateTime dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
 
             int loopError = 0;
@@ -463,7 +463,7 @@ namespace WindowsFormsForecastLactalis
                 //Error: start year with 4th jan
                 Console.WriteLine("Loop Error day");
                 dt =
-                DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             }
 
             return dt;
@@ -544,6 +544,7 @@ namespace WindowsFormsForecastLactalis
             return returnBool;
         }
 
+
         internal static string ReturnDanishFormat(string tempDate)
         {
             string outDate = tempDate.Replace("-","");
@@ -559,6 +560,39 @@ namespace WindowsFormsForecastLactalis
 
             }
             return outDate;
+        }
+
+
+        internal static DateTime GetDateTimeFromString(string dateString)
+        {
+            DateTime date = new DateTime();
+            try
+            {
+                date = DateTime.Parse(dateString);               
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Error transfoming string to date: " + dateString + "\r\n" + "Send this info to Christofer Hellberg in print screen"+ "\r\n" + ex.Message);
+            }
+            return date;
+        }
+
+
+        internal static DateTime ParseExactStringToDate(string dateString, string format, CultureInfo cultureInfo)
+        {
+            DateTime date = new DateTime();
+            string dateStringLocal = dateString.Replace(".", "");
+            dateStringLocal = dateStringLocal.Replace(",", ""); 
+           
+            try
+            {
+                date = DateTime.ParseExact(dateStringLocal, format, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Error transfoming string to date Exact: " + dateString + "\r\n" + " format: " + format + "\r\n" + "Send this info to Christofer Hellberg in print screen" + "\r\n" + ex.Message);
+            }
+            return date;
         }
     }
 }

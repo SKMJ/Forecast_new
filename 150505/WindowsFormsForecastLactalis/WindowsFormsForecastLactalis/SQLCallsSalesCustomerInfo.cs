@@ -215,6 +215,12 @@ namespace WindowsFormsForecastLactalis
                     date = date.Replace("-", @"/");
                     startDateStrings.Add(year, date);
                     startDate = date;
+
+                    //Add also last year
+                    stDate = StaticVariables.GetForecastStartDateOfWeeknumber(startYear - 1, startWeek);
+                    date = stDate.ToString("yyyy/MM/dd");
+                    date = date.Replace("-", @"/");
+                    startDateStrings.Add(year-1, date);
                 }
                 else if (year == 999)
                 {
@@ -300,7 +306,7 @@ namespace WindowsFormsForecastLactalis
                     //string levKedja = row["Navn_DebBogfGr"].ToString();
 
 
-                    DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     if (intType == (int)TypeEnum.SalgsBudget && weekInt < 54 && weekInt >= 0)
@@ -386,7 +392,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
 
 
-                    DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     if (weekInt > 0 && weekInt < 54)
@@ -472,7 +478,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal_Realiseret"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                    DateTime tempDate = DateTime.Parse(row["startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     if (weekInt > 0 && weekInt < 54)
@@ -496,7 +502,7 @@ namespace WindowsFormsForecastLactalis
                     string levAntal = row["Antal_Budget"].ToString();
                     int Antal = Convert.ToInt32(levAntal);
 
-                    DateTime tempDate = DateTime.Parse(row["Dato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Dato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
                     Beskrivelse = row["Beskrivelse"].ToString();
 
@@ -536,7 +542,7 @@ namespace WindowsFormsForecastLactalis
                     string dateforNumber = row["Tastedato"].ToString();
 
 
-                    DateTime tempDate = DateTime.Parse(row["Startdato"].ToString());
+                    DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     if (intType == (int)TypeEnum.SalgsBudget && weekInt == week)
@@ -654,7 +660,7 @@ namespace WindowsFormsForecastLactalis
         //            //string lokKode = row["Lokationskode"].ToString();
         //            //bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
         //            string dateString = row["KalenderIDBekräftadLeveransDatum"].ToString();
-        //            DateTime tempDate = DateTime.ParseExact(dateString,
+        //            DateTime tempDate = StaticVariables.ParseExactStringToDate(dateString,
         //                                                    "yyyyMMdd",
         //                                                    CultureInfo.InvariantCulture,
         //                                                    DateTimeStyles.None);
@@ -725,13 +731,13 @@ namespace WindowsFormsForecastLactalis
             DataTable table = conn.QueryExWithTableReturn(query);
             DataRowCollection rows = table.Rows;
             string tempDate = GetStartDate(year).Replace(@"/", "");
-            DateTime tempDateThisStart = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime tempDateThisStart = StaticVariables.ParseExactStringToDate(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             tempDate = GetEndDate(year).Replace(@"/", "");
-            DateTime tempDateThisEnd = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime tempDateThisEnd = StaticVariables.ParseExactStringToDate(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             tempDate = GetStartDate(year - 1).Replace(@"/", "");
-            DateTime tempDateLastStart = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime tempDateLastStart = StaticVariables.ParseExactStringToDate(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             tempDate = GetEndDate(year - 1).Replace(@"/", "");
-            DateTime tempDateLastEnd = DateTime.ParseExact(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime tempDateLastEnd = StaticVariables.ParseExactStringToDate(tempDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             foreach (DataRow row in rows)
             {
                 bool levEgetLager = (bool)row["LeverandørlagerOrdre"];
@@ -856,10 +862,9 @@ namespace WindowsFormsForecastLactalis
 
             foreach (DataRow row in rows)
             {
-                DateTime date = DateTime.ParseExact(row["UCDLDT"].ToString(),
+                DateTime date = StaticVariables.ParseExactStringToDate(row["UCDLDT"].ToString(),
                                                     "yyyyMMdd",
-                                                    CultureInfo.InvariantCulture,
-                                                    DateTimeStyles.None);
+                                                    CultureInfo.InvariantCulture);
                 int quantity = (int)Convert.ToDecimal(row["MTTRQT"].ToString());
                 int week = StaticVariables.GetWeek2(date);
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());

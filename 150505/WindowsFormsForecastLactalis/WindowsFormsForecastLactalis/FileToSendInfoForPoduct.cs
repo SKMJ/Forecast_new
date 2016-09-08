@@ -49,9 +49,7 @@ namespace WindowsFormsForecastLactalis
             Dictionary<string, string> info = m3Info.GetItemInfoByItemNumber(m3ProdNumber);
             //if (info != null && info.Count > 0 && Convert.ToInt32(info["INLActaFranceFile"]) > 0)
             //{
-
             //    InLactaFranceFile = true;
-
             //    Console.WriteLine("M3 prod infofields: " + m3ProdNumber);
             //    weekPartPercentage = new int[] { Convert.ToInt32(info["forecastWeek"]), Convert.ToInt32(info["FCMO"]), Convert.ToInt32(info["FCTU"]), Convert.ToInt32(info["FCWE"]), Convert.ToInt32(info["FCTH"]), Convert.ToInt32(info["FCFR"]), Convert.ToInt32(info["FCSA"]), Convert.ToInt32(info["FCSU"]) };
             //}

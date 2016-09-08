@@ -33,8 +33,6 @@ namespace WindowsFormsForecastLactalis
             //Navision SQL
             try
             {
-
-
                 //ConnectionString
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 conn = new SqlConnection("Data Source=210.2.250.9,1433;Initial Catalog=NAV-ForecastData;User ID=sto;Password=sto");

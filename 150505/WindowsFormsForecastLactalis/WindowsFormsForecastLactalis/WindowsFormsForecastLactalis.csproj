@@ -23,8 +23,8 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dkfile02.dk.lactadom.ad\PMO\IS_SKMJ_MALMÖ\PublishedApplications\ForecastApplication\</InstallUrl>
-    <ApplicationRevision>3</ApplicationRevision>
-    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>2.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -52,13 +52,16 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>FA85308C6668E9004DC33F3A79F0BDA1DB60D5B2</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>2085A4B38A4B3505FC8514E449F80F6B9C85D497</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WindowsFormsForecastLactalis_32_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WindowsFormsForecastLactalis_39_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MvxSockN, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -179,6 +182,13 @@
     <None Include="WindowsFormsForecastLactalis_30_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_31_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_32_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_33_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_34_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_35_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_36_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_37_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_38_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_39_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

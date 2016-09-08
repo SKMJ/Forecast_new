@@ -187,7 +187,9 @@ namespace WindowsFormsForecastLactalis
                 MvxSock.Access(ref sid, null);
                 try
                 {
-                    DateTime tempDate = DateTime.ParseExact(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                    tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
 
                     //Kampanjer ska ligga veckan innan kampanjstart
                     tempDate = tempDate.AddDays(-7);
@@ -768,7 +770,7 @@ namespace WindowsFormsForecastLactalis
                 
                 while (MvxSock.More(ref sid))
                 {
-                    DateTime bestBeforeDate = DateTime.ParseExact(MvxSock.GetField(ref sid, "PRDT"), 
+                    DateTime bestBeforeDate = StaticVariables.ParseExactStringToDate(MvxSock.GetField(ref sid, "PRDT"), 
                                                                             "yyyyMMdd", 
                                                                             System.Globalization.CultureInfo.InvariantCulture);
                     int onHandBalance = Convert.ToInt32(MvxSock.GetField(ref sid, "STQT"));
@@ -868,7 +870,7 @@ namespace WindowsFormsForecastLactalis
                 Console.WriteLine(" start: " + tempstartDate + " end: " + tempEndDate + " antal: " + quantity);
                 MvxSock.Access(ref sid, null);
                 try { 
-                    DateTime tempDate = DateTime.ParseExact(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                     //Kampanjer ska presenteras en vecka innan kampanjstart
                     tempDate = tempDate.AddDays(-7);
                     int weekInt = StaticVariables.GetWeek2(tempDate);
@@ -998,7 +1000,7 @@ namespace WindowsFormsForecastLactalis
                         isReceived = true;
                     }
 
-                    DateTime tempDate = DateTime.ParseExact(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    DateTime tempDate = StaticVariables.ParseExactStringToDate(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
 
                     if (plannedDate.Substring(0, 4).Equals(year.ToString()) ||
                         year < 2000 && StaticVariables.DateWithinNowForecastLimit(tempDate))
@@ -1020,7 +1022,7 @@ namespace WindowsFormsForecastLactalis
                         int quantiyExpected = Convert.ToInt32(temp[0]) * nbrPerUnit;
                         Console.WriteLine("Datum: " + rcdt + " antal: " + quantity);
 
-                        tempDate = DateTime.ParseExact(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                        tempDate = StaticVariables.ParseExactStringToDate(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                         tempDate = tempDate.AddMinutes(10);
                         int weekInt = StaticVariables.GetWeek2(tempDate);
 
@@ -1039,7 +1041,7 @@ namespace WindowsFormsForecastLactalis
 
                             if (isReceived && confirmedDate.Length > 7)
                             {
-                                tempDate = DateTime.ParseExact(confirmedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                                tempDate = StaticVariables.ParseExactStringToDate(confirmedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                                 bool nowAndWithLimit = (year < 2000 && StaticVariables.DateWithinNowForecastLimit(tempDate));
                                 if (confirmedDate.Substring(0, 4).Equals(year.ToString()) || (nowAndWithLimit))
                                 {

@@ -45,6 +45,8 @@
             this.textBoxProdNBR = new System.Windows.Forms.TextBox();
             this.textBoxCalculator = new System.Windows.Forms.TextBox();
             this.labelCalculator = new System.Windows.Forms.Label();
+            this.checkBoxLastYear = new System.Windows.Forms.CheckBox();
+            this.checkBoxKampgn = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridForecastInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -119,7 +121,7 @@
             // comboBoxAssortment
             // 
             this.comboBoxAssortment.FormattingEnabled = true;
-            this.comboBoxAssortment.Location = new System.Drawing.Point(328, 121);
+            this.comboBoxAssortment.Location = new System.Drawing.Point(326, 92);
             this.comboBoxAssortment.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxAssortment.Name = "comboBoxAssortment";
             this.comboBoxAssortment.Size = new System.Drawing.Size(191, 24);
@@ -128,7 +130,7 @@
             // labelAssortment
             // 
             this.labelAssortment.AutoSize = true;
-            this.labelAssortment.Location = new System.Drawing.Point(328, 97);
+            this.labelAssortment.Location = new System.Drawing.Point(326, 68);
             this.labelAssortment.Name = "labelAssortment";
             this.labelAssortment.Size = new System.Drawing.Size(79, 17);
             this.labelAssortment.TabIndex = 4;
@@ -137,7 +139,7 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.button1.Location = new System.Drawing.Point(328, 146);
+            this.button1.Location = new System.Drawing.Point(326, 117);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(101, 27);
@@ -217,12 +219,36 @@
             this.labelCalculator.TabIndex = 23;
             this.labelCalculator.Text = "Regneformler: ";
             // 
+            // checkBoxLastYear
+            // 
+            this.checkBoxLastYear.AutoSize = true;
+            this.checkBoxLastYear.Location = new System.Drawing.Point(435, 151);
+            this.checkBoxLastYear.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBoxLastYear.Name = "checkBoxLastYear";
+            this.checkBoxLastYear.Size = new System.Drawing.Size(123, 21);
+            this.checkBoxLastYear.TabIndex = 24;
+            this.checkBoxLastYear.Text = "Load LastYear";
+            this.checkBoxLastYear.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxKampgn
+            // 
+            this.checkBoxKampgn.AutoSize = true;
+            this.checkBoxKampgn.Location = new System.Drawing.Point(435, 122);
+            this.checkBoxKampgn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.checkBoxKampgn.Name = "checkBoxKampgn";
+            this.checkBoxKampgn.Size = new System.Drawing.Size(137, 21);
+            this.checkBoxKampgn.TabIndex = 27;
+            this.checkBoxKampgn.Text = "Load Promotions";
+            this.checkBoxKampgn.UseVisualStyleBackColor = true;
+            // 
             // FormSales
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.MenuHighlight;
             this.ClientSize = new System.Drawing.Size(1483, 855);
+            this.Controls.Add(this.checkBoxKampgn);
+            this.Controls.Add(this.checkBoxLastYear);
             this.Controls.Add(this.labelCalculator);
             this.Controls.Add(this.textBoxCalculator);
             this.Controls.Add(this.textBoxProdNBR);
@@ -271,6 +297,8 @@
         private System.Windows.Forms.TextBox textBoxProdNBR;
         private System.Windows.Forms.TextBox textBoxCalculator;
         private System.Windows.Forms.Label labelCalculator;
+        private System.Windows.Forms.CheckBox checkBoxLastYear;
+        private System.Windows.Forms.CheckBox checkBoxKampgn;
     }
 }
 

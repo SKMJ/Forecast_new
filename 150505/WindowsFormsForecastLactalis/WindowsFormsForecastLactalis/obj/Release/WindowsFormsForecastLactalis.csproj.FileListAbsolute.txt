@@ -13,7 +13,6 @@ C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecas
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.exe.manifest
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.application
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\bin\Release\MvxSock.dll
-C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.csprojResolveAssemblyReference.cache
 C:\Users\toer@SKMJ\Desktop\tobias\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\bin\Release\WindowsFormsForecastLactalis.exe.config
 C:\Users\toer@SKMJ\Desktop\tobias\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.exe
 C:\Users\toer@SKMJ\Desktop\tobias\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.pdb
@@ -523,3 +522,4 @@ C:\Users\chhe1226\Desktop\Forecast Jlui2016\v.1.8.0.0 160709\WindowsFormsForecas
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.FormSales.resources
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.SaleInfo.resources
 C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.ScrollToProdNumber.resources
+C:\NewRepositoryFolder2\150505\Forecast_new.git\trunk\150505\WindowsFormsForecastLactalis\WindowsFormsForecastLactalis\obj\Release\WindowsFormsForecastLactalis.csprojResolveAssemblyReference.cache
