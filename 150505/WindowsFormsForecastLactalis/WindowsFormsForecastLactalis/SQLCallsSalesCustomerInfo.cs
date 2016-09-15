@@ -29,6 +29,7 @@ namespace WindowsFormsForecastLactalis
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
 
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
+        public Dictionary<int, string> Salgsbudget_Comment_LY = new Dictionary<int, string>();
         List<ISalesRow> lastYearRowsM3 = new List<ISalesRow>();
         List<ISalesRow> lastYearRowsNAV = new List<ISalesRow>();
 
@@ -81,6 +82,7 @@ namespace WindowsFormsForecastLactalis
                 realKampagn_LY.Add(k, 0);
                 kampagn_TY.Add(k, 0);
                 Salgsbudget_Comment.Add(k, " ");
+                Salgsbudget_Comment_LY.Add(k, " ");
             }
         }
 
@@ -297,6 +299,12 @@ namespace WindowsFormsForecastLactalis
                     int Antal2 = Convert.ToInt32(row["Antal"]);
                     string comment = row["Kommentar"].ToString();
                     string temp = "2016-11-11 11:11:11";
+                    if (comment.Length > 0)
+                    {
+                        Console.WriteLine("comment: 1"+ comment);
+                    }
+
+                    //If comment start with time and date remove it since from now on take from Tastedato
                     if (comment.StartsWith("2016-") && temp.Length < comment.Length)
                     {
 
@@ -322,6 +330,10 @@ namespace WindowsFormsForecastLactalis
                         else if (year == currentSelectedYear - 1)
                         {
                             salesBudgetLY[weekInt] = salesBudgetLY[weekInt] + Antal;
+                            if (comment.Length > 0)
+                            {
+                                Salgsbudget_Comment_LY[weekInt] = Salgsbudget_Comment_LY[weekInt] + " \n " + Antal + " " + dateforNumber + " " + comment;
+                            }
                         }
 
                         antalTot = antalTot + Antal;
@@ -965,6 +977,10 @@ namespace WindowsFormsForecastLactalis
         internal Dictionary<int, string> GetSalesComment_TY()
         {
             return Salgsbudget_Comment;
+        }
+        internal Dictionary<int, string> GetSalesComment_LY()
+        {
+            return Salgsbudget_Comment_LY;
         }
 
         internal int GetCurrentWeekNBR()

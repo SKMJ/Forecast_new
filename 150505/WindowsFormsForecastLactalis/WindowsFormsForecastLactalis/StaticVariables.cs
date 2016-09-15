@@ -18,6 +18,7 @@ namespace WindowsFormsForecastLactalis
         public static Dictionary<string, int> dictItemStatus;
 
         // private bool loadingNewProductsOngoing;
+        public static Dictionary<string, string> AssortmentNation = new Dictionary<string, string>();
 
         public static Dictionary<string, string> AllProductsNavDict = new Dictionary<string, string>();
 
@@ -27,7 +28,7 @@ namespace WindowsFormsForecastLactalis
 
         public static Dictionary<string, string> AllProductsM3Dict = new Dictionary<string, string>();
         public static Dictionary<string, List<string>> AllSuppliersM3 = new Dictionary<string, List<string>>();
-        public static Dictionary<string,string> AllSuppliersNameDict = new Dictionary<string, string>();
+        public static Dictionary<string, string> AllSuppliersNameDict = new Dictionary<string, string>();
 
         //public static Dictionary<string, string> NewNumberDictNavKey = new Dictionary<string, string>();
         //public static Dictionary<string, string> NewNumberDictM3Key = new Dictionary<string, string>();
@@ -39,7 +40,7 @@ namespace WindowsFormsForecastLactalis
 
         public static Dictionary<string, List<string>> Kedjor_toCUNO = new Dictionary<string, List<string>>();
         public static List<PurchaseOrderLine> PurchaseOrderLinesM3 = new List<PurchaseOrderLine>();
-        public static List<PurchaseOrderLine> ExpectedPurchaseOrderLinesM3 = new List<PurchaseOrderLine>(); 
+        public static List<PurchaseOrderLine> ExpectedPurchaseOrderLinesM3 = new List<PurchaseOrderLine>();
 
         public static Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>(); //Dict First Date of week 1 in Year
         public static bool Production = true;
@@ -53,7 +54,7 @@ namespace WindowsFormsForecastLactalis
         private static bool StartDateFirst = true;
         public static int TestWeek = 0;
 
-        public enum WritePermission { Read = 1, Write = 2, SaleWrite = 3, SupplWrite = 4};
+        public enum WritePermission { Read = 1, Write = 2, SaleWrite = 3, SupplWrite = 4 };
 
 
 
@@ -126,13 +127,117 @@ namespace WindowsFormsForecastLactalis
                         tempList.Add(tempList2[i]);
                         AssortmentNav.Add(tempList2[i], item.Key);
                     }
-                    
+
                     AssortmentM3_toNav.Add(item.Key, tempList);
                 }
-
+                FillNationDictionary();
                 Console.WriteLine("Assortment ready" + AssortmentM3_toNav.ToString());
 
             }
+        }
+
+        private static void FillNationDictionary()
+        {
+            //Danmark :
+            AssortmentNation.Add("YEYD", "DK");// ALDI tx15: KAVK
+
+            AssortmentNation.Add("KAVK", "DK");// ALDI tx15: KAVK
+
+            AssortmentNation.Add("KCVD", "DK");// Coop Danmark tx15: KCVD
+
+            AssortmentNation.Add("KCVF", "DK");// Irma tx15: KCVF;LUWY
+
+            AssortmentNation.Add("KDVA", "DK");// Dansk Supermarked tx15: KDVA;KDVB
+
+            AssortmentNation.Add("KDVC", "DK");// Netto Danmark tx15: KDVC
+
+            AssortmentNation.Add("KGVG", "DK");// Dagrofa Danmark tx15: KGVG
+
+            AssortmentNation.Add("KIVM", "DK");// Intervare tx15: KIVM
+
+            AssortmentNation.Add("KRVI", "DK");// Reitan tx15: KRVI;KRVJ
+
+            AssortmentNation.Add("LDWA", "DK");// AB Catering, BC Catering, Inco CC tx15: LDWA;LDWB;LDWC
+
+            AssortmentNation.Add("LH", "DK");// Hørkram tx15: LH
+
+            AssortmentNation.Add("LI", "DK");// HKI tx15: LI
+
+            AssortmentNation.Add("LOWE", "DK");// Meyer Kantiner Ny tx15: LOWE
+
+            AssortmentNation.Add("LZ", "DK");// Grossister tx15: LZ
+
+            AssortmentNation.Add("LOWQ", "DK");// Hoteller tx15: LOWQ
+
+            AssortmentNation.Add("LOWR", "DK");// Restauranter tx15: LOWR
+
+            AssortmentNation.Add("LOWS", "DK");// Sodexo tx15: LOWS
+
+            AssortmentNation.Add("LOWT", "DK");// Øvrige Out of Home tx15: LOWT
+
+            AssortmentNation.Add("LSWU", "DK");// Ostehandlere tx15: LSWU
+
+            AssortmentNation.Add("LUWW", "DK");// GNF DAGROFA tx15: LUWW;KGVH
+
+            AssortmentNation.Add("LUWX", "DK");// Coop Danmark Direkt tx15: LUWX;KCVE
+
+            AssortmentNation.Add("YEYC", "DK");// Arla Grönland tx15: YEYC
+
+
+
+            //Finland:
+            AssortmentNation.Add("OAOA", "FI");// Helsinki Foodstock tx15: OAOAOA
+
+            AssortmentNation.Add("OEOE", "FI");// KESKO KESPRO Finland tx15: OEOEOE;OPOPOP
+
+            AssortmentNation.Add("OIOI", "FI");// INEX Finland tx15: OIOIOI
+
+            AssortmentNation.Add("OZOZ", "FI");// Other Customers Finland tx15: OZOZOZ;OTOTOT
+
+
+            //Norge:
+            AssortmentNation.Add("NCNC", "NO");// COOP Norge tx15: NCNCNC
+
+            AssortmentNation.Add("NINI", "NO");// ICA Norge tx15: NININI
+
+            AssortmentNation.Add("NNNN", "NO");// Unil tx15: NNNNNN
+
+            AssortmentNation.Add("NRNR", "NO");// REMA Norge tx15: NRNRNR
+
+            //Others:
+
+            AssortmentNation.Add("SKM", "XX");// SKM tx15: Styrs via FC
+
+            AssortmentNation.Add("YEVL", "XX");// ISLAND tx15: YEVL
+
+            AssortmentNation.Add("YEYB", "XX");// NETTO Polen tx15: YEYB
+            AssortmentNation.Add("NETTO", "XX");// Netto sortiment tx15: NETTO
+
+            AssortmentNation.Add("OKQ8", "XX");// OKQ8 sortiment tx15: OKQ8 sortiment
+
+
+            //Sverige:
+
+            AssortmentNation.Add("AXFOOD", "SE");// Axfoods sortiment Storhushåll tx15: Axfoods sortime
+
+            AssortmentNation.Add("BITOST", "SE");// Bitost i wellkartong tx15: Bitost i wellka
+
+            AssortmentNation.Add("DBBCBC", "SE");// Bergendahls butikspack tx15: DBBCBC
+
+            AssortmentNation.Add("DBDBLC", "SE");// Bergendahls tx15: DBDBLC
+
+            AssortmentNation.Add("DDDCLC", "SE");// Axfood tx15: DDDCLC
+
+            AssortmentNation.Add("DIILLC", "SE");// ICA Sverige tx15: DIILLC
+
+            AssortmentNation.Add("DKCKLC", "SE");// Coop Sverige tx15: DKCKLC
+
+            AssortmentNation.Add("DNZNLC", "SE");// Netto Sverige tx15: DNZNLC
+
+            AssortmentNation.Add("DZDZ", "SE");// Direkt Sverige tx15: Styrs i FC
+
+            AssortmentNation.Add("ICABP", "SE");// ICA Butikspack tx15: Styrs via FC
+
         }
 
         public static void SetCustDictionary()
@@ -210,12 +315,12 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        public static void SetCustAssortmentListM3( Dictionary<string, string> inputDict)
+        public static void SetCustAssortmentListM3(Dictionary<string, string> inputDict)
         {
             AssortmentDictionaryM3 = new Dictionary<string, string>();
 
             AssortmentDictionaryM3 = inputDict;
-            
+
         }
 
         public static void SetAllProductsNavDict(Dictionary<string, string> dict)
@@ -234,7 +339,7 @@ namespace WindowsFormsForecastLactalis
         public static void InitiateDate()
         {
             //Todo ? maybe change dates to first sunday instead of first monday
-           // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
+            // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
             if (StartDateFirst)
             {
                 //StartDateFirst = false;
@@ -276,7 +381,7 @@ namespace WindowsFormsForecastLactalis
         {
             if (AllSuppliersM3First)
             {
-                
+
                 AllSuppliersM3First = false;
                 foreach (KeyValuePair<string, List<string>> item in dict)
                 {
@@ -322,7 +427,7 @@ namespace WindowsFormsForecastLactalis
                 Console.WriteLine("AllNumberProducts: " + AllProductsM3Dict.Count());
             }
         }
-        
+
         internal static void SetAllSuppliersNameDict(Dictionary<string, string> AllSuppliersName)
         {
             AllSuppliersNameDict = AllSuppliersName;
@@ -378,7 +483,7 @@ namespace WindowsFormsForecastLactalis
         }
 
         public static int GetWeek2(DateTime date)
-        {   
+        {
             var day = (int)CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(date);
             int week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(date.AddDays(4 - (day == 0 ? 7 : day)), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
@@ -414,7 +519,7 @@ namespace WindowsFormsForecastLactalis
                 weekNum -= 1;
             }
             var result = firstThursday.AddDays(weekNum * 7);
-            return result.AddDays(-3-1);
+            return result.AddDays(-3 - 1);
         }
 
         public static bool AbortLoad { get; set; }
@@ -459,7 +564,7 @@ namespace WindowsFormsForecastLactalis
 
 
             if (loopError > 7)
-            {   
+            {
                 //Error: start year with 4th jan
                 Console.WriteLine("Loop Error day");
                 dt =
@@ -482,9 +587,9 @@ namespace WindowsFormsForecastLactalis
             int year = inputDate.Year;
             DateTime dtFirst = FirstSaturdayBeforeWeakOne(year);
 
-            if((inputDate - dtFirst).TotalDays<0)
+            if ((inputDate - dtFirst).TotalDays < 0)
             {
-                dtFirst = FirstSaturdayBeforeWeakOne(year-1);
+                dtFirst = FirstSaturdayBeforeWeakOne(year - 1);
             }
 
             double week1 = (inputDate - dtFirst).TotalDays;
@@ -499,10 +604,10 @@ namespace WindowsFormsForecastLactalis
         internal static DateTime GetForecastStartDateOfWeeknumber(int year, int week)
         {
 
-            
+
             DateTime dtFirst = FirstSaturdayBeforeWeakOne(year);
 
-            dtFirst = dtFirst.AddDays(7*(week-1));
+            dtFirst = dtFirst.AddDays(7 * (week - 1));
 
             return dtFirst;
         }
@@ -547,7 +652,7 @@ namespace WindowsFormsForecastLactalis
 
         internal static string ReturnDanishFormat(string tempDate)
         {
-            string outDate = tempDate.Replace("-","");
+            string outDate = tempDate.Replace("-", "");
             string year;
             string month;
             string day;
@@ -568,11 +673,11 @@ namespace WindowsFormsForecastLactalis
             DateTime date = new DateTime();
             try
             {
-                date = DateTime.Parse(dateString);               
+                date = DateTime.Parse(dateString);
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Error transfoming string to date: " + dateString + "\r\n" + "Send this info to Christofer Hellberg in print screen"+ "\r\n" + ex.Message);
+                System.Windows.Forms.MessageBox.Show("Error transfoming string to date: " + dateString + "\r\n" + "Send this info to Christofer Hellberg in print screen" + "\r\n" + ex.Message);
             }
             return date;
         }
@@ -582,8 +687,8 @@ namespace WindowsFormsForecastLactalis
         {
             DateTime date = new DateTime();
             string dateStringLocal = dateString.Replace(".", "");
-            dateStringLocal = dateStringLocal.Replace(",", ""); 
-           
+            dateStringLocal = dateStringLocal.Replace(",", "");
+
             try
             {
                 date = DateTime.ParseExact(dateStringLocal, format, System.Globalization.CultureInfo.InvariantCulture);
@@ -593,6 +698,16 @@ namespace WindowsFormsForecastLactalis
                 System.Windows.Forms.MessageBox.Show("Error transfoming string to date Exact: " + dateString + "\r\n" + " format: " + format + "\r\n" + "Send this info to Christofer Hellberg in print screen" + "\r\n" + ex.Message);
             }
             return date;
+        }
+
+        internal static string GetNationForAssortment(string assortment)
+        {
+            string nationCode = "XX";
+            if (AssortmentNation.ContainsKey(assortment))
+            {
+                nationCode = AssortmentNation[assortment];
+            }
+            return nationCode;
         }
     }
 }

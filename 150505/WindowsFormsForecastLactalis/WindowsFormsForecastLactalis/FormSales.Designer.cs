@@ -126,6 +126,7 @@
             this.comboBoxAssortment.Name = "comboBoxAssortment";
             this.comboBoxAssortment.Size = new System.Drawing.Size(191, 24);
             this.comboBoxAssortment.TabIndex = 3;
+            this.comboBoxAssortment.SelectedIndexChanged += new System.EventHandler(this.comboBoxAssortment_SelectedIndexChanged);
             // 
             // labelAssortment
             // 

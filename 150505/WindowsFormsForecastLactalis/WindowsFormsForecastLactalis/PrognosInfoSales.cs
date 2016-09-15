@@ -39,6 +39,7 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, int> Salgsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Salgsbudget_LastYear = new Dictionary<int, int>();
         public Dictionary<int, string> Salgsbudget_Comment = new Dictionary<int, string>();
+        public Dictionary<int, string> Salgsbudget_CommentLY = new Dictionary<int, string>();
         public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
         public List<PromotionInfo> PromotionLines = new List<PromotionInfo>();
         public List<ISalesRow> SalesRowsLastYear = new List<ISalesRow>();
@@ -98,10 +99,12 @@ namespace WindowsFormsForecastLactalis
             Dictionary<int, int> salesBudgetTY = sqlSalesCalls.GetSalesBudgetTY(ProductNumber, CustomerCodeNav);
             Dictionary<int, string> Sales_CommentTY = sqlSalesCalls.GetSalesComment_TY();
             Console.WriteLine("Time4: " + stopwatch2.ElapsedMilliseconds);
-            Dictionary<int, int> salesBudgetLY = new Dictionary<int, int>(); 
+            Dictionary<int, int> salesBudgetLY = new Dictionary<int, int>();
+            Dictionary<int, string> Sales_CommentLY = new Dictionary<int, string>();
             if (showLastYear)
             {
                 salesBudgetLY = sqlSalesCalls.GetSalesBudget_LY(ProductNumber, CustomerCodeNav);
+                Sales_CommentLY = sqlSalesCalls.GetSalesComment_LY();
                 Console.WriteLine("Time5: " + stopwatch2.ElapsedMilliseconds);
             }
             
@@ -187,6 +190,7 @@ namespace WindowsFormsForecastLactalis
                 if (showLastYear)
                 {
                     Salgsbudget_LastYear[i] = salesBudgetLY[i];
+                    Salgsbudget_CommentLY[i] = Sales_CommentLY[i];
                 }
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
                 //RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];

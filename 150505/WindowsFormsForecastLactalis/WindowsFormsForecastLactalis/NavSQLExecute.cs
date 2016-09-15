@@ -45,7 +45,7 @@ namespace WindowsFormsForecastLactalis
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(new System.Windows.Forms.Form() { TopMost = true }, "Error in Navision Database Connection!");
+                System.Windows.Forms.MessageBox.Show(new System.Windows.Forms.Form() { TopMost = true }, "Error in Navision Database Connection! \r\n Application Will not work without This Data Base  \r\n \r\n \r\n Error: " + ex.Message);
                 Console.WriteLine("Error NavDB Connection: " + ex.Message);
             }
         }

@@ -43,6 +43,8 @@ namespace WindowsFormsForecastLactalis
                 rc = ConnectToM3Interface(ref sid, "MMS200MI");
                 if (rc != 0)
                 {
+                    Console.WriteLine("Test M3 Connection Failed!");
+                    MessageBox.Show("Test M3 Connection Failed! \r\n Application Will not work without M3  \r\n Error: " + rc);
                     return false;
                 }
                 //Set the field without need to know position Start from this customer 00752
@@ -545,7 +547,7 @@ namespace WindowsFormsForecastLactalis
             try
             {
                 rc = MvxSock.Connect(ref sid, ipNummer, portNumber, userName, userPsw, m3Interface, null);
-                //Console.WriteLine("After Connect to M3 Interface: " + M3Interface);
+                //Console.WriteLine("After Connect to M3 Interface: " + m3Interface);
             }
             catch (Exception ex)
             {
@@ -559,6 +561,7 @@ namespace WindowsFormsForecastLactalis
                 //MessageBox.Show("Not Connected to M3!! communication Fail! Application will not work!");
                 //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
                 Console.WriteLine("Exception in M3 connection: ");
+                
             }
             return rc;
         }

@@ -61,12 +61,13 @@ namespace WindowsFormsForecastLactalis
             forecastNbrWeeks = 20;
             latestClickedWeek = 1;
             latestClickedYear = 1000;
+            m3Info.TestM3Connection();
 
             loadingNewProductsOngoing = false;
             //test with Coop and test customer
             FixCustomerChoices();
 
-            m3Info.TestM3Connection();
+            
             SetupColumns();
             allProductsM3Dict = m3Info.GetAllSkaevingeProductsDict();
             allSuppliersM3 = m3Info.GetSupplierWithItemsDict();
@@ -107,10 +108,16 @@ namespace WindowsFormsForecastLactalis
             else
             {
                 Dictionary<string, string> assormentList = m3Info.GetListOfAssortments();
+                Dictionary<string, string> assormentListNation = new Dictionary<string, string>();
+                foreach (KeyValuePair<string, string> item in assormentList)
+                {
+                    string nation = StaticVariables.GetNationForAssortment(item.Key);
+                    assormentListNation.Add(item.Key, nation + "  " + item.Value);
+                }
                 if (assormentList != null)
                 {
                     //Sort the assortment list by description
-                    var sortedList = from entry in assormentList orderby entry.Value ascending select entry;
+                    var sortedList = from entry in assormentListNation orderby entry.Value ascending select entry;
                     comboBoxAssortment.DataSource = new BindingSource(sortedList, null);
                 }
                 comboBoxAssortment.DisplayMember = "Value";
@@ -1681,6 +1688,16 @@ namespace WindowsFormsForecastLactalis
                 //if (e.GetType() == System.Windows.Forms.TextBox)
             }
             
+        }
+
+        private void comboBoxLand_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBoxAssortment_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
