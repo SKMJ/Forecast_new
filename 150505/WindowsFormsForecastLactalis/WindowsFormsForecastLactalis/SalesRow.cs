@@ -18,6 +18,7 @@ namespace WindowsFormsForecastLactalis
         //public DateTime DeliveryDate { get; set; }
         public String Customer { get; set; }
         public int Quantity { get; set; }
+        public int QuantityOrdered { get; set; }
         public int Week { get; set; }
         public int BestBeforeDate { get; set; }
         public int WantedBestBeforeDate { get; set; }

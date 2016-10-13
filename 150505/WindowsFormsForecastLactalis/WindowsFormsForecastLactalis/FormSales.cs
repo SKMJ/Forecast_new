@@ -461,6 +461,27 @@ namespace WindowsFormsForecastLactalis
                     tempList = new List<object>();
                     tempList.Add("");
                     tempList.Add("");
+                    tempList.Add("Comment_LastYear");
+                    if (item.showLastYear)
+                    {
+                        for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                        {
+                            if (i > 52)
+                            {
+                                k = i - 52;
+                            }
+                            else
+                            {
+                                k = i;
+                            }
+                            tempList.Add(item.Salgsbudget_CommentLY[k]);
+                        }
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
                     tempList.Add("RealiseratSalg_ThisYear");
                     for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
                     {
@@ -631,6 +652,20 @@ namespace WindowsFormsForecastLactalis
                     tempList = new List<object>();
                     tempList.Add("");
                     tempList.Add("");
+                    tempList.Add("Comment_LastYear");
+                    if (item.showLastYear)
+                    {
+
+                        for (int i = 1; i < 54; i++)
+                        {
+                            tempList.Add(item.Salgsbudget_CommentLY[i]);
+                        }
+                    }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
                     tempList.Add("RealiseratSalg_ThisYear");
                     for (int i = 1; i < 54; i++)
                     {
@@ -770,6 +805,10 @@ namespace WindowsFormsForecastLactalis
                 else if (Convert.ToString(row.Cells[2].Value).Contains("Commen"))
                 {
                     row.ReadOnly = true;
+                    if (Convert.ToString(row.Cells[2].Value).Contains("Last"))
+                    {
+                        row.DefaultCellStyle.ForeColor = Color.Blue;
+                    }
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "RealiseratSalg_ThisYear")
                 {
@@ -1237,12 +1276,29 @@ namespace WindowsFormsForecastLactalis
                             {
                                 if (item.ProductNumber.ToString() == latestProductNumber)
                                 {
-                                    temp = item.Salgsbudget_Comment[latestClickedWeek];
+                                    if (GetValueFromGridAsString(rowIndex, 2).Contains("Last"))
+                                    {
+                                        if (item.showLastYear)
+                                        {
+                                            temp = item.Salgsbudget_CommentLY[latestClickedWeek];
+                                        }
+                                    }
+                                    else
+                                    {
+                                        temp = item.Salgsbudget_Comment[latestClickedWeek];
+                                    }
                                 }
                             }
                             infoboxSales.SetInfoText(this, "", " Product: " + latestProductNumber + " Week: " + latestClickedWeek);
                             infoboxSales.SetOldInfo(temp);
-                            infoboxSales.IsReadOnly(CellIsReadOnly(rowIndex - 1, columnIndex));
+                            if (GetValueFromGridAsString(rowIndex, 2).Contains("Last"))
+                            {
+                                infoboxSales.IsReadOnly(true);
+                            }
+                            else
+                            {
+                                infoboxSales.IsReadOnly(CellIsReadOnly(rowIndex - 1, columnIndex));
+                            }
                             infoboxSales.TopMost = true;
 
                             //First time it is showed needs special handling
@@ -1257,6 +1313,7 @@ namespace WindowsFormsForecastLactalis
                             infoboxSales.Show();
                             infoboxSales.SaveButtonVisible(true);
                             infoboxSales.FocusTextBox(this);
+                            infoboxSales.LastYearNoSave(GetValueFromGridAsString(rowIndex, 2).Contains("Last"));
                         }
                         else
                         {

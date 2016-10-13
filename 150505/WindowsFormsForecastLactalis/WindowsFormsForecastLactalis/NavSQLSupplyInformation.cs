@@ -210,6 +210,14 @@ namespace WindowsFormsForecastLactalis
                     string levKedja = row["Navn_DebBogfGr"].ToString();
                     string comment = row["Kommentar"].ToString();
 
+                    //clear country
+                    levKedja = levKedja.Replace("DK  ", "");
+                    levKedja = levKedja.Replace("FI  ", "");
+                    levKedja = levKedja.Replace("SE  ", "");
+                    levKedja = levKedja.Replace("NO  ", "");
+                    levKedja = levKedja.Replace("XX  ", "");
+
+
                     
                     DateTime tempDate = StaticVariables.GetDateTimeFromString(row["Startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
@@ -514,10 +522,9 @@ namespace WindowsFormsForecastLactalis
             query = query + @"AND SKMJDWDataMarts.dbo.DimArtikel.ArtikelNR =  'XXXXX' ";
 
             query = query.Replace("XXXXX", currentProdNumber);
-            //queryString = queryString.Replace("YYYYY", custNumber);
-            //Console.WriteLine("LoadRealiseretKampagnLY Query Qlickview: " + queryString2);
+
             latestQueryQlickTable = conn.QueryExWithTableReturn(query);
-            //dataGridViewQlickviewData.DataSource = latestQueryTable;
+
 
             conn.Close();
         }
@@ -618,6 +625,7 @@ namespace WindowsFormsForecastLactalis
 	                                    [UCCUNO],
                                         [F1A130],
                                         [LMEXPI],
+                                        [UCORQT],
 	                                    CASE 
 		                                    WHEN a.assortmentName IS NOT NULL	THEN a.assortmentName
 		                                    WHEN a1.assortmentName IS NOT NULL	THEN a1.assortmentName
@@ -643,7 +651,8 @@ namespace WindowsFormsForecastLactalis
                                                     "yyyyMMdd",
                                                     CultureInfo.InvariantCulture);
                 string mttrqt = row["MTTRQT"].ToString();
-
+                string UCORQT = row["UCORQT"].ToString();
+                int quantityOrdered = (int)Convert.ToDecimal(UCORQT);
                 int quantity = (int)Convert.ToDecimal(mttrqt);
                 int week = GetWeek(date, year);
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
@@ -656,6 +665,7 @@ namespace WindowsFormsForecastLactalis
                         Date = date,
                         OrderNumber = row["UCORNO"].ToString(),
                         Quantity = quantity,
+                        QuantityOrdered = quantityOrdered,
                         Customer = row["UCCUNO"].ToString(),
                         ItemNumber = row["UCITNO"].ToString(),
                         Week = week,
@@ -672,6 +682,7 @@ namespace WindowsFormsForecastLactalis
                         Date = date,
                         OrderNumber = row["UCORNO"].ToString(),
                         Quantity = quantity,
+                        QuantityOrdered = quantityOrdered,
                         Customer = row["UCCUNO"].ToString(),
                         ItemNumber = row["UCITNO"].ToString(),
                         Week = week,

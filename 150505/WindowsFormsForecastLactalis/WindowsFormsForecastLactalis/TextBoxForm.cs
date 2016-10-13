@@ -225,5 +225,15 @@ namespace WindowsFormsForecastLactalis
             }
             this.Hide();
         }
+
+        internal void LastYearNoSave(bool p)
+        {
+            if (p)
+            {
+                saveImmediateBtn.Visible = false;
+                buttonSaveInfo.Visible = false;
+            }
+            
+        }
     }
 }

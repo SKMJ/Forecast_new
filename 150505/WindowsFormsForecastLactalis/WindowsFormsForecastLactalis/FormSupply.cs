@@ -1267,7 +1267,7 @@ namespace WindowsFormsForecastLactalis
                     if (!infoboxSupply.Visible)
                     {
                         string tempProdNBR = GetProductNumberFromRow(rowIndex);
-                        int productNumber = Convert.ToInt32(tempProdNBR);
+                        //int productNumber = Convert.ToInt32(tempProdNBR);
                         int latestWeek = latestClickedWeek;
                         PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
 
@@ -1282,7 +1282,7 @@ namespace WindowsFormsForecastLactalis
                     if (!infoboxSupply.Visible)
                     {
                         string tempProdNBR = GetProductNumberFromRow(rowIndex);
-                        int productNumber = Convert.ToInt32(tempProdNBR);
+                        //int productNumber = Convert.ToInt32(tempProdNBR);
                         int latestWeek = latestClickedWeek;
                         PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
 

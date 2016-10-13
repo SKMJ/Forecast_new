@@ -46,6 +46,8 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, string> Salgsbudget_ChangeHistory = new Dictionary<int, string>();
         public Dictionary<int, int> SalgsbudgetReguleret_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, string> SalgsbudgetReguleret_Comment = new Dictionary<int, string>();
+        public Dictionary<int, int> SalgsbudgetReguleret_LastYear = new Dictionary<int, int>();
+        public Dictionary<int, string> SalgsbudgetReguleret_CommentLY = new Dictionary<int, string>();
         public Dictionary<int, int> Kopsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kopsorder_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> KopsorderExpected_ThisYear = new Dictionary<int, int>();
@@ -137,6 +139,7 @@ namespace WindowsFormsForecastLactalis
                 if (ShowLastYear)
                 {
                     RealiseretKampagn_LastYear[i] = realiseretKampagnLY[i];
+
                 }
                 if (ShowCampaign)
                 {

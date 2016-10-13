@@ -222,7 +222,7 @@ namespace WindowsFormsForecastLactalis
                     stDate = StaticVariables.GetForecastStartDateOfWeeknumber(startYear - 1, startWeek);
                     date = stDate.ToString("yyyy/MM/dd");
                     date = date.Replace("-", @"/");
-                    startDateStrings.Add(year-1, date);
+                    startDateStrings.Add(year - 1, date);
                 }
                 else if (year == 999)
                 {
@@ -301,7 +301,7 @@ namespace WindowsFormsForecastLactalis
                     string temp = "2016-11-11 11:11:11";
                     if (comment.Length > 0)
                     {
-                        Console.WriteLine("comment: 1"+ comment);
+                        Console.WriteLine("comment: 1" + comment);
                     }
 
                     //If comment start with time and date remove it since from now on take from Tastedato
@@ -592,15 +592,15 @@ namespace WindowsFormsForecastLactalis
             int callyear = year;
             if (year < 2000)
             {
-                if(year == 1000)
+                if (year == 1000)
                 {
                     callyear = DateTime.Now.Year;
                 }
-                else if(year == 999)
+                else if (year == 999)
                 {
-                    callyear = DateTime.Now.Year-1;
+                    callyear = DateTime.Now.Year - 1;
                 }
-                
+
             }
             if (callyear <= 2017)
             {
@@ -735,7 +735,7 @@ namespace WindowsFormsForecastLactalis
                     query = query + @" or Bogfgruppe='" + item + "' ";
                 }
             }
-            query = query + @")  and Varenr='XXXX' and Bogføringsdato >= '" + startDateStrings[year-1] + "' and Bogføringsdato < '" + endDateStrings[year] + "' order by Bogføringsdato";
+            query = query + @")  and Varenr='XXXX' and Bogføringsdato >= '" + startDateStrings[year - 1] + "' and Bogføringsdato < '" + endDateStrings[year] + "' order by Bogføringsdato";
             query = query.Replace("XXXX", prodNumber.ToString());
             Console.WriteLine("LoadRelSalgsbudget Query: ");
 
@@ -775,7 +775,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 if (quantity > 0)
                 {
-                    
+
 
                     if (date > tempDateThisStart && tempDateThisEnd > date)
                     {
@@ -847,6 +847,7 @@ namespace WindowsFormsForecastLactalis
 	                                [UCCUNO],
                                     [F1A130],
                                     [LMEXPI],
+                                    [UCORQT],
 	                                CASE 
 		                                WHEN a.assortmentName IS NOT NULL	THEN a.assortmentName
 		                                WHEN a1.assortmentName IS NOT NULL	THEN a1.assortmentName
@@ -877,7 +878,10 @@ namespace WindowsFormsForecastLactalis
                 DateTime date = StaticVariables.ParseExactStringToDate(row["UCDLDT"].ToString(),
                                                     "yyyyMMdd",
                                                     CultureInfo.InvariantCulture);
-                int quantity = (int)Convert.ToDecimal(row["MTTRQT"].ToString());
+                string mttrqt = row["MTTRQT"].ToString();
+                string UCORQT = row["UCORQT"].ToString();
+                int quantityOrdered = (int)Convert.ToDecimal(UCORQT);
+                int quantity = (int)Convert.ToDecimal(mttrqt);
                 int week = StaticVariables.GetWeek2(date);
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
@@ -888,6 +892,7 @@ namespace WindowsFormsForecastLactalis
                         Date = date,
                         OrderNumber = row["UCORNO"].ToString(),
                         Quantity = quantity,
+                        QuantityOrdered = quantityOrdered,
                         Customer = row["UCCUNO"].ToString(),
                         ItemNumber = row["UCITNO"].ToString(),
                         Week = week,
@@ -904,6 +909,7 @@ namespace WindowsFormsForecastLactalis
                         Date = date,
                         OrderNumber = row["UCORNO"].ToString(),
                         Quantity = quantity,
+                        QuantityOrdered = quantityOrdered,
                         Customer = row["UCCUNO"].ToString(),
                         ItemNumber = row["UCITNO"].ToString(),
                         Week = week,

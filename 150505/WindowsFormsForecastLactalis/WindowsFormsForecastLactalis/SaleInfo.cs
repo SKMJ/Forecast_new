@@ -17,21 +17,30 @@ namespace WindowsFormsForecastLactalis
             InitializeComponent();
         }
 
-        public void LoadSaleInfo(List<ISalesRow> salesRowList, int week)
+        public void LoadSaleInfo(List<ISalesRow> salesRowList, int week)        
         {
+
+            bool orderedInBoxes = false;
             string currentCustomer = "-";
             int totalQuantity = 0;
+            int lastNollade = 0;
             var salesRows = from row in salesRowList
                             where row.Week == week
                             orderby row.CustomerName
                             select row;
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("");
 
+            Dictionary<string, int> sumOrdered = new Dictionary<string, int>();
+            Dictionary<string, int> sumDelivered = new Dictionary<string, int>();
+
             foreach (ISalesRow row in salesRows)
             {
                 string date = "";
                 string orderNumber = "";
                 int quantity = 0;
+                int quantityOrdered = 0;
+                int quantityDiff = 0;
+                int quantityLeft = 0;
                 string customer = "";
                 string bbd = "";
                 string wantedBbd = "";
@@ -42,41 +51,129 @@ namespace WindowsFormsForecastLactalis
                     date = StaticVariables.ReturnDanishFormat(m3row.Date.ToShortDateString());
                     orderNumber = m3row.OrderNumber;
                     quantity = m3row.Quantity;
+                    quantityOrdered = m3row.QuantityOrdered;
+                    quantityDiff = quantityOrdered - quantity;
+
+                    
                     customer = m3row.Customer;
                     bbd = "" + StaticVariables.ReturnDanishFormat(m3row.BestBeforeDate.ToString());
                     wantedBbd = "" + StaticVariables.ReturnDanishFormat(m3row.WantedBestBeforeDate.ToString());
+                    if (quantityDiff < 0)
+                    {
+                        orderedInBoxes = true;
+                    }
+
+                    //if new customer clear the old sums
+                    if (!currentCustomer.Equals(row.CustomerName))
+                    {
+                        sumOrdered = new Dictionary<string, int>();
+                        sumDelivered = new Dictionary<string, int>();
+                    }
+
+                    if (quantityDiff > 0)
+                    {
+                        if (!sumOrdered.ContainsKey(orderNumber))
+                        {
+                            sumOrdered.Add(orderNumber, quantityOrdered);
+                        }
+                        if (!sumDelivered.ContainsKey(orderNumber))
+                        {
+                            sumDelivered.Add(orderNumber, quantity);
+                        }
+                        else
+                        {
+                            sumDelivered[orderNumber] = sumDelivered[orderNumber] + quantity;
+                        }
+                        Console.WriteLine("q: " + quantity + "zero: " + quantityDiff);
+                        quantityLeft = quantityOrdered - sumDelivered[orderNumber];
+                    }
+                    else
+                    {
+                        quantityLeft = quantityDiff;
+                    }
                 }
                 else
                 {
                     date = StaticVariables.ReturnDanishFormat(row.Date.ToShortDateString());
                     quantity = row.Quantity;
                 }
-                System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode(String.Format("{0,-15}\t{1,-10}\t{2,-13}\t{3,-9}\t{5,-14}\t{4,-10}",
-                                                                                                            date,
-                                                                                                            customer,
-                                                                                                            orderNumber,
-                                                                                                            quantity,
-                                                                                                            bbd,
-                                                                                                            wantedBbd));
+                System.Windows.Forms.TreeNode treeNode2;
+                if (!orderedInBoxes)
+                {
+                    treeNode2 = new System.Windows.Forms.TreeNode(String.Format("{0,-15}\t{1,-10}\t{2,-13}\t{3,-9}\t{5,-14}\t{4,-15}\t{6,-15}",
+                                                                                                                date,
+                                                                                                                customer,
+                                                                                                                orderNumber,
+                                                                                                                quantity,
+                                                                                                                bbd,
+                                                                                                                wantedBbd,
+                                                                                                                quantityOrdered));
+                }
+                else
+                {
+                    treeNode2 = new System.Windows.Forms.TreeNode(String.Format("{0,-15}\t{1,-10}\t{2,-13}\t{3,-9}\t{5,-14}\t{4,-15}",
+                                                                                                                                date,
+                                                                                                                                customer,
+                                                                                                                                orderNumber,
+                                                                                                                                quantity,
+                                                                                                                                bbd,
+                                                                                                                                wantedBbd));
+
+
+                }
+
+                //Om vi kommit till en ny kund sätt rubrik-raden för den 
                 if (!currentCustomer.Equals(row.CustomerName))
                 {
-                    treeNode1.Text = treeNode1.Text + " - " + totalQuantity + " st";
+                    treeNode1.Text = treeNode1.Text + " - " + "Realiserat: " + totalQuantity + " st  ";// +" DebugNBR: " + orderNBR;
+                    if (!orderedInBoxes)
+                    {
+                        treeNode1.Text = treeNode1.Text + "Nollat: " + lastNollade + " st  ";
+                    }
                     totalQuantity = 0;
                     treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", row.CustomerName));
                     treeView1.Nodes.Add(treeNode1);
-                    treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("{0,-15}\t{1,-10}\t{2,-13}\t{3,-9}\t{5,-14}\t{4,-10}",
+                    treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("{0,-15}\t{1,-10}\t{2,-13}\t{3,-9}\t{5,-14}\t{4,-15}\t{6,-15}",
                                                                                             "Dato",
                                                                                             "Kund",
                                                                                             "Order",
                                                                                             "Antal",
                                                                                             "BBD",
-                                                                                            "Ønsket BBD")));
+                                                                                            "Ønsket BBD",
+                                                                                            "AntalOrdered")));
                     currentCustomer = row.CustomerName;
                 }
                 treeNode1.Nodes.Add(treeNode2);
                 totalQuantity = totalQuantity + quantity;
+
+                int zero = 0;
+                foreach (KeyValuePair<string, int> item in sumDelivered)
+                {
+                    int diffrence = sumOrdered[item.Key] - item.Value;
+                    if (diffrence > 0)
+                    {
+                        zero += diffrence;
+                    }
+
+                }
+                lastNollade = zero;
             }
-            treeNode1.Text = treeNode1.Text + " - " + totalQuantity + " st";
+            int zeroed = 0;
+            foreach (KeyValuePair<string, int> item in sumDelivered)
+            {
+                int diffrence = sumOrdered[item.Key] - item.Value;
+                if (diffrence > 0)
+                {
+                    zeroed += diffrence;
+                }
+
+            }
+
+            treeNode1.Text = treeNode1.Text + " - " +"Realiserat: " + totalQuantity + " st.  ";
+            if (!orderedInBoxes)
+            {
+                treeNode1.Text = treeNode1.Text + "Nollat: " + zeroed + " st  ";
+            }
 
         }
     }
