@@ -12,14 +12,15 @@ namespace WindowsFormsForecastLactalis
 {
     public partial class SaleInfo : Form
     {
-        public SaleInfo()
+        public SaleInfo(string text)
         {
             InitializeComponent();
+            this.Text = text;
         }
 
-        public void LoadSaleInfo(List<ISalesRow> salesRowList, int week)        
+        public void LoadSaleInfo(List<ISalesRow> salesRowList, int week, int completelyZeroed, bool supplyView)        
         {
-
+            int allaKundersNollade = 0;
             bool orderedInBoxes = false;
             string currentCustomer = "-";
             int totalQuantity = 0;
@@ -32,9 +33,10 @@ namespace WindowsFormsForecastLactalis
 
             Dictionary<string, int> sumOrdered = new Dictionary<string, int>();
             Dictionary<string, int> sumDelivered = new Dictionary<string, int>();
-
+            bool noRealiserat = true;
             foreach (ISalesRow row in salesRows)
             {
+                noRealiserat = false;
                 string date = "";
                 string orderNumber = "";
                 int quantity = 0;
@@ -126,9 +128,10 @@ namespace WindowsFormsForecastLactalis
                 if (!currentCustomer.Equals(row.CustomerName))
                 {
                     treeNode1.Text = treeNode1.Text + " - " + "Realiserat: " + totalQuantity + " st  ";// +" DebugNBR: " + orderNBR;
-                    if (!orderedInBoxes)
+                    if (!orderedInBoxes && !supplyView)
                     {
                         treeNode1.Text = treeNode1.Text + "Nollat: " + lastNollade + " st  ";
+                        allaKundersNollade += lastNollade;
                     }
                     totalQuantity = 0;
                     treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", row.CustomerName));
@@ -156,6 +159,7 @@ namespace WindowsFormsForecastLactalis
                     }
 
                 }
+
                 lastNollade = zero;
             }
             int zeroed = 0;
@@ -168,13 +172,27 @@ namespace WindowsFormsForecastLactalis
                 }
 
             }
-
-            treeNode1.Text = treeNode1.Text + " - " +"Realiserat: " + totalQuantity + " st.  ";
-            if (!orderedInBoxes)
+            if(noRealiserat)
             {
-                treeNode1.Text = treeNode1.Text + "Nollat: " + zeroed + " st  ";
-            }
+                treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", " "));
+                treeView1.Nodes.Add(treeNode1);
 
+            }
+            treeNode1.Text = treeNode1.Text + " - " +"Realiserat: " + totalQuantity + " st.  ";
+            if (!orderedInBoxes && !supplyView)
+            {
+
+                zeroed += completelyZeroed;
+
+                treeNode1.Text = treeNode1.Text + "Nollat: " + zeroed + " st ";
+            }
+            if (!orderedInBoxes && supplyView)
+            {
+                allaKundersNollade += completelyZeroed;
+                treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", "Total Nollat (Alla Kunder) : " + allaKundersNollade));
+                treeView1.Nodes.Add(treeNode1);
+                treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("Nollat Alla Kunder: " + allaKundersNollade)));
+            }
         }
     }
 }

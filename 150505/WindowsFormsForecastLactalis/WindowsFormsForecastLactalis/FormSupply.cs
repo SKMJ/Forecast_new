@@ -1272,8 +1272,14 @@ namespace WindowsFormsForecastLactalis
                         PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
 
                         Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
-                        SaleInfo sf = new SaleInfo();
-                        sf.LoadSaleInfo(tempInfo.SalesRowsThisYear, latestWeek);
+                        DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
+                        DateTime endDate = startDate.AddDays(7);
+                        SQL_M3Direct m3Sql = new SQL_M3Direct();
+                        int nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
+                        m3Sql.Close();
+
+                        SaleInfo sf = new SaleInfo(" Product: " + tempProdNBR + " Week: " + latestWeek);
+                        sf.LoadSaleInfo(tempInfo.SalesRowsThisYear, latestWeek, nolladeTotalt, true);
                         sf.Show();
                     }
                 }
@@ -1287,8 +1293,15 @@ namespace WindowsFormsForecastLactalis
                         PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
 
                         Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
-                        SaleInfo sf = new SaleInfo();
-                        sf.LoadSaleInfo(tempInfo.SalesRowsLastYear, latestWeek);
+                        DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear-1, latestClickedWeek);
+                        DateTime endDate = startDate.AddDays(7);
+
+                        SQL_M3Direct m3Sql = new SQL_M3Direct();
+                        int nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
+                        m3Sql.Close();
+
+                        SaleInfo sf = new SaleInfo(" Product: " + tempProdNBR + " Week: " + latestWeek);
+                        sf.LoadSaleInfo(tempInfo.SalesRowsLastYear, latestWeek, nolladeTotalt, true);
                         sf.Show();
                     }
                 }

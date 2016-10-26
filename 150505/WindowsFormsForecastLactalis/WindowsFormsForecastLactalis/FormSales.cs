@@ -1233,7 +1233,6 @@ namespace WindowsFormsForecastLactalis
 
             if (columnIndex >= 0)
             {
-
                 String columnName = this.dataGridForecastInfo.Columns[e.ColumnIndex].Name;
 
                 if (comboBoxYear.SelectedItem != null && comboBoxYear.SelectedItem != "Now")
@@ -1398,15 +1397,21 @@ namespace WindowsFormsForecastLactalis
                     }
                     else if (GetValueFromGridAsString(rowIndex, 2).Contains("RealiseratSalg_ThisYear"))
                     {
-                        if (!infoboxSales.Visible && GetValueFromGridAsString(rowIndex, columnIndex) != "0")
+                        if (!infoboxSales.Visible)// && GetValueFromGridAsString(rowIndex, columnIndex) != "0")
                         {
                             latestClickedWeek = StaticVariables.GetWeekFromName(columnName);
                             latestClickedYear = StaticVariables.GetYearFromName(columnName);
                             string productNumber = GetProductNumberFromRow(rowIndex);
                             PrognosInfoSales prognosInfo = Products.FirstOrDefault(p => p.ProductNumber == productNumber);
                             Console.WriteLine(" Product: " + productNumber + " Week: " + latestClickedWeek);
-                            SaleInfo sf = new SaleInfo();
-                            sf.LoadSaleInfo(prognosInfo.SalesRowsThisYear, latestClickedWeek);
+                            DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
+                            DateTime endDate = startDate.AddDays(7);
+                            SQL_M3Direct m3Sql = new SQL_M3Direct();
+                            int nolladeTotalt = m3Sql.GetZeroedForSpecificCustomer(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), prognosInfo.CustomerNumberM3, prognosInfo.ProductNumber);
+                            m3Sql.Close();
+
+                            SaleInfo sf = new SaleInfo(" Product: " + productNumber + " Week: " + latestClickedWeek);
+                            sf.LoadSaleInfo(prognosInfo.SalesRowsThisYear, latestClickedWeek, nolladeTotalt, false);
                             sf.Show();
                         }
                     }
@@ -1419,10 +1424,16 @@ namespace WindowsFormsForecastLactalis
                             string productNumber = GetProductNumberFromRow(rowIndex);
                             PrognosInfoSales prognosInfo = Products.FirstOrDefault(p => p.ProductNumber == productNumber);
                             Console.WriteLine(" Product: " + productNumber + " Week: " + latestClickedWeek);
+                            DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear-1, latestClickedWeek);
+                            DateTime endDate = startDate.AddDays(7);
+                            SQL_M3Direct m3Sql = new SQL_M3Direct();
+                            int nolladeTotalt = m3Sql.GetZeroedForSpecificCustomer(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), prognosInfo.CustomerNumberM3, prognosInfo.ProductNumber);
+                            m3Sql.Close();
 
-                            SaleInfo sf = new SaleInfo();
-                            sf.LoadSaleInfo(prognosInfo.SalesRowsLastYear, latestClickedWeek);
+                            SaleInfo sf = new SaleInfo(" Product: " + productNumber + " Week: " + latestClickedWeek);
+                            sf.LoadSaleInfo(prognosInfo.SalesRowsLastYear, latestClickedWeek, nolladeTotalt, false);
                             sf.Show();
+                            
                         }
                     }
                 }
@@ -1515,7 +1526,7 @@ namespace WindowsFormsForecastLactalis
 
             List<string> productList = m3Info.GetListOfProductsNbrByAssortment(tempString);
 
-            if (productList.Contains(prodNMBR))
+            if (productList != null && productList.Contains(prodNMBR))
             {
 
                 PrognosInfoSales product1 = new PrognosInfoSales(temp, prodNMBR, tempCustNumber, 20);

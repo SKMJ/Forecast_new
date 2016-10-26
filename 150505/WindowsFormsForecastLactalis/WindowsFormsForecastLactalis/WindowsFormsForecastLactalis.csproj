@@ -23,7 +23,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dkfile02.dk.lactadom.ad\PMO\IS_SKMJ_MALMÖ\PublishedApplications\ForecastApplication\</InstallUrl>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>2.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -52,10 +52,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>D03616503262FBCBE55B361CC5809CBDCF94813A</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>837A210DBFF2C69E01B4DCE87077F9011AE14D0B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WindowsFormsForecastLactalis_43_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WindowsFormsForecastLactalis_45_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -99,6 +99,7 @@
     <Compile Include="ScrollToProdNumber.Designer.cs">
       <DependentUpon>ScrollToProdNumber.cs</DependentUpon>
     </Compile>
+    <Compile Include="SQL_M3Direct.cs" />
     <Compile Include="StaticVariables.cs" />
     <Compile Include="FileToSendInfoForPoduct.cs" />
     <Compile Include="FormSales.cs">
@@ -193,6 +194,8 @@
     <None Include="WindowsFormsForecastLactalis_41_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_42_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_43_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_44_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_45_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
