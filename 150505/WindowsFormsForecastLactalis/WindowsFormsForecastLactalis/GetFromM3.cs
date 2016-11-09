@@ -874,8 +874,12 @@ namespace WindowsFormsForecastLactalis
                 MvxSock.Access(ref sid, null);
                 try { 
                     DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    int yearForDate1 = tempDate.Year;
                     //Kampanjer ska presenteras en vecka innan kampanjstart
                     tempDate = tempDate.AddDays(-7);
+                    int yearForDate2 = tempDate.Year;
+
+                    int yeardiff = yearForDate1 - yearForDate2;
                     int weekInt = StaticVariables.GetWeek2(tempDate);
                     if (weekInt > 0 && weekInt < 54)
                     {
@@ -886,7 +890,7 @@ namespace WindowsFormsForecastLactalis
                             ItemNumber = itno,
                             Id = promotionId,
                             Division = division,
-                            Year = year
+                            Year = year - yeardiff
                         });
                     }
                 }

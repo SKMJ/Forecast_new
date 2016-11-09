@@ -218,7 +218,7 @@ namespace WindowsFormsForecastLactalis
             int laps = 1;
             while (!Completed && laps<3)
             {
-                Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(1000), () =>
+                //Completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(1000), () =>
                 {
                     //
                     // Write your time bounded code here
@@ -249,7 +249,8 @@ namespace WindowsFormsForecastLactalis
                         int tempWeeksToLOCK = tempDaysLock / 7;
                         WeekToLockFrom = tempWeeksToLOCK + currWeek; ;
                     }
-                });
+                }
+                //);
 
                 Console.WriteLine("Completed: " + Completed + " lap: " + laps);
                 laps++;

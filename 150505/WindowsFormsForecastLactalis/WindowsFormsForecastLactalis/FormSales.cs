@@ -67,7 +67,7 @@ namespace WindowsFormsForecastLactalis
             //test with Coop and test customer
             FixCustomerChoices();
 
-            
+
             SetupColumns();
             allProductsM3Dict = m3Info.GetAllSkaevingeProductsDict();
             allSuppliersM3 = m3Info.GetSupplierWithItemsDict();
@@ -79,7 +79,7 @@ namespace WindowsFormsForecastLactalis
             dataGridForecastInfo.Height = this.Height - 250;
 
             labelCalculator.Location = new System.Drawing.Point(10, this.Height - 70); ;
-            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70); 
+            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70);
 
 
             StaticVariables.SetAllProductsNavDict(allProductsDict);
@@ -184,7 +184,7 @@ namespace WindowsFormsForecastLactalis
                             dataGridForecastInfo.Columns[i + 2].Name = temp;
                         }
 
-                        for (int i = (forecastNbrWeeks * 2 + 2); i <= dataGridForecastInfo.Columns.Count -3; i++)
+                        for (int i = (forecastNbrWeeks * 2 + 2); i <= dataGridForecastInfo.Columns.Count - 3; i++)
                         {
                             string temp = "XXXX";
                             weekNumber++;
@@ -235,7 +235,7 @@ namespace WindowsFormsForecastLactalis
                     for (int i = 1; i < 54; i++)
                     {
                         int currentWeek = StaticVariables.GetForecastWeeknumberForDate(DateTime.Now);
-                        
+
                         string temp = i + "." + comboBoxYear.Text;
                         if (i == currentWeek && selectedYear == DateTime.Now.Year)
                         {
@@ -276,7 +276,7 @@ namespace WindowsFormsForecastLactalis
                     dataGridForecastInfo.FirstDisplayedScrollingColumnIndex = columnNow - 2;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("Scroll Now error: " + ex.Message);
             }
@@ -375,22 +375,22 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add("Vecka");
                     int k = 0;
 
-                        
-                        for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
-                        {
-                            if (i > 52)
-                            {
-                                k = i - 52;
-                            }
-                            else
-                            {
-                                k = i;
-                            }
-                            tempList.Add(k);
 
-                            //tempList.Add(item.RealiseretSalgs_LastYear[i]);
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
                         }
-                    
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(k);
+
+                        //tempList.Add(item.RealiseretSalgs_LastYear[i]);
+                    }
+
                     AddRowFromList(tempList);
 
                     tempList = new List<object>();
@@ -681,7 +681,7 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add("");
                     tempList.Add("");
                     tempList.Add("Kampagn_ThisYear");
-                    if(item.showLastKampagn)
+                    if (item.showLastKampagn)
                     {
                         for (int i = 1; i < 54; i++)
                         {
@@ -773,12 +773,12 @@ namespace WindowsFormsForecastLactalis
                     bool writingForbidden = !(OnlyLook == StaticVariables.WritePermission.SaleWrite || OnlyLook == StaticVariables.WritePermission.Write);
                     for (int i = 3; i < row.Cells.Count; i++)
                     {
-                        if ((selectedYear > 2000 && selectedYear < DateTime.Now.Year) || writingForbidden)
+                        if ((selectedYear > 2000 && selectedYear < DateTime.Now.Year) || writingForbidden) //past years
                         {
                             row.Cells[i].ReadOnly = true;
                             row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                         }
-                        else
+                        else if (selectedYear == DateTime.Now.Year || selectedYear == 1000)
                         {
                             if (weekToLock[weekProdNBR] < i )
                             {
@@ -790,13 +790,27 @@ namespace WindowsFormsForecastLactalis
                                 row.Cells[i].ReadOnly = true;
                                 row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                             }
-
-                            if (selectedYear > DateTime.Now.Year && weekToLock[weekProdNBR] <= 52)
+                        }
+                        else if (selectedYear - 1 > DateTime.Now.Year)
+                        {
+                            //if year more then one year in future always allow writing
+                            row.Cells[i].ReadOnly = false;
+                            row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };
+                        }
+                        else if (selectedYear - 1 == DateTime.Now.Year )
+                        {
+                            if (weekToLock[weekProdNBR] - 52 < i)
                             {
                                 row.Cells[i].ReadOnly = false;
-                                row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };                            
+                                row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };
                             }
-                         }
+                            else
+                            {
+                                row.Cells[i].ReadOnly = true;
+                                row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
+                            }
+                        }
+
 
 
                     }
@@ -989,7 +1003,8 @@ namespace WindowsFormsForecastLactalis
                             i++;
                             string temp = GetNameFromLoadedProducts(item.ToString());
                             int status = 0;
-                            if(StaticVariables.dictItemStatus.ContainsKey(item)) {
+                            if (StaticVariables.dictItemStatus.ContainsKey(item))
+                            {
                                 status = StaticVariables.dictItemStatus[item];
                             }
                             PrognosInfoSales product1 = new PrognosInfoSales(temp, item, tempString, status);
@@ -1150,7 +1165,7 @@ namespace WindowsFormsForecastLactalis
                                     string tempCustNumber = StaticVariables.GetCustNavCodeFirst(latestCustomerLoaded); ;
                                     if (selectedYear > 2000)
                                     {
-                                        
+
                                         DateTime tempDate = StaticVariables.GetDateTimeFromString(StaticVariables.StartDate[selectedYear].ToString());
                                         tempDate = StaticVariables.GetDateTimeFromString(StaticVariables.StartDate[selectedYear].ToString());
                                         budgetDate = tempDate.AddDays((week - 1) * 7);
@@ -1179,8 +1194,8 @@ namespace WindowsFormsForecastLactalis
                                     string cleanComment = System.Text.RegularExpressions.Regex.Replace(tempComment, "[áàäâãåÁÀÄÂÃÅ]", "a");
                                     cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
                                     string thisDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                    cleanComment = thisDate.Substring(5,11) + ": " + cleanComment;
-                                    if(cleanComment.Length >49)
+                                    cleanComment = thisDate.Substring(5, 11) + ": " + cleanComment;
+                                    if (cleanComment.Length > 49)
                                     {
                                         cleanComment = cleanComment.Substring(0, 49);
                                     }
@@ -1406,9 +1421,17 @@ namespace WindowsFormsForecastLactalis
                             Console.WriteLine(" Product: " + productNumber + " Week: " + latestClickedWeek);
                             DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
                             DateTime endDate = startDate.AddDays(7);
-                            SQL_M3Direct m3Sql = new SQL_M3Direct();
-                            int nolladeTotalt = m3Sql.GetZeroedForSpecificCustomer(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), prognosInfo.CustomerNumberM3, prognosInfo.ProductNumber);
-                            m3Sql.Close();
+                            int nolladeTotalt = 0;
+                            try
+                            {
+                                SQL_M3Direct m3Sql = new SQL_M3Direct();
+                                nolladeTotalt = m3Sql.GetZeroedForSpecificCustomer(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), prognosInfo.CustomerNumberM3, prognosInfo.ProductNumber);
+                                m3Sql.Close();
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Please install Client Access to be able to se totally Zeroed sales-orders");
+                            }
 
                             SaleInfo sf = new SaleInfo(" Product: " + productNumber + " Week: " + latestClickedWeek);
                             sf.LoadSaleInfo(prognosInfo.SalesRowsThisYear, latestClickedWeek, nolladeTotalt, false);
@@ -1424,16 +1447,26 @@ namespace WindowsFormsForecastLactalis
                             string productNumber = GetProductNumberFromRow(rowIndex);
                             PrognosInfoSales prognosInfo = Products.FirstOrDefault(p => p.ProductNumber == productNumber);
                             Console.WriteLine(" Product: " + productNumber + " Week: " + latestClickedWeek);
-                            DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear-1, latestClickedWeek);
+                            DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear - 1, latestClickedWeek);
                             DateTime endDate = startDate.AddDays(7);
-                            SQL_M3Direct m3Sql = new SQL_M3Direct();
-                            int nolladeTotalt = m3Sql.GetZeroedForSpecificCustomer(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), prognosInfo.CustomerNumberM3, prognosInfo.ProductNumber);
-                            m3Sql.Close();
+
+                            int nolladeTotalt = 0;
+                            try
+                            {
+                                SQL_M3Direct m3Sql = new SQL_M3Direct();
+                                nolladeTotalt = m3Sql.GetZeroedForSpecificCustomer(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), prognosInfo.CustomerNumberM3, prognosInfo.ProductNumber);
+                                m3Sql.Close();
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Please install Client Access to be able to se  totally Zeroed sales-orders");
+                            }
+
 
                             SaleInfo sf = new SaleInfo(" Product: " + productNumber + " Week: " + latestClickedWeek);
                             sf.LoadSaleInfo(prognosInfo.SalesRowsLastYear, latestClickedWeek, nolladeTotalt, false);
                             sf.Show();
-                            
+
                         }
                     }
                 }
@@ -1605,9 +1638,9 @@ namespace WindowsFormsForecastLactalis
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
 
-            
-            labelCalculator.Location = new System.Drawing.Point(10, this.Height - 70); 
-            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70); 
+
+            labelCalculator.Location = new System.Drawing.Point(10, this.Height - 70);
+            textBoxCalculator.Location = new System.Drawing.Point(125, this.Height - 70);
             dataGridForecastInfo.Width = this.Width - 50;
             dataGridForecastInfo.Height = this.Height - 250;
         }
@@ -1705,7 +1738,7 @@ namespace WindowsFormsForecastLactalis
 
             number = number.Trim();
 
-            for(int i = 0; i < dataGridForecastInfo.RowCount; i++)
+            for (int i = 0; i < dataGridForecastInfo.RowCount; i++)
             {
                 string value = GetValueFromGridAsString(i, 0);
                 if (value.Contains(number))
@@ -1734,7 +1767,7 @@ namespace WindowsFormsForecastLactalis
                 double tempD = (double)loDataTable.Rows[0]["Eval"];
                 tempD = Math.Floor(tempD);
                 int answer = Convert.ToInt32(tempD);
-                string temp = answer.ToString(); 
+                string temp = answer.ToString();
                 textBoxCalculator.Text = temp;
                 return;
             }
@@ -1755,7 +1788,7 @@ namespace WindowsFormsForecastLactalis
                 }
                 //if (e.GetType() == System.Windows.Forms.TextBox)
             }
-            
+
         }
 
         private void comboBoxLand_SelectedIndexChanged(object sender, EventArgs e)

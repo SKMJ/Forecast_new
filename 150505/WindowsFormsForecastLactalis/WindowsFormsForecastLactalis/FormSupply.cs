@@ -878,12 +878,12 @@ namespace WindowsFormsForecastLactalis
                 {
                     row.DefaultCellStyle.ForeColor = Color.Red;
                     for (int i = 3; i < row.Cells.Count; i++)
-                    {                        
+                    {
                         if ((selectedYear > 2000 && selectedYear < DateTime.Now.Year))
                         {
                             row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                         }
-                        else
+                        else if (selectedYear == DateTime.Now.Year || selectedYear == 1000)
                         {
                             if (weekToLock[weekProdNBR] < i)
                             {
@@ -893,13 +893,24 @@ namespace WindowsFormsForecastLactalis
                             {
                                 row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
                             }
-
-                            if (selectedYear > DateTime.Now.Year && weekToLock[weekProdNBR] <= 52)
+                        }
+                        else if (selectedYear - 1 > DateTime.Now.Year)
+                        {
+                            row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };
+                        }
+                        else if (selectedYear - 1 == DateTime.Now.Year)
+                        {
+                            if (weekToLock[weekProdNBR] - 52 < i)
                             {
                                 row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.ForestGreen };
                             }
+                            else
+                            {
+                                row.Cells[i].Style = new DataGridViewCellStyle { ForeColor = Color.Red };
+                            }
                         }
                     }
+                    
                     weekProdNBR++;
                     row.ReadOnly = true;
                 }
@@ -1274,9 +1285,17 @@ namespace WindowsFormsForecastLactalis
                         Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
                         DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
                         DateTime endDate = startDate.AddDays(7);
-                        SQL_M3Direct m3Sql = new SQL_M3Direct();
-                        int nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
-                        m3Sql.Close();
+                        int nolladeTotalt = 0;
+                        try
+                        {
+                            SQL_M3Direct m3Sql = new SQL_M3Direct();
+                            nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
+                            m3Sql.Close();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Please install Client Access to be able to se totally Zeroed sales-orders");
+                        }
 
                         SaleInfo sf = new SaleInfo(" Product: " + tempProdNBR + " Week: " + latestWeek);
                         sf.LoadSaleInfo(tempInfo.SalesRowsThisYear, latestWeek, nolladeTotalt, true);
@@ -1295,10 +1314,18 @@ namespace WindowsFormsForecastLactalis
                         Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
                         DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear-1, latestClickedWeek);
                         DateTime endDate = startDate.AddDays(7);
+                        int nolladeTotalt = 0;
+                        try
+                        {
+                            SQL_M3Direct m3Sql = new SQL_M3Direct();
+                            nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
+                            m3Sql.Close();
 
-                        SQL_M3Direct m3Sql = new SQL_M3Direct();
-                        int nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
-                        m3Sql.Close();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Please install Client Access to be able to se  Totally  Zeroed sales-orders");
+                        }
 
                         SaleInfo sf = new SaleInfo(" Product: " + tempProdNBR + " Week: " + latestWeek);
                         sf.LoadSaleInfo(tempInfo.SalesRowsLastYear, latestWeek, nolladeTotalt, true);
