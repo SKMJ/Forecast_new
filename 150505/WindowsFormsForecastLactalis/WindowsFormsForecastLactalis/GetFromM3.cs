@@ -25,7 +25,7 @@ namespace WindowsFormsForecastLactalis
         String userPsw = "MIPGM99";
 
         Dictionary<string, List<string>> dictSupplier;
-        
+
 
         /// <summary>
         /// This function is just to test M3 Connection
@@ -192,33 +192,37 @@ namespace WindowsFormsForecastLactalis
                     DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
 
                     tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-
+                    DateTime startDateYear = StaticVariables.FirstSaturdayBeforeWeakOne(year);
                     //Kampanjer ska ligga veckan innan kampanjstart
                     tempDate = tempDate.AddDays(-7);
                     int weekInt = StaticVariables.GetWeek2(tempDate);
+
                     if (weekInt > 0 && weekInt < 54)
                     {
                         if (nowSelected)
                         {
-                            bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempDate);
-                            if (withinLimit) //only witihin 20 weeks count
+                            if (tempDate > startDateYear)
                             {
-                                promotions[weekInt] = promotions[weekInt] + Antal;
+                                bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempDate);
+                                if (withinLimit) //only witihin 20 weeks count
+                                {
+                                    promotions[weekInt] = promotions[weekInt] + Antal;
+                                }
                             }
                         }
                         else
                         {
                             promotions[weekInt] = promotions[weekInt] + Antal;
                         }
-                                                    
+
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     MessageBox.Show("Kan inte visa kampanj " + promotionID + " på division " + division);
                 }
-                
+
             }
             MvxSock.Close(ref sid);
 
@@ -303,10 +307,10 @@ namespace WindowsFormsForecastLactalis
         //    {
         //        Stopwatch stopwatch2 = Stopwatch.StartNew();
         //        SERVER_ID sid = new SERVER_ID();
-                
+
         //        uint rc = 0;
         //        rc = ConnectToM3Interface(ref sid, "OIS038MI");
-                
+
         //        if (rc != 0)
         //        {
         //            return;
@@ -456,7 +460,7 @@ namespace WindowsFormsForecastLactalis
 
                 MvxSock.Close(ref sid);
 
-                Console.WriteLine("Get Lock days. Supplier: " + supplNBR + " days: " + FCLockSale );
+                Console.WriteLine("Get Lock days. Supplier: " + supplNBR + " days: " + FCLockSale);
 
                 Console.WriteLine("M3 Forecast info communication get supplier days: SUCCESS!!");
                 return FCLockSale;
@@ -505,7 +509,7 @@ namespace WindowsFormsForecastLactalis
 
             uint rc;
             rc = ConnectToM3Interface(ref sid, "OIS038MI");
-            
+
             if (rc != 0)
             {
                 //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
@@ -537,12 +541,12 @@ namespace WindowsFormsForecastLactalis
         private uint ConnectToM3Interface(ref SERVER_ID sid, string m3Interface)
         {
             //Console.WriteLine("Before Connect to M3 Interface: " + M3Interface);
-            if(StaticVariables.Production)
-            { 
+            if (StaticVariables.Production)
+            {
                 ipNummer = "172.31.157.14";
                 portNumber = 16105;
             }
-            
+
             uint rc = 0;
             try
             {
@@ -561,7 +565,7 @@ namespace WindowsFormsForecastLactalis
                 //MessageBox.Show("Not Connected to M3!! communication Fail! Application will not work!");
                 //MvxSock.ShowLastError(ref sid, "Error no " + rc + "\n");
                 Console.WriteLine("Exception in M3 connection: ");
-                
+
             }
             return rc;
         }
@@ -770,18 +774,18 @@ namespace WindowsFormsForecastLactalis
                     MvxSock.Close(ref sid);
                     return balanceIdentities;
                 }
-                
+
                 while (MvxSock.More(ref sid))
                 {
-                    DateTime bestBeforeDate = StaticVariables.ParseExactStringToDate(MvxSock.GetField(ref sid, "PRDT"), 
-                                                                            "yyyyMMdd", 
+                    DateTime bestBeforeDate = StaticVariables.ParseExactStringToDate(MvxSock.GetField(ref sid, "PRDT"),
+                                                                            "yyyyMMdd",
                                                                             System.Globalization.CultureInfo.InvariantCulture);
                     int onHandBalance = Convert.ToInt32(MvxSock.GetField(ref sid, "STQT"));
                     int allocatable = Convert.ToInt16(MvxSock.GetField(ref sid, "ALOC"));
                     int allocatedQuantity = Convert.ToInt32(MvxSock.GetField(ref sid, "ALQT"));
                     string allokplats = MvxSock.GetField(ref sid, "WHSL");
 
-                    if(allokplats != "IRMA" && allocatable == 1)
+                    if (allokplats != "IRMA" && allocatable == 1)
                     {
                         balanceIdentities.Add(new BalanceId
                         {
@@ -799,36 +803,46 @@ namespace WindowsFormsForecastLactalis
             }
             return balanceIdentities;
         }
-        
+
         internal List<PromotionInfo> GetPromotionForAllCustomerAsListv2(string itno, int year)
         {
             List<PromotionInfo> promotionList = new List<PromotionInfo>();
             if (year > 2000)
-            { 
+            {
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "310"));
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "320"));
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "710"));
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "720"));
-            }           
+            }
             else if (year < 2000)
             {
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "310"));
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "320"));
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "710"));
                 promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "720"));
+                List<PromotionInfo> tempList = new List<PromotionInfo>();
                 if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) > 32)
                 {
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "310"));
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "320"));
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "710"));
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "720"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "310"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "320"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "710"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "720"));
                 }
                 else if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) < 21)
                 {
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "310"));
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "320"));
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "710"));
-                    promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "720"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "310"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "320"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "710"));
+                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "720"));
+                }
+                foreach(PromotionInfo item in tempList)
+                {
+                    DateTime tempKampagnDay = StaticVariables.GetForecastStartDateOfWeeknumber(item.Year, item.Week);
+                    bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempKampagnDay);
+                    if (withinLimit) //only witihin 20 weeks count
+                    {
+                        promotionList.Add(item);
+                    }
                 }
             }
 
@@ -870,39 +884,51 @@ namespace WindowsFormsForecastLactalis
                 string quantity = MvxSock.GetField(ref sid, "BUQT");
                 string[] temp = quantity.Split('.');
                 int Antal = Convert.ToInt32(temp[0]);
+
                 Console.WriteLine(" start: " + tempstartDate + " end: " + tempEndDate + " antal: " + quantity);
                 MvxSock.Access(ref sid, null);
-                try { 
-                    DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-                    int yearForDate1 = tempDate.Year;
-                    //Kampanjer ska presenteras en vecka innan kampanjstart
-                    tempDate = tempDate.AddDays(-7);
-                    int yearForDate2 = tempDate.Year;
 
-                    int yeardiff = yearForDate1 - yearForDate2;
-                    int weekInt = StaticVariables.GetWeek2(tempDate);
-                    if (weekInt > 0 && weekInt < 54)
+                //Do sanity check of campaign values. Christofer
+                if (Antal > 0 && tempstartDate.Length > 3 && tempEndDate.Length > 3)
+                {
+
+                    try
                     {
-                        answerList.Add(new PromotionInfo()
+                        DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                        int yearForDate1 = tempDate.Year;
+                        //Kampanjer ska presenteras en vecka innan kampanjstart
+                        tempDate = tempDate.AddDays(-7);
+                        int yearForDate2 = tempDate.Year;
+
+                        int yeardiff = yearForDate1 - yearForDate2;
+                        int weekInt = StaticVariables.GetWeek2(tempDate);
+                        if (weekInt > 0 && weekInt < 54)
                         {
-                            Week = weekInt,
-                            Quantity = Antal,
-                            ItemNumber = itno,
-                            Id = promotionId,
-                            Division = division,
-                            Year = year - yeardiff
-                        });
+                            answerList.Add(new PromotionInfo()
+                            {
+                                Week = weekInt,
+                                Quantity = Antal,
+                                ItemNumber = itno,
+                                Id = promotionId,
+                                Division = division,
+                                Year = year - yeardiff
+                            });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        MessageBox.Show("Kan inte visa kampanj " + promotionId + " på division " + division);
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine(e.Message);
-                    MessageBox.Show("Kan inte visa kampanj " + promotionId + " på division " + division);
+                    Console.WriteLine("strange campaign on product: " + itno);
                 }
             }
             MvxSock.Close(ref sid);
 
-            foreach(PromotionInfo promotion in answerList)
+            foreach (PromotionInfo promotion in answerList)
             {
                 rc = ConnectToM3Interface(ref sid, "OIS840MI");
                 if (rc != 0)
@@ -986,20 +1012,21 @@ namespace WindowsFormsForecastLactalis
                 string plannedDate = "", confirmedDate = "";
 
                 string purchaseUnit = MvxSock.GetField(ref sid, "PUUN");
+                string purchasePNLI = MvxSock.GetField(ref sid, "PNLI");
                 bool isReceived = false;
                 if (rcdt.Length > 3 || pldt.Length > 3)
                 {
                     // Hämta Önskad/bekräftad kvantitet och datum
-                    if(confirmedQuantity.StartsWith("0.0"))
+                    if (confirmedQuantity.StartsWith("0.0"))
                     {
                         expectedQuantity = orderQuantity;
                     }
                     else
                     {
                         expectedQuantity = confirmedQuantity;
-                    }   
+                    }
                     plannedDate = pldt;
-                    if(!rcdt.Equals("0"))
+                    if (!rcdt.Equals("0"))
                     {
                         //Mottagen
                         quantity = receivedQuantity;
@@ -1011,15 +1038,15 @@ namespace WindowsFormsForecastLactalis
 
                     if (plannedDate.Substring(0, 4).Equals(year.ToString()) ||
                         year < 2000 && StaticVariables.DateWithinNowForecastLimit(tempDate))
-                    {                        
+                    {
                         //Räkna om till grundenhet ST 
-                        int nbrPerUnit = 1; 
-                        if(unitToNBR.ContainsKey("ANT"))
+                        int nbrPerUnit = 1;
+                        if (unitToNBR.ContainsKey("ANT"))
                         {
                             nbrPerUnit = unitToNBR["ANT"];
                         }
                         else if (unitToNBR.ContainsKey(purchaseUnit))
-                        { 
+                        {
                             nbrPerUnit = unitToNBR[purchaseUnit];
                         }
                         string[] temp = quantity.Split('.');
@@ -1042,7 +1069,8 @@ namespace WindowsFormsForecastLactalis
                                 Date = tempDate.Date,
                                 Week = weekInt,
                                 ItemNumber = itemNumber,
-                                Warehouse = miWarehouse
+                                Warehouse = miWarehouse,
+                                Line = purchasePNLI
                             };
                             expPoLineList.Add(poExpLine);
 
@@ -1050,6 +1078,7 @@ namespace WindowsFormsForecastLactalis
                             {
                                 tempDate = StaticVariables.ParseExactStringToDate(confirmedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                                 bool nowAndWithLimit = (year < 2000 && StaticVariables.DateWithinNowForecastLimit(tempDate));
+                                weekInt = StaticVariables.GetWeek2(tempDate);
                                 if (confirmedDate.Substring(0, 4).Equals(year.ToString()) || (nowAndWithLimit))
                                 {
                                     var poLine = new PurchaseOrderLine()
@@ -1059,12 +1088,13 @@ namespace WindowsFormsForecastLactalis
                                         Date = tempDate.Date,
                                         Week = weekInt,
                                         ItemNumber = itemNumber,
-                                        Warehouse = miWarehouse
+                                        Warehouse = miWarehouse,
+                                        Line = purchasePNLI
                                     };
                                     poLineList.Add(poLine);
                                 }
                             }
-                            
+
                         }
                     }
                 }

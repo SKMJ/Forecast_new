@@ -14,6 +14,7 @@ namespace WindowsFormsForecastLactalis
         public DateTime Date { get; set; }
         public int Week { get; set; }
         public string Warehouse { get; set; }
+        public string Line { get; set; }
 
         public override string ToString()
         {

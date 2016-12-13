@@ -608,7 +608,17 @@ namespace WindowsFormsForecastLactalis
             }
             if (callyear > 2015)
             {
-                salesRows.AddRange(LoadRealizedSalesFromM3Sales(itemNumber, year, customerNumber));
+                List<ISalesRow> tempList = LoadRealizedSalesFromM3Sales(itemNumber, year, customerNumber);
+                List<ISalesRow> tempListCorrect = new List<ISalesRow>();
+                foreach (ISalesRow item in tempList)
+                {
+                    if (year>2000 ||(DateTime.Now - item.Date).TotalDays < 23 * 7)
+                    {
+                        tempListCorrect.Add(item);
+                    }
+
+                }
+                salesRows.AddRange(tempListCorrect);
             }
             return salesRows;
         }
@@ -883,9 +893,21 @@ namespace WindowsFormsForecastLactalis
                 int quantityOrdered = (int)Convert.ToDecimal(UCORQT);
                 int quantity = (int)Convert.ToDecimal(mttrqt);
                 int week = StaticVariables.GetWeek2(date);
+
+                bool lastYearInNextYear;
+                bool inShowRange;
+                lastYearInNextYear = false;
+                inShowRange = true;
+                double dateDiff = (DateTime.Now - date).TotalDays;
+
+                if (year < 2000 && dateDiff > 23 * 7)
+                {
+                    inShowRange = false;
+                }
+
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
-                if (date.Year == salesYear)
+                if (date.Year == salesYear && inShowRange)
                 {
                     salesRows.Add(new SalesRow()
                     {
@@ -901,8 +923,13 @@ namespace WindowsFormsForecastLactalis
                         CustomerName = row["AssortmentName"].ToString()
                     });
                 }
+                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365 && week<25)
+                {
+                    lastYearInNextYear = true;
+                }
 
-                if (date.Year == salesYear - 1)
+
+                if (date.Year == salesYear - 1 || lastYearInNextYear)
                 {
                     lastYearRowsM3.Add(new SalesRow()
                     {

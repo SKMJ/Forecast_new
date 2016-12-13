@@ -23,8 +23,8 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dkfile02.dk.lactadom.ad\PMO\IS_SKMJ_MALMÖ\PublishedApplications\ForecastApplication\</InstallUrl>
-    <ApplicationRevision>9</ApplicationRevision>
-    <ApplicationVersion>2.1.0.%2a</ApplicationVersion>
+    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationVersion>2.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -52,10 +52,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>07BE13EB034613C2FD83FC56A8450A2C5D4FE027</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>6437507E3DB15D6ED3DD6A6516BC8EFF3445B3A0</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WindowsFormsForecastLactalis_48_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WindowsFormsForecastLactalis_55_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -100,6 +100,7 @@
       <DependentUpon>ScrollToProdNumber.cs</DependentUpon>
     </Compile>
     <Compile Include="SQL_M3Direct.cs" />
+    <Compile Include="SQL_ModdedM3.cs" />
     <Compile Include="StaticVariables.cs" />
     <Compile Include="FileToSendInfoForPoduct.cs" />
     <Compile Include="FormSales.cs">
@@ -199,6 +200,13 @@
     <None Include="WindowsFormsForecastLactalis_46_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_47_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_48_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_49_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_50_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_51_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_52_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_53_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_54_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_55_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

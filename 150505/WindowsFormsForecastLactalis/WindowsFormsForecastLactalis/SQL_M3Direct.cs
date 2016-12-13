@@ -142,6 +142,107 @@ namespace WindowsFormsForecastLactalis
             return returnInt;
         }
 
+        public Dictionary<string, double> GetReservedQuantityInWarehouse(string itemNBR)
+        {
+            Dictionary<string, double> dictReservedQuantity = new Dictionary<string, double>();
+            //int returnInt = 0;
+
+
+            string query = @" select mbreqt, mbwhlo from mitbal where mbcono = '1' and mbitno = '" + itemNBR + "'  ";
+
+
+            WindowsSQLQuery(query);
+
+            DataTable tempTable = QueryEx();
+
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string qty_recv = row["mbreqt"].ToString();
+                    string warehouse = row["mbwhlo"].ToString();
+
+                    double qty = Convert.ToDouble(qty_recv);
+                    //double antalPerStor = 1.0 / qty;
+
+                    if (warehouse == "LSK" || warehouse == "LDI")
+                    {
+                        //Console.WriteLine("whole: " + whole_supl + "gives " + antalPerStor + "          of product: " + part_sale + "    kvot:  " + qty);
+                        if (!dictReservedQuantity.ContainsKey(warehouse.Trim()))
+                        {
+                            dictReservedQuantity.Add(warehouse.Trim(), qty);
+                        }
+                        else
+                        {
+                            dictReservedQuantity[warehouse.Trim()] = dictReservedQuantity[warehouse.Trim()] + qty;
+                        }
+                    }
+                }
+            }
+
+            //Console.WriteLine(returnInt);
+            return dictReservedQuantity;
+        }
+
+        public Dictionary<string, string> GetMotherChildren()
+        {
+            Dictionary<string, string> motherChildList = new Dictionary<string, string>();
+            int returnInt = 0;
+           
+
+            string query = @"select PMPRNO,  PMMTNO,  PMCNQT, pmfaci from MPDMAT where pmcono = '1' and pmfaci = 'LAD' and pmbypr = '0' ";
+
+
+            WindowsSQLQuery(query);
+
+            DataTable tempTable = QueryEx();
+
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string part_sale = row["PMPRNO"].ToString();
+                    string whole_supl = row["PMMTNO"].ToString();
+                    string qty_partOfWhole = row["PMCNQT"].ToString();
+
+                    double qty = Convert.ToDouble(qty_partOfWhole );
+                    double antalPerStor = 1.0 / qty;
+
+                    if (qty > 0 && qty <= 1)
+                    {
+                        Console.WriteLine("whole: " + whole_supl + "gives " + antalPerStor + "          of product: " + part_sale + "    kvot:  " + qty);
+                        if (!motherChildList.ContainsKey(whole_supl.Trim()))
+                        {
+                            motherChildList.Add(whole_supl.Trim(), part_sale.Trim() + ";" + qty);
+                        }
+                        else
+                        {
+                            motherChildList[whole_supl.Trim()] = motherChildList[whole_supl.Trim()] + "=" + part_sale.Trim() + ";" + qty;
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine(returnInt);
+            return motherChildList;
+        }
+
+        //select PMPRNO,  PMMTNO,  PMCNQT, pmfaci from MPDMAT where pmcono = '1' and pmfaci = 'LAD'
+
 
         public int GetZeroedForAllCustomers(string dateStart, string dateEnd, string itemNumber)
         {

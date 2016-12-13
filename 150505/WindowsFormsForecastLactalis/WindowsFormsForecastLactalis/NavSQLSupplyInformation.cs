@@ -49,6 +49,7 @@ namespace WindowsFormsForecastLactalis
 
         Dictionary<int, string> startDateStrings = new Dictionary<int, string>();
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
+        List<ISalesRow> salesRowsLast ;
 
         int[] weekPartPercentage;
 
@@ -326,7 +327,21 @@ namespace WindowsFormsForecastLactalis
                 Dictionary<int, int> promotions = m3.GetPromotionsOfProducts(currentProdNumber, currentSelectedYear);
                 foreach (var promotionItem in promotions)
                 {
-                    kampagn_TY[promotionItem.Key] += promotionItem.Value;
+                    if (currentSelectedYear < 2000)
+                    {
+
+                        kampagn_TY[promotionItem.Key] += promotionItem.Value;
+                        //DateTime tempKampagnDay = StaticVariables.GetForecastStartDateOfWeeknumber(promotionItem.Year, promotionItem.Week);
+                        //bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempKampagnDay);
+                        //if (withinLimit) //only witihin 20 weeks count
+                        //{
+                        //    kampagn_TY[promotionItem.Key] += promotionItem.Value;
+                        //}
+                    }
+                    else
+                    {
+                        kampagn_TY[promotionItem.Key] += promotionItem.Value;
+                    }
                 }
             }
             if (currentSelectedYear < 2017)
@@ -509,6 +524,20 @@ namespace WindowsFormsForecastLactalis
             return salesRows;
         }
 
+        public List<ISalesRow> GetRealizedSalesLastYear(int year)
+        {
+            List<ISalesRow> salesRows = new List<ISalesRow>();
+            if (year < 2017)
+            {
+                salesRows.AddRange(LoadRelSalg_FromSQL(year, currentProdNumber));
+            }
+            if (year > 2015 || year < 2000)
+            {
+                salesRows.AddRange(GetRealizedSalesLastYear());
+            }
+            return salesRows;
+        }
+
         public void LoadRelSalg_FromQlick()
         {
             ClassSQLQlickViewDataLayer conn = new ClassSQLQlickViewDataLayer();
@@ -610,7 +639,7 @@ namespace WindowsFormsForecastLactalis
                 salesYear = DateTime.Now.Year -1 ;
             }
             List<ISalesRow> salesRows = new List<ISalesRow>();
-            List<ISalesRow> salesRowsLast = new List<ISalesRow>();
+            salesRowsLast = new List<ISalesRow>();
             string tableSales = StaticVariables.TableM3Sales;
             string tableChainAssortment = StaticVariables.TableChainAssortment;
             string tableChainCustomer = StaticVariables.TableChainCustomer;
@@ -658,7 +687,18 @@ namespace WindowsFormsForecastLactalis
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
 
-                if (date.Year == salesYear)
+                bool lastYearInNextYear;
+                bool inNowRange;
+                lastYearInNextYear = false;
+                inNowRange = true;
+                double dateDiff = (DateTime.Now - date).TotalDays;
+
+                if (year < 2000 && dateDiff > 23 * 7)
+                {
+                    inNowRange = false;
+                }
+
+                if (date.Year == salesYear && inNowRange)
                 {
                     salesRows.Add(new SalesRow()
                     {
@@ -674,7 +714,14 @@ namespace WindowsFormsForecastLactalis
                         CustomerName = row["AssortmentName"].ToString()
                     });
                 }
-                if (date.Year == (salesYear - 1))
+
+                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365 && week < 25)
+                {
+                    lastYearInNextYear = true;
+                }
+
+
+                if (date.Year == salesYear - 1 || lastYearInNextYear)
                 {
 
                     salesRowsLast.Add(new SalesRow()
@@ -696,6 +743,11 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Last year sales row: " + salesRowsLast.Count + " This year Sales Row: " + salesRows.Count);
 
             return salesRows;
+        }
+
+        private List<ISalesRow> GetRealizedSalesLastYear()
+        {
+            return salesRowsLast;
         }
 
 

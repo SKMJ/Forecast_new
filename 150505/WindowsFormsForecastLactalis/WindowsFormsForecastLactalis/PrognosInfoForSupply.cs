@@ -53,6 +53,7 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, int> KopsorderExpected_ThisYear = new Dictionary<int, int>();
         public List<ISalesRow> SalesRowsLastYear = new List<ISalesRow>();
         public List<ISalesRow> SalesRowsThisYear = new List<ISalesRow>();
+        public Dictionary<string, Dictionary<int, int>> childSales = new Dictionary<string, Dictionary<int, int>>();
 
         public int CompareTo(object obj)
         {
@@ -101,6 +102,41 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Time3: " + stopwatch2.ElapsedMilliseconds);
 
             Dictionary<int, int> salesBudgetTY = sqlSupplyCalls.GetSalesBudget();
+            if (StaticVariables.ProdMotherChildRelation.ContainsKey(ProductNumber))
+            {
+                Console.WriteLine("prod " + ProductNumber + "  " + StaticVariables.ProdMotherChildRelation[ProductNumber]);
+                Dictionary<string, double> parts = new Dictionary<string, double>();
+                childSales = new Dictionary<string, Dictionary<int, int>>();
+                string[] listChilds = StaticVariables.ProdMotherChildRelation[ProductNumber].Split('=');
+                foreach(string child in listChilds)
+                {
+                    string[] valueKvot = child.Split(';');
+                    parts.Add(valueKvot[0], Convert.ToDouble(valueKvot[1]));
+
+                }
+                foreach(KeyValuePair<string,double> items in parts)
+                {
+                    Console.WriteLine("Barn: " + items.Key + " kvot: " + items.Value);
+                    NavSQLSupplyInformation sqlSupplyCallsChild = new NavSQLSupplyInformation(selectedYear, items.Key);
+                    sqlSupplyCallsChild.SetSelectedYear(selectedYear);
+                    sqlSupplyCallsChild.UpdateVareKort();
+                    //Supplier = GetSupplierFromProduct();
+
+                    Console.WriteLine("Time3: " + stopwatch2.ElapsedMilliseconds);
+
+                    Dictionary<int, int> salesBudgetChildTY = sqlSupplyCallsChild.GetSalesBudget();
+                    Dictionary<int, int> salesBudgetChildNumberWhole = new Dictionary<int,int>();
+                    foreach(KeyValuePair<int,int> salesNumber in salesBudgetChildTY)
+                    {
+                        double antalWhole = items.Value * salesNumber.Value;
+                        antalWhole  = Math.Ceiling(antalWhole);
+                        int tempInt = Convert.ToInt32(antalWhole);
+                        salesBudgetChildNumberWhole.Add(salesNumber.Key, tempInt);
+                    }
+                    childSales.Add(items.Key, salesBudgetChildNumberWhole);
+                }
+
+            }
             Dictionary<int, int> salesBudget_REG_TY = sqlSupplyCalls.GetSalesBudgetREG_TY();
             Dictionary<int, string> Reguleret_CommentTY = sqlSupplyCalls.GetRegComment_TY();
             Dictionary<int, int> kopesBudgetTY = sqlSupplyCalls.GetKopesBudget_TY();
@@ -123,7 +159,7 @@ namespace WindowsFormsForecastLactalis
             SalesRowsThisYear.AddRange(sqlSupplyCalls.GetRealizedSalesByYear(selectedYear));
             if (ShowLastYear)
             {
-                SalesRowsLastYear.AddRange(sqlSupplyCalls.GetRealizedSalesByYear(selectedYear - 1));
+                SalesRowsLastYear.AddRange(sqlSupplyCalls.GetRealizedSalesLastYear(selectedYear - 1));
             }
             Console.WriteLine("Time5A: " + stopwatch2.ElapsedMilliseconds);
 
@@ -146,6 +182,7 @@ namespace WindowsFormsForecastLactalis
                     Kampagn_ThisYear[i] = KampagnTY[i];
                 }
                 Salgsbudget_ThisYear[i] = salesBudgetTY[i];
+
                 SalgsbudgetReguleret_ThisYear[i] = salesBudget_REG_TY[i];
                 Kopsbudget_ThisYear[i] = kopesBudgetTY[i];
                 Kopsorder_ThisYear[i] = kopsOrder_TY[i];

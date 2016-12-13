@@ -15,7 +15,6 @@ namespace WindowsFormsForecastLactalis
         public int OrderRow { get; set; }
         public string ItemNumber { get; set; }
         public DateTime Date { get; set; }
-        //public DateTime DeliveryDate { get; set; }
         public String Customer { get; set; }
         public int Quantity { get; set; }
         public int QuantityOrdered { get; set; }

@@ -74,6 +74,7 @@ namespace WindowsFormsForecastLactalis
             }
 
             SetupColumns();
+            StaticVariables.SetMotherChildDictionary();
             //FillInfo();
         }
 
@@ -360,17 +361,23 @@ namespace WindowsFormsForecastLactalis
             Dictionary<int, string> commentDict = new Dictionary<int, string>();
             Dictionary<int, int> weekToLock = new Dictionary<int, int>();
             this.dataGridForecastInfo.DataSource = null;
-            
+
 
             this.dataGridForecastInfo.Rows.Clear();
             int weekProdNBR = 0;
+
+            Dictionary<int, int> sumChild = new Dictionary<int, int>();
+            for (int i = 1; i < 54; i++)
+            {
+                sumChild.Add(i, 0);
+            }
 
 
             // Loop through keys.
             foreach (PrognosInfoForSupply item in Products)
             {
                 List<object> tempList;
-                
+
                 //Load salesdata per week
                 var salesThisYear = item.SalesRowsThisYear.GroupBy(r => new
                 {
@@ -506,6 +513,9 @@ namespace WindowsFormsForecastLactalis
                     }
                     AddRowFromList(tempList);
 
+
+
+
                     tempList = new List<object>();
                     tempList.Add("");
                     tempList.Add("");
@@ -544,6 +554,32 @@ namespace WindowsFormsForecastLactalis
                         tempList.Add(item.Salgsbudget_ThisYear[k]);
                     }
                     AddRowFromList(tempList);
+
+                    if (item.childSales.Count > 0)
+                    {
+                        foreach (KeyValuePair<string, Dictionary<int, int>> childSalesDict in item.childSales)
+                        {
+                            tempList = new List<object>();
+                            tempList.Add("");
+                            tempList.Add("");
+                            tempList.Add("Salesbudget Product Part " + childSalesDict.Key);
+
+                            for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                            {
+                                if (i > 52)
+                                {
+                                    k = i - 52;
+                                }
+                                else
+                                {
+                                    k = i;
+                                }
+                                tempList.Add(childSalesDict.Value[k]);
+                                sumChild[k] = sumChild[k] + childSalesDict.Value[k];
+                            }
+                            AddRowFromList(tempList);
+                        }
+                    }
 
                     tempList = new List<object>();
                     tempList.Add("");
@@ -613,7 +649,7 @@ namespace WindowsFormsForecastLactalis
                         {
                             k = i;
                         }
-                        tempList.Add(item.SalgsbudgetReguleret_ThisYear[k] + item.Salgsbudget_ThisYear[k]);
+                        tempList.Add(item.SalgsbudgetReguleret_ThisYear[k] + item.Salgsbudget_ThisYear[k] + sumChild[k]);
                     }
 
                     AddRowFromList(tempList);
@@ -771,6 +807,26 @@ namespace WindowsFormsForecastLactalis
                     }
                     AddRowFromList(tempList);
 
+                    if (item.childSales.Count > 0)
+                    {
+
+                        foreach (KeyValuePair<string, Dictionary<int, int>> childSalesDict in item.childSales)
+                        {
+
+                            tempList = new List<object>();
+                            tempList.Add("");
+                            tempList.Add("");
+                            tempList.Add("Salesbudget Product Part " + childSalesDict.Key);
+                            for (int i = 1; i < 54; i++)
+                            {
+                                tempList.Add(childSalesDict.Value[i]);
+                                sumChild[i] = sumChild[i] + childSalesDict.Value[i];
+                            }
+
+                            AddRowFromList(tempList);
+                        }
+                    }
+
                     tempList = new List<object>();
                     tempList.Add("");
                     tempList.Add("");
@@ -809,7 +865,7 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add("Salgsbudget_Summeret_ThisYear");
                     for (int i = 1; i < 54; i++)
                     {
-                        tempList.Add(item.SalgsbudgetReguleret_ThisYear[i] + item.Salgsbudget_ThisYear[i]);
+                        tempList.Add(item.SalgsbudgetReguleret_ThisYear[i] + item.Salgsbudget_ThisYear[i] + sumChild[i]);
                     }
                     AddRowFromList(tempList);
 
@@ -874,6 +930,11 @@ namespace WindowsFormsForecastLactalis
                     row.DefaultCellStyle.ForeColor = Color.DarkRed;
                     row.ReadOnly = true;
                 }
+                else if (Convert.ToString(row.Cells[2].Value).Contains("Part"))
+                {
+                    row.DefaultCellStyle.ForeColor = Color.Violet;
+                    row.ReadOnly = true;
+                }
                 else if (Convert.ToString(row.Cells[2].Value) == "Salgsbudget_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Red;
@@ -910,7 +971,7 @@ namespace WindowsFormsForecastLactalis
                             }
                         }
                     }
-                    
+
                     weekProdNBR++;
                     row.ReadOnly = true;
                 }
@@ -1197,6 +1258,16 @@ namespace WindowsFormsForecastLactalis
                                     balanceId.Warehouse,
                                     Environment.NewLine);
                             }
+                            SQL_M3Direct m3SQL = new SQL_M3Direct();
+                            Dictionary<string, double> dictRecerved;
+                            dictRecerved = m3SQL.GetReservedQuantityInWarehouse(itemNumber);
+                            m3SQL.Close();
+                            foreach (KeyValuePair<string, double> itemRecved in dictRecerved)
+                            {
+                                message = message + " I ordre " + itemRecved.Value.ToString() + "  " + itemRecved.Key + Environment.NewLine;
+                                // "I ordre XXX LSK" "I ordre XXX LDI" 
+
+                            }
                         }
                         else
                         {
@@ -1232,6 +1303,30 @@ namespace WindowsFormsForecastLactalis
                         MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
                     }
                 }
+                else if ((GetValueFromGridAsString(rowIndex, 2).Contains("Part")) && columnIndex > 2 && columnName.Contains("20"))
+                {
+                    if (!infoboxSupply.Visible)
+                    {
+                        string temp2 = GetValueFromGridAsString(rowIndex, 2);
+                        temp2 = temp2.Replace("Salesbudget Product Part ", "");
+                        string tempNewName = temp2;
+                        int latestWeek = latestClickedWeek;
+                        latestClickedYear = StaticVariables.GetYearFromName(columnName);//columnIndex - 2;;
+                        PrognosInfoForSupply tempInfo = GetProductInfoByNumber(temp2);
+                        Console.WriteLine(" Product: " + temp2 + " Week: " + latestWeek);
+
+                        string temp = "";
+                        NavSQLSupplyInformation sqlConnection = new NavSQLSupplyInformation(selectedYear, temp2);
+                        temp = sqlConnection.GetSalesBudgetWeekInfo(latestWeek);
+
+                        temp = "Salgsbudget" + " Product: " + tempNewName + " Week: " + latestWeek + "\n\n" + temp;
+                        MessageBox.Show(temp);
+                    }
+                    else
+                    {
+                        MessageBox.Show(new Form() { TopMost = true }, "Close the open comment window to see info!");
+                    }
+                }
                 else if ((GetValueFromGridAsString(rowIndex, 2) == "Kampagn_ThisYear") && columnIndex > 2 && columnName.Contains("20"))
                 {
                     if (!infoboxSupply.Visible)
@@ -1245,6 +1340,14 @@ namespace WindowsFormsForecastLactalis
                         string infoText = "";
                         GetFromM3 m3Connection = new GetFromM3();
                         List<PromotionInfo> promotionLines = m3Connection.GetPromotionForAllCustomerAsListv2(tempProdNBR, selectedYear);
+
+                        foreach (PromotionInfo item in promotionLines)
+                        {
+                            if (item.Week == 51)
+                            {
+                                Console.WriteLine(item.Week + "  " + item.Quantity + "  " + item.Year);
+                            }
+                        }
 
                         var result = from rows in promotionLines where rows.Week == latestWeek select rows;
                         NavSQLExecute sqlconn = new NavSQLExecute();
@@ -1312,7 +1415,7 @@ namespace WindowsFormsForecastLactalis
                         PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
 
                         Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
-                        DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear-1, latestClickedWeek);
+                        DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear - 1, latestClickedWeek);
                         DateTime endDate = startDate.AddDays(7);
                         int nolladeTotalt = 0;
                         try
@@ -1376,46 +1479,60 @@ namespace WindowsFormsForecastLactalis
                 else if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear" || GetValueFromGridAsString(rowIndex, 2) == "InkommandeKöpsorder_ThisYear" && columnName.Contains("20"))
                   && columnIndex > 2)
                 {
-                    bool received = GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear";
-                    string message = "";
-                    //latestClickedWeek = latestClickedWeek;
-                    latestProductNumber = GetProductNumberFromRow(rowIndex);
-
-                    if (latestClickedWeek > 0)
+                    try
                     {
-                        if (received)
+                        SQL_ModdedM3 modM3 = new SQL_ModdedM3();
+                        bool received = GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear";
+                        string message = "";
+                        //latestClickedWeek = latestClickedWeek;
+                        latestProductNumber = GetProductNumberFromRow(rowIndex);
+
+                        if (latestClickedWeek > 0)
                         {
-                            var lines = from line in StaticVariables.PurchaseOrderLinesM3
-                                        where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
-                                        select line;
-                            foreach (var line in lines)
+                            if (received)
                             {
-                                message = message + String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}",
-                                line.Warehouse,
-                                StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
-                                line.PONumber,
-                                line.Quantity,
-                                Environment.NewLine);
+                                var lines = from line in StaticVariables.PurchaseOrderLinesM3
+                                            where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
+                                            select line;
+
+                                foreach (var line in lines)
+                                {
+                                    string tempdate = "XX";
+                                    message = message + String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}",
+                                    line.Warehouse,
+                                    StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
+                                    line.PONumber,
+                                    line.Quantity,
+                                    tempdate,
+                                    Environment.NewLine);
+                                }
                             }
-                        }
-                        else
-                        {
-                            var lines = from line in StaticVariables.ExpectedPurchaseOrderLinesM3
-                                        where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
-                                        select line;
-                            foreach (var line in lines)
+                            else
                             {
-                                message = message + String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}",
-                                line.Warehouse + "   ",
-                                StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
-                                line.PONumber,
-                                line.Quantity,
-                                Environment.NewLine);
+                                var lines = from line in StaticVariables.ExpectedPurchaseOrderLinesM3
+                                            where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
+                                            select line;
+                                foreach (var line in lines)
+                                {
+                                    string expDate = modM3.GetExpectadDateByPUNO(line.PONumber, line.Line);
+                                    message = message + String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}",
+                                    line.Warehouse,
+                                    StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
+                                    line.PONumber,
+                                    line.Quantity,
+                                    expDate,
+                                    Environment.NewLine);
+                                }
                             }
+                            modM3.Close();
+                            message = String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}", "Lager", "Dato", "Order", "Antal", "BBDExpected",
+                                        Environment.NewLine) + message;
+                            MessageBox.Show(message);
                         }
-                        message = String.Format("{0, -20}\t{1, -20}\t{2, -20}\t{3, -8}{4}", "Lager", "Dato", "Order", "Antal",
-                                    Environment.NewLine) + message;
-                        MessageBox.Show(message);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error when loading Köpsorder Data");
                     }
                 }
             }
@@ -1738,6 +1855,7 @@ namespace WindowsFormsForecastLactalis
 
             string prodNMBR = textBoxProdNBR.Text;
             AddProductByNumber(prodNMBR);
+
             PrepareGUI();
             dataGridForecastInfo.Visible = true;
             FocusNowColumn();

@@ -24,6 +24,8 @@ namespace WindowsFormsForecastLactalis
 
         public static Dictionary<string, string> ProdToSupplDict = new Dictionary<string, string>();
 
+        public static Dictionary<string, string> ProdMotherChildRelation = new Dictionary<string, string>();
+
         public static List<string> AllCuttingProducts = new List<string>();
 
         public static Dictionary<string, string> AllProductsM3Dict = new Dictionary<string, string>();
@@ -57,7 +59,26 @@ namespace WindowsFormsForecastLactalis
         public enum WritePermission { Read = 1, Write = 2, SaleWrite = 3, SupplWrite = 4 };
 
 
+        public static void SetMotherChildDictionary()
+        {
+            try
+            {
+                if (ProdMotherChildRelation.Count < 1)
+                {
 
+                    SQL_M3Direct m3Sql = new SQL_M3Direct();
+
+                    ProdMotherChildRelation = m3Sql.GetMotherChildren();
+                    m3Sql.Close();
+                }
+            }
+            catch
+            {
+                ProdMotherChildRelation = new Dictionary<string, string>();
+                Console.WriteLine("Mother Children does not work. Probalby no Client access");
+            }
+
+        }
 
         public static void SetAssortmentDictionary()
         {

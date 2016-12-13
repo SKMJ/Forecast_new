@@ -89,6 +89,7 @@ namespace WindowsFormsForecastLactalis
             Console.WriteLine("Wanted day1: " + dateTemp.ToString("MMMM dd, yyyy"));
             dateTemp = StaticVariables.GetForecastStartDateOfWeeknumber(2017, 1);
             Console.WriteLine("Wanted day2: " + dateTemp.ToString("MMMM dd, yyyy"));
+            
 
         }
 
