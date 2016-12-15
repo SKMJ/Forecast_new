@@ -1045,27 +1045,34 @@ namespace WindowsFormsForecastLactalis
         private void AddProductByNumber(string number)
         {
             string tempNumber = number.ToString();
-            string prodName = "Unknown Name";
-            //Clear purchase orders since we fetch new data from M3
-            StaticVariables.PurchaseOrderLinesM3.Clear();
-            StaticVariables.ExpectedPurchaseOrderLinesM3.Clear();
-            if (StaticVariables.AllProductsNavDict.ContainsKey(tempNumber))
+            if (tempNumber.Length > 1)
             {
-                prodName = StaticVariables.AllProductsNavDict[tempNumber];
+                string prodName = "Unknown Name";
+                //Clear purchase orders since we fetch new data from M3
+                StaticVariables.PurchaseOrderLinesM3.Clear();
+                StaticVariables.ExpectedPurchaseOrderLinesM3.Clear();
+                if (StaticVariables.AllProductsNavDict.ContainsKey(tempNumber))
+                {
+                    prodName = StaticVariables.AllProductsNavDict[tempNumber];
+                }
+                else if (StaticVariables.AllProductsM3Dict.ContainsKey(tempNumber))
+                {
+                    prodName = StaticVariables.AllProductsM3Dict[tempNumber];
+                }
+                int status = 0;
+                if (StaticVariables.dictItemStatus.ContainsKey(tempNumber))
+                {
+                    status = StaticVariables.dictItemStatus[tempNumber];
+                }
+                PrognosInfoForSupply product1 = new PrognosInfoForSupply(prodName, tempNumber, status);
+                product1.SetWhatToLoad(checkBoxLastYear.Checked, checkBoxKampgn.Checked);
+                product1.FillNumbers(selectedYear);
+                Products.Add(product1);
             }
-            else if (StaticVariables.AllProductsM3Dict.ContainsKey(tempNumber))
+            else
             {
-                prodName = StaticVariables.AllProductsM3Dict[tempNumber];
+                MessageBox.Show("Item number too short.");
             }
-            int status = 0;
-            if (StaticVariables.dictItemStatus.ContainsKey(tempNumber))
-            {
-                status = StaticVariables.dictItemStatus[tempNumber];
-            }
-            PrognosInfoForSupply product1 = new PrognosInfoForSupply(prodName, tempNumber, status);
-            product1.SetWhatToLoad(checkBoxLastYear.Checked, checkBoxKampgn.Checked);
-            product1.FillNumbers(selectedYear);
-            Products.Add(product1);
         }
 
 
@@ -1479,25 +1486,28 @@ namespace WindowsFormsForecastLactalis
                 else if ((GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear" || GetValueFromGridAsString(rowIndex, 2) == "InkommandeKöpsorder_ThisYear" && columnName.Contains("20"))
                   && columnIndex > 2)
                 {
+                    string BBDHeader = "BBD";
                     try
                     {
-                        SQL_ModdedM3 modM3 = new SQL_ModdedM3();
+                        
                         bool received = GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear";
                         string message = "";
                         //latestClickedWeek = latestClickedWeek;
                         latestProductNumber = GetProductNumberFromRow(rowIndex);
-
+                        
                         if (latestClickedWeek > 0)
                         {
                             if (received)
                             {
+                                SQL_M3Direct m3SQL = new SQL_M3Direct();
                                 var lines = from line in StaticVariables.PurchaseOrderLinesM3
                                             where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
                                             select line;
 
                                 foreach (var line in lines)
                                 {
-                                    string tempdate = "XX";
+                                    string dateBBD = m3SQL.GetBatchFromOrderLine(line.PONumber, line.Line);
+                                    string tempdate = dateBBD;
                                     message = message + String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}",
                                     line.Warehouse,
                                     StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
@@ -1506,9 +1516,11 @@ namespace WindowsFormsForecastLactalis
                                     tempdate,
                                     Environment.NewLine);
                                 }
+                                m3SQL.Close();
                             }
                             else
                             {
+                                SQL_ModdedM3 modM3 = new SQL_ModdedM3();
                                 var lines = from line in StaticVariables.ExpectedPurchaseOrderLinesM3
                                             where line.Week == latestClickedWeek && line.ItemNumber == latestProductNumber
                                             select line;
@@ -1523,9 +1535,13 @@ namespace WindowsFormsForecastLactalis
                                     expDate,
                                     Environment.NewLine);
                                 }
+                                modM3.Close();
+                                BBDHeader = "ExpectedBBD";
                             }
-                            modM3.Close();
-                            message = String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}", "Lager", "Dato", "Order", "Antal", "BBDExpected",
+
+
+
+                            message = String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}", "Lager", "Dato", "Order", "Antal", BBDHeader,
                                         Environment.NewLine) + message;
                             MessageBox.Show(message);
                         }
