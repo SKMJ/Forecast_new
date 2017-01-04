@@ -20,6 +20,7 @@ namespace WindowsFormsForecastLactalis
         private OdbcDataAdapter dataAddapter;
         //private SqlDataAdapter dataAddapter;
         private DataTable dataTable;
+        private Dictionary<string, string> custNameDict;
 
         public SQL_M3Direct()
         {
@@ -67,9 +68,289 @@ namespace WindowsFormsForecastLactalis
             conn.Close();
         }
 
+        public Dictionary<int, int> GetZeroedSpecificCustomerWholeYear(string dateStart, string dateEnd, string customer, string itemNumber)
+        {
+            //Here is the orders that are totally zeroed, it means nothing delivered.
+            Dictionary<int, int> returnZeroedDict = new Dictionary<int, int>();
+            for (int i = 0; i <= 53; i++)
+            {
+                returnZeroedDict.Add(i, 0);
+            }
+            //int returnInt = 0;
+            string CheckKedjor = "";
+            List<string> tempKedjor = StaticVariables.AssortmentM3_toKedjor[customer];
+            Console.WriteLine(tempKedjor[0]);
+            bool first;
+            first = true;
+            foreach (string kedja in tempKedjor)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    CheckKedjor += " OR ";
+                }
+
+                string tempAdd = "";
+                tempAdd = "(OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')";
+                CheckKedjor += tempAdd.Replace("XXXXX", kedja);
+            }
+
+
+            string query = @"SELECT OOLINE.OBFACI, OOLINE.OBDIVI, OOLINE.OBWHLO, OCHCUS.OSCHCT, OOLINE.OBCUNO,  ";
+            query = query + " OCUSMA.OKCUNM, OOLINE.OBORNO, OOLINE.OBPONR, OOLINE.OBITNO, OOLINE.OBITDS, OOLINE.OBORQT, ";
+            query = query + " OOLINE.OBIVQT, MITMAS.MMUNMS, OOLINE.OBDSDT, OCHCUS.OSLVDT, OCHCUS.OSCHL2,OOLINE.OBLNA2, ";
+            query = query + " OCUSMA.OKCUCD, OCUSMA.OKCUNM, OOLINE.OBNEPR, OOLINE.OBSPUN ";
+            query = query + " FROM M3PRDDTA.MITMAS MITMAS, M3PRDDTA.OCHCUS OCHCUS, M3PRDDTA.OCUSMA OCUSMA, ";
+            query = query + " M3PRDDTA.OOLINE OOLINE "; //, mmitty as ItemType ";
+            query = query + " WHERE OOLINE.OBCONO = OCHCUS.OSCONO AND OCHCUS.OSLVDT = 99999999 AND  ";
+            query = query + " OOLINE.OBCUNO = OCHCUS.OSCUNO AND OCHCUS.OSCONO = OCUSMA.OKCONO AND  ";
+            query = query + " OCHCUS.OSCUNO = OCUSMA.OKCUNO AND OOLINE.OBITNO = MITMAS.MMITNO ";
+            //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
+            query = query + "AND    OCHCUS.OSCONO = '1' ";
+            query = query + "AND    (" + CheckKedjor + ")  ";
+            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99', '79')) AND  ";
+            query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
+
+            //query = query.Replace("XXXXX", customer);
+            query = query.Replace("YYYYY", dateStart);
+            query = query.Replace("ZZZZZ", dateEnd);
+            query = query.Replace("RRRRR", itemNumber);
+
+            WindowsSQLQuery(query);
+
+            DataTable tempTable = QueryEx();
+
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string tempOrdered = row["OBORQT"].ToString();
+                    string tempDev = row["OBIVQT"].ToString();
+                    string tempDateString = row["OBDSDT"].ToString();
+                    DateTime tempDate = StaticVariables.ParseExactStringToDate(tempDateString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    int weekNumber = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
+                    if (tempOrdered.Contains(','))
+                    {
+                        string[] strings = tempOrdered.Split(',');
+                        tempOrdered = strings[0];
+                    }
+                    int tempOrderedInt = Convert.ToInt32(tempOrdered);
+
+                    if (tempDev.Contains(','))
+                    {
+                        string[] strings = tempDev.Split(',');
+                        tempDev = strings[0];
+                    }
+                    int tempDevInt = Convert.ToInt32(tempDev);
+                    //returnInt += tempOrderedInt;
+
+                    returnZeroedDict[weekNumber] += tempOrderedInt - tempDevInt;
+                }
+            }
+
+            //Console.WriteLine(returnInt);
+            return returnZeroedDict;
+        }
+
+        public Dictionary<string, string>  GetCustomerNameDict()
+        {
+            return custNameDict;
+        }
+
+
+        public Dictionary<string, int> GetZeroedAllCustomerWholeYearSortedOnCustomer(string dateStart, string dateEnd, string itemNumber)
+        {
+            //Here is the orders that are totally zeroed, it means nothing delivered.
+            Dictionary<string, int> returnZeroedDict = new Dictionary<string, int>();
+            custNameDict = new Dictionary<string, string>();
+
+            //int returnInt = 0;
+            //string CheckKedjor = "";
+            //List<string> tempKedjor = StaticVariables.AssortmentM3_toKedjor[customer];
+            //Console.WriteLine(tempKedjor[0]);
+            //bool first;
+            //first = true;
+            //foreach (string kedja in tempKedjor)
+            //{
+            //    if (first)
+            //    {
+            //        first = false;
+            //    }
+            //    else
+            //    {
+            //        CheckKedjor += " OR ";
+            //    }
+
+            //    string tempAdd = "";
+            //    tempAdd = "(OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')";
+            //    CheckKedjor += tempAdd.Replace("XXXXX", kedja);
+            //}
+
+
+            string query = @"SELECT OOLINE.OBFACI, OOLINE.OBDIVI, OOLINE.OBWHLO, OCHCUS.OSCHCT, OOLINE.OBCUNO,  ";
+            query = query + " OCUSMA.OKCUNM, OOLINE.OBORNO, OOLINE.OBPONR, OOLINE.OBITNO, OOLINE.OBITDS, OOLINE.OBORQT, ";
+            query = query + " OOLINE.OBIVQT, OCUSMA.OKCUNM, MITMAS.MMUNMS, OOLINE.OBDSDT, OCHCUS.OSLVDT, OCHCUS.OSCHL2,OOLINE.OBLNA2, ";
+            query = query + " OCUSMA.OKCUCD, OOLINE.OBNEPR, OOLINE.OBSPUN ";
+            query = query + " FROM M3PRDDTA.MITMAS MITMAS, M3PRDDTA.OCHCUS OCHCUS, M3PRDDTA.OCUSMA OCUSMA, ";
+            query = query + " M3PRDDTA.OOLINE OOLINE "; //, mmitty as ItemType ";
+            query = query + " WHERE OOLINE.OBCONO = OCHCUS.OSCONO AND OCHCUS.OSLVDT = 99999999 AND  ";
+            query = query + " OOLINE.OBCUNO = OCHCUS.OSCUNO AND OCHCUS.OSCONO = OCUSMA.OKCONO AND  ";
+            query = query + " OCHCUS.OSCUNO = OCUSMA.OKCUNO AND OOLINE.OBITNO = MITMAS.MMITNO ";
+            //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
+            query = query + "AND    OCHCUS.OSCONO = '1' ";
+            //query = query + "AND    (" + CheckKedjor + ")  ";
+            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99', '79')) AND  ";
+            query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
+
+            //query = query.Replace("XXXXX", customer);
+            query = query.Replace("YYYYY", dateStart);
+            query = query.Replace("ZZZZZ", dateEnd);
+            query = query.Replace("RRRRR", itemNumber);
+
+            WindowsSQLQuery(query);
+
+            DataTable tempTable = QueryEx();
+
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string tempKund = row["OSCHCT"].ToString().Trim();
+                    string tempOrdered = row["OBORQT"].ToString();
+                    string tempDev = row["OBIVQT"].ToString();
+                    string tempDateString = row["OBDSDT"].ToString();
+                    string tempKundnamnString = row["OKCUNM"].ToString();
+                    DateTime tempDate = StaticVariables.ParseExactStringToDate(tempDateString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    int weekNumber = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
+                    if (tempOrdered.Contains(','))
+                    {
+                        string[] strings = tempOrdered.Split(',');
+                        tempOrdered = strings[0];
+                    }
+                    int tempOrderedInt = Convert.ToInt32(tempOrdered);
+
+                    if (tempDev.Contains(','))
+                    {
+                        string[] strings = tempDev.Split(',');
+                        tempDev = strings[0];
+                    }
+                    int tempDevInt = Convert.ToInt32(tempDev);
+                    //returnInt += tempOrderedInt;
+                    if (!returnZeroedDict.ContainsKey(tempKund))
+                    {
+                        returnZeroedDict.Add(tempKund, tempOrderedInt - tempDevInt);
+                        custNameDict.Add(tempKund, tempKundnamnString);
+                    }
+                    else
+                    {
+                        returnZeroedDict[tempKund] += tempOrderedInt - tempDevInt;
+                    }
+                }
+            }
+
+            //Console.WriteLine(returnInt);
+            return returnZeroedDict;
+        }
+
+
+        public Dictionary<int, int> GetZeroedAllCustomersWholeYear(string dateStart, string dateEnd, string itemNumber)
+        {
+            //Here is the orders that are totally zeroed, it means nothing delivered.
+            Dictionary<int, int> returnZeroedDict = new Dictionary<int, int>();
+            for (int i = 0; i <= 53; i++)
+            {
+                returnZeroedDict.Add(i, 0);
+            }
+            //int returnInt = 0;
+
+
+
+            string query = @"SELECT OOLINE.OBFACI, OOLINE.OBDIVI, OOLINE.OBWHLO, OCHCUS.OSCHCT, OOLINE.OBCUNO,  ";
+            query = query + " OCUSMA.OKCUNM, OOLINE.OBORNO, OOLINE.OBPONR, OOLINE.OBITNO, OOLINE.OBITDS, OOLINE.OBORQT, ";
+            query = query + " OOLINE.OBIVQT, MITMAS.MMUNMS, OOLINE.OBDSDT, OCHCUS.OSLVDT, OCHCUS.OSCHL2,OOLINE.OBLNA2, ";
+            query = query + " OCUSMA.OKCUCD, OOLINE.OBNEPR, OOLINE.OBSPUN ";
+            query = query + " FROM M3PRDDTA.MITMAS MITMAS, M3PRDDTA.OCHCUS OCHCUS, M3PRDDTA.OCUSMA OCUSMA, ";
+            query = query + " M3PRDDTA.OOLINE OOLINE "; //, mmitty as ItemType ";
+            query = query + " WHERE OOLINE.OBCONO = OCHCUS.OSCONO AND OCHCUS.OSLVDT = 99999999 AND  ";
+            query = query + " OOLINE.OBCUNO = OCHCUS.OSCUNO AND OCHCUS.OSCONO = OCUSMA.OKCONO AND  ";
+            query = query + " OCHCUS.OSCUNO = OCUSMA.OKCUNO AND OOLINE.OBITNO = MITMAS.MMITNO ";
+            //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
+            query = query + "AND    OCHCUS.OSCONO = '1' ";
+            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99', '79')) AND  ";
+            query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
+
+            //query = query.Replace("XXXXX", customer);
+            query = query.Replace("YYYYY", dateStart);
+            query = query.Replace("ZZZZZ", dateEnd);
+            query = query.Replace("RRRRR", itemNumber);
+
+            WindowsSQLQuery(query);
+
+            DataTable tempTable = QueryEx();
+
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string tempOrdered = row["OBORQT"].ToString();
+                    string tempDev = row["OBIVQT"].ToString();
+                    string tempDateString = row["OBDSDT"].ToString();
+                    DateTime tempDate = StaticVariables.ParseExactStringToDate(tempDateString, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                    int weekNumber = StaticVariables.GetForecastWeeknumberForDate(tempDate);
+
+                    if (tempOrdered.Contains(','))
+                    {
+                        string[] strings = tempOrdered.Split(',');
+                        tempOrdered = strings[0];
+                    }
+                    int tempOrderedInt = Convert.ToInt32(tempOrdered);
+
+                    if (tempDev.Contains(','))
+                    {
+                        string[] strings = tempDev.Split(',');
+                        tempDev = strings[0];
+                    }
+                    int tempDevInt = Convert.ToInt32(tempDev);
+                    //returnInt += tempOrderedInt;
+
+                    returnZeroedDict[weekNumber] += tempOrderedInt - tempDevInt;
+                }
+            }
+
+            //Console.WriteLine(returnInt);
+            return returnZeroedDict;
+        }
+
 
         public int GetZeroedForSpecificCustomer(string dateStart, string dateEnd, string customer, string itemNumber)
         {
+            //Here is the orders that are totally zeroed, it means nothing delivered.
             int returnInt = 0;
             string CheckKedjor = "";
             List<string> tempKedjor = StaticVariables.AssortmentM3_toKedjor[customer];
@@ -246,6 +527,7 @@ namespace WindowsFormsForecastLactalis
 
         public int GetZeroedForAllCustomers(string dateStart, string dateEnd, string itemNumber)
         {
+            //Here is the orders that are totally zeroed, it means nothing delivered.
             int returnInt = 0;
 
 
@@ -333,7 +615,7 @@ namespace WindowsFormsForecastLactalis
                     }
                 }
 
-                foreach(string icREPN in icrepnListan)
+                foreach (string icREPN in icrepnListan)
                 {
                     query = @" ";
                     query += @"select MTBANO from mittra ";
@@ -360,10 +642,10 @@ namespace WindowsFormsForecastLactalis
                             {
                                 returnDate = tempBano;
                             }
-                            else if(tempBano.Length > 5 && returnDate.Length >5 && Convert.ToInt32(tempBano) < Convert.ToInt32(returnDate))
+                            else if (tempBano.Length > 5 && returnDate.Length > 5 && Convert.ToInt32(tempBano) < Convert.ToInt32(returnDate))
                             {
                                 returnDate = tempBano;
-                            }                            
+                            }
                         }
                     }
                 }

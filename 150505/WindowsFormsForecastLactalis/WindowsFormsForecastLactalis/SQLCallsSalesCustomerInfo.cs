@@ -907,7 +907,7 @@ namespace WindowsFormsForecastLactalis
 
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
-                if (date.Year == salesYear && inShowRange)
+                if ( inShowRange)
                 {
                     salesRows.Add(new SalesRow()
                     {
@@ -929,7 +929,7 @@ namespace WindowsFormsForecastLactalis
                 }
 
 
-                if (date.Year == salesYear - 1 || lastYearInNextYear)
+                if (date.Year == year - 1 || lastYearInNextYear)
                 {
                     lastYearRowsM3.Add(new SalesRow()
                     {

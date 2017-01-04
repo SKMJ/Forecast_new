@@ -377,7 +377,11 @@ namespace WindowsFormsForecastLactalis
             foreach (PrognosInfoForSupply item in Products)
             {
                 List<object> tempList;
-
+                sumChild = new Dictionary<int, int>();
+                for (int i = 1; i < 54; i++)
+                {
+                    sumChild.Add(i, 0);
+                }
                 //Load salesdata per week
                 var salesThisYear = item.SalesRowsThisYear.GroupBy(r => new
                 {
@@ -410,7 +414,13 @@ namespace WindowsFormsForecastLactalis
                         }
                     }
 
-                    weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 3 - weekNumberStart); //+ 3 is offset from cell number to week number
+                    int lockfromColumn = (item.WeekToLockFrom + 3 - weekNumberStart);
+                    if (lockfromColumn < 3)
+                    {
+                        lockfromColumn = lockfromColumn + 52;
+                    }
+
+                    weekToLock.Add(weekProdNBR, lockfromColumn); //+ 3 is offset from cell number to week number
                     weekProdNBR++;
 
                     tempList = new List<object>();
@@ -511,6 +521,26 @@ namespace WindowsFormsForecastLactalis
                                   select line.Sum;
                         tempList.Add(sum.FirstOrDefault());
                     }
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Nollat_ThisYear");
+
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(item.Zeroed_ThisYear[k]);
+                    }
+                   
                     AddRowFromList(tempList);
 
 
@@ -787,6 +817,18 @@ namespace WindowsFormsForecastLactalis
                     tempList = new List<object>();
                     tempList.Add("");
                     tempList.Add("");
+                    tempList.Add("Nollat_ThisYear");
+
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(item.Zeroed_ThisYear[i]);
+                    }
+                    
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
                     tempList.Add("Kampagn_ThisYear");
                     if (item.ShowCampaign)
                     {
@@ -918,6 +960,11 @@ namespace WindowsFormsForecastLactalis
                 else if (Convert.ToString(row.Cells[2].Value) == "RealiseratSalg_ThisYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Black;
+                    row.ReadOnly = true;
+                }
+                else if (Convert.ToString(row.Cells[2].Value).Contains("Nollat"))
+                {
+                    row.DefaultCellStyle.ForeColor = Color.Chocolate;
                     row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value).Length < 1)
@@ -1412,6 +1459,70 @@ namespace WindowsFormsForecastLactalis
                         sf.Show();
                     }
                 }
+                else if ((GetValueFromGridAsString(rowIndex, 2).Contains("Nollat")) && columnIndex > 2 && columnName.Contains("20"))
+                {
+                    if(GetValueFromGridAsString(rowIndex, columnIndex) != "0")
+                    { 
+
+                        string tempProdNBR = GetProductNumberFromRow(rowIndex);
+                        //int productNumber = Convert.ToInt32(tempProdNBR);
+                        int latestWeek = latestClickedWeek;
+                        PrognosInfoForSupply tempInfo = GetProductInfoByNumber(tempProdNBR);
+
+                        Console.WriteLine(" Product: " + tempProdNBR + " Week: " + latestWeek);
+                        DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
+                        DateTime endDate = startDate.AddDays(7);
+                        int nolladeTotalt = 0;
+                        string zeroedStrings = "Nollade Per Kund:";
+                        try
+                        {
+                            SQL_M3Direct m3Sql = new SQL_M3Direct();
+                            Dictionary<string, int> returnZeroedDict = m3Sql.GetZeroedAllCustomerWholeYearSortedOnCustomer(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
+                            Dictionary<string, string> returnZeroedCustomerName = m3Sql.GetCustomerNameDict();
+                            m3Sql.Close();
+                            Console.WriteLine(returnZeroedDict.ToString());
+                            
+                            foreach(KeyValuePair<string, int> item in returnZeroedDict)
+                            {
+                                string tempName = item.Key;
+                                string tempNAme1 = returnZeroedCustomerName[item.Key];
+                                if(StaticVariables.AssortmentDictionaryM3.ContainsKey(item.Key))
+                                {
+                                    tempName = StaticVariables.AssortmentDictionaryM3[item.Key];
+                                }
+                                else
+                                {
+
+                                    foreach(KeyValuePair<string, List<string>> listItem in StaticVariables.AssortmentM3_toKedjor)
+                                    {
+                                        foreach (string itemInTheList in listItem.Value)
+                                        {
+                                            if (item.Key == itemInTheList) //StaticVariables.AssortmentDictionaryM3.ContainsKey(listItem.Key))
+                                            {
+                                                tempName = StaticVariables.AssortmentDictionaryM3[listItem.Key];
+                                            }
+                                        }
+                                    }
+                                    
+                                }
+
+                                if (tempName == item.Key)
+                                {
+                                    tempName = tempNAme1.Trim();
+                                }
+                                zeroedStrings += "\n\r "+ tempName +" antal: " + item.Value.ToString() ;   
+                                
+                            }
+                            MessageBox.Show(zeroedStrings);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Please install Client Access to be able to se totally Zeroed sales-orders");
+                        }
+                    }
+
+                    
+                }
                 else if ((GetValueFromGridAsString(rowIndex, 2) == "RealiseretSalg_LastYear") && columnIndex > 2 && columnName.Contains("20"))
                 {
                     if (!infoboxSupply.Visible)
@@ -1425,17 +1536,17 @@ namespace WindowsFormsForecastLactalis
                         DateTime startDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear - 1, latestClickedWeek);
                         DateTime endDate = startDate.AddDays(7);
                         int nolladeTotalt = 0;
-                        try
-                        {
-                            SQL_M3Direct m3Sql = new SQL_M3Direct();
-                            nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
-                            m3Sql.Close();
+                        //try
+                        //{
+                        //    SQL_M3Direct m3Sql = new SQL_M3Direct();
+                        //    nolladeTotalt = m3Sql.GetZeroedForAllCustomers(startDate.ToString("yyyyMMdd"), endDate.ToString("yyyyMMdd"), tempInfo.ProductNumber);
+                        //    m3Sql.Close();
 
-                        }
-                        catch
-                        {
-                            MessageBox.Show("Please install Client Access to be able to se  Totally  Zeroed sales-orders");
-                        }
+                        //}
+                        //catch
+                        //{
+                        //    MessageBox.Show("Please install Client Access to be able to se  Totally  Zeroed sales-orders");
+                        //}
 
                         SaleInfo sf = new SaleInfo(" Product: " + tempProdNBR + " Week: " + latestWeek);
                         sf.LoadSaleInfo(tempInfo.SalesRowsLastYear, latestWeek, nolladeTotalt, true);
@@ -1679,8 +1790,14 @@ namespace WindowsFormsForecastLactalis
                             if (dataGridForecastInfo.Rows[rowIndex - 1].Cells[columnIndex].Value.ToString() != "")
                             {
                                 SetRegulerat1102(week, productNumber.ToString(), Convert.ToInt32(e.FormattedValue));
-
-                                int sBudget = Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - 2].Cells[columnIndex].Value);
+                                int rowsToSumForSales = 2;
+                                int sBudget = Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - rowsToSumForSales].Cells[columnIndex].Value);
+                                while ((GetValueFromGridAsString(rowIndex - rowsToSumForSales, 2).Contains("Product Part")))
+                                {
+                                    rowsToSumForSales++;
+                                    sBudget += Convert.ToInt32(dataGridForecastInfo.Rows[rowIndex - rowsToSumForSales].Cells[columnIndex].Value);
+                                    Console.WriteLine("Summa counting ForSales Rows child + salesbudget  " + sBudget);
+                                }
                                 int regSbudget = Convert.ToInt32(e.FormattedValue);
                                 if ((GetValueFromGridAsString(rowIndex + 1, 2).Contains("Salgsbudget_Summeret")))
                                 {

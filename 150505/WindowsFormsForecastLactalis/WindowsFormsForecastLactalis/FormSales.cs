@@ -216,7 +216,7 @@ namespace WindowsFormsForecastLactalis
                             dataGridForecastInfo.Columns[i + 2].Name = temp;
                         }
 
-                        for (int i = (forecastNbrWeeks * 2 + 2); i <= dataGridForecastInfo.Columns.Count; i++)
+                        for (int i = (forecastNbrWeeks * 2 + 2); i < dataGridForecastInfo.Columns.Count-2; i++)
                         {
                             string temp = "XXXX";
                             weekNumber++;
@@ -366,9 +366,13 @@ namespace WindowsFormsForecastLactalis
                         }
                     }
 
+                    int lockfromColumn = (item.WeekToLockFrom + 3 - weekNumberStart);
+                    if (lockfromColumn < 3)
+                    { 
+                        lockfromColumn = lockfromColumn + 52;
+                    }
 
-
-                    weekToLock.Add(weekProdNBR, item.WeekToLockFrom + 3 - weekNumberStart); //+ 3 is offset from cell number to week number
+                    weekToLock.Add(weekProdNBR, lockfromColumn); //+ 3 is offset from cell number to week number
                     weekProdNBR++;
                     List<object> tempList = new List<object>();
                     tempList.Add("");
@@ -501,6 +505,26 @@ namespace WindowsFormsForecastLactalis
                         //tempList.Add(item.RealiseratSalg_ThisYear[i]);
                     }
                     AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
+                    tempList.Add("Nollat_ThisYear");
+                    for (int i = weekNumberStart; i <= (weekNumberStart + (2 * forecastNbrWeeks + 1)); i++)
+                    {
+                        if (i > 52)
+                        {
+                            k = i - 52;
+                        }
+                        else
+                        {
+                            k = i;
+                        }
+                        tempList.Add(item.Zeroed_ThisYear[k]);
+                        //tempList.Add(item.RealiseratSalg_ThisYear[i]);
+                    }
+                    AddRowFromList(tempList);
+
 
                     tempList = new List<object>();
                     tempList.Add("");
@@ -681,6 +705,18 @@ namespace WindowsFormsForecastLactalis
                     tempList = new List<object>();
                     tempList.Add("");
                     tempList.Add("");
+                    tempList.Add("Nollat_ThisYear");
+
+                    for (int i = 1; i < 54; i++)
+                    {
+                        tempList.Add(item.Zeroed_ThisYear[i]);
+                    }
+
+                    AddRowFromList(tempList);
+
+                    tempList = new List<object>();
+                    tempList.Add("");
+                    tempList.Add("");
                     tempList.Add("Kampagn_ThisYear");
                     if (item.showLastKampagn)
                     {
@@ -744,6 +780,11 @@ namespace WindowsFormsForecastLactalis
                 if (Convert.ToString(row.Cells[2].Value) == "RealiseretKampagn_LastYear")
                 {
                     row.DefaultCellStyle.ForeColor = Color.Blue;
+                    row.ReadOnly = true;
+                }
+                else if (Convert.ToString(row.Cells[2].Value).Contains("Nollat"))
+                {
+                    row.DefaultCellStyle.ForeColor = Color.Chocolate;
                     row.ReadOnly = true;
                 }
                 else if (Convert.ToString(row.Cells[2].Value) == "RealiseretSalg_LastYear")

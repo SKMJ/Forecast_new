@@ -698,7 +698,7 @@ namespace WindowsFormsForecastLactalis
                     inNowRange = false;
                 }
 
-                if (date.Year == salesYear && inNowRange)
+                if (inNowRange)
                 {
                     salesRows.Add(new SalesRow()
                     {
@@ -721,7 +721,7 @@ namespace WindowsFormsForecastLactalis
                 }
 
 
-                if (date.Year == salesYear - 1 || lastYearInNextYear)
+                if (date.Year == year - 1 || lastYearInNextYear)
                 {
 
                     salesRowsLast.Add(new SalesRow()
@@ -1120,7 +1120,7 @@ namespace WindowsFormsForecastLactalis
             return kopesBudget_ForFile;
         }
 
-        private string GetEndDate(int year)
+        public string GetEndDate(int year)
         {
             string endDate = "";
             int endYear = DateTime.Now.Year;
@@ -1169,7 +1169,7 @@ namespace WindowsFormsForecastLactalis
             return endDate;
         }
 
-        private string GetStartDate(int year)
+        public string GetStartDate(int year)
         {
 
             int weeknumber;

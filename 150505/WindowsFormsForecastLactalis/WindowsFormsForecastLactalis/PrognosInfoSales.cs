@@ -45,6 +45,9 @@ namespace WindowsFormsForecastLactalis
         public List<ISalesRow> SalesRowsLastYear = new List<ISalesRow>();
         public List<ISalesRow> SalesRowsThisYear = new List<ISalesRow>();
 
+        public Dictionary<int, int> Zeroed_ThisYear = new Dictionary<int, int>();
+
+
         int[] weekPartPercentage = new int[8]; //antal, mån, tis, ons....
 
         public int CompareTo(object obj)
@@ -115,6 +118,10 @@ namespace WindowsFormsForecastLactalis
             {
                 KampagnTY.Add(i, 0);
             }
+            string stDateString = sqlSupplyCalls.GetStartDate(selectedYear).Replace("/","");
+            string eDateString = sqlSupplyCalls.GetEndDate(selectedYear).Replace("/", "");
+
+            Zeroed_ThisYear = GetZeroed(stDateString, eDateString);
 
 
             if (showLastKampagn)
@@ -203,6 +210,29 @@ namespace WindowsFormsForecastLactalis
             double timeQuerySeconds = stopwatch2.ElapsedMilliseconds / 1000.0;
             Console.WriteLine("Time for For Filling productifo : " + timeQuerySeconds.ToString() + " For Product Number: " + ProductNumber);
         }
+
+        private Dictionary<int, int> GetZeroed(string p1, string p2)
+        {
+            Dictionary<int, int> Zeroed = new Dictionary<int, int>();
+
+            try
+            {
+                SQL_M3Direct m3SQL = new SQL_M3Direct();
+                Zeroed = m3SQL.GetZeroedSpecificCustomerWholeYear(p1, p2, CustomerNumberM3, ProductNumber);
+                m3SQL.Close();
+            }
+            catch
+            {
+                Zeroed = new Dictionary<int, int>();
+                for (int i = 0; i <= 53; i++)
+                {
+                    Zeroed.Add(i, 0);
+                }
+            }
+            return Zeroed;
+        }
+
+       
 
         /// <summary>
         /// Load from m3 is timebound since it sometimes hangs 

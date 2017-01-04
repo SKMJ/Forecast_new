@@ -128,11 +128,11 @@ namespace WindowsFormsForecastLactalis
                 if (!currentCustomer.Equals(row.CustomerName))
                 {
                     treeNode1.Text = treeNode1.Text + " - " + "Realiserat: " + totalQuantity + " st  ";// +" DebugNBR: " + orderNBR;
-                    if (!orderedInBoxes && !supplyView)
-                    {
-                        treeNode1.Text = treeNode1.Text + "Nollat: " + lastNollade + " st  ";
-                        allaKundersNollade += lastNollade;
-                    }
+                    //if (!orderedInBoxes && !supplyView)
+                    //{
+                    //    treeNode1.Text = treeNode1.Text + "Nollat: " + lastNollade + " st  ";
+                    //    allaKundersNollade += lastNollade;
+                    //}
                     totalQuantity = 0;
                     treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", row.CustomerName));
                     treeView1.Nodes.Add(treeNode1);
@@ -179,20 +179,20 @@ namespace WindowsFormsForecastLactalis
 
             }
             treeNode1.Text = treeNode1.Text + " - " +"Realiserat: " + totalQuantity + " st.  ";
-            if (!orderedInBoxes && !supplyView)
-            {
+            //if (!orderedInBoxes && !supplyView)
+            //{
 
-                zeroed += completelyZeroed;
+            //    zeroed += completelyZeroed;
 
-                treeNode1.Text = treeNode1.Text + "Nollat: " + zeroed + " st ";
-            }
-            if (!orderedInBoxes && supplyView)
-            {
-                allaKundersNollade += completelyZeroed;
-                treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", "Total Nollat (Alla Kunder) : " + allaKundersNollade));
-                treeView1.Nodes.Add(treeNode1);
-                treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("Nollat Alla Kunder: " + allaKundersNollade)));
-            }
+            //    treeNode1.Text = treeNode1.Text + "Nollat: " + zeroed + " st ";
+            //}
+            //if (!orderedInBoxes && supplyView)
+            //{
+            //    allaKundersNollade += completelyZeroed;
+            //    treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", "Total Nollat (Alla Kunder) : " + allaKundersNollade));
+            //    treeView1.Nodes.Add(treeNode1);
+            //    treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("Nollat Alla Kunder: " + allaKundersNollade)));
+            //}
         }
     }
 }
