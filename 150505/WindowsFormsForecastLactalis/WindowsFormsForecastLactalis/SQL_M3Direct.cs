@@ -92,9 +92,9 @@ namespace WindowsFormsForecastLactalis
                 {
                     CheckKedjor += " OR ";
                 }
-
                 string tempAdd = "";
                 tempAdd = "(OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')";
+                tempAdd = "(OCHCUS.OSCHL2 LIKE 'XXXXX%' OR OCHCUS.OSCHCT  LIKE 'XXXXX%')";
                 CheckKedjor += tempAdd.Replace("XXXXX", kedja);
             }
 
