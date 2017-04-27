@@ -1175,7 +1175,7 @@ namespace WindowsFormsForecastLactalis
             {
                 int i;
                 string productNumber = GetProductNumberFromRow(rowIndex);//GetValueFromGridAsString(rowIndex - 5, 0);
-                int week = columnIndex - 2; //Christofer todo var används den....
+                int week = columnIndex - 2; 
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
                     e.Cancel = true;

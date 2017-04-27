@@ -175,27 +175,6 @@ namespace WindowsFormsForecastLactalis
             Dictionary<string, int> returnZeroedDict = new Dictionary<string, int>();
             custNameDict = new Dictionary<string, string>();
 
-            //int returnInt = 0;
-            //string CheckKedjor = "";
-            //List<string> tempKedjor = StaticVariables.AssortmentM3_toKedjor[customer];
-            //Console.WriteLine(tempKedjor[0]);
-            //bool first;
-            //first = true;
-            //foreach (string kedja in tempKedjor)
-            //{
-            //    if (first)
-            //    {
-            //        first = false;
-            //    }
-            //    else
-            //    {
-            //        CheckKedjor += " OR ";
-            //    }
-
-            //    string tempAdd = "";
-            //    tempAdd = "(OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')";
-            //    CheckKedjor += tempAdd.Replace("XXXXX", kedja);
-            //}
 
 
             string query = @"SELECT OOLINE.OBFACI, OOLINE.OBDIVI, OOLINE.OBWHLO, OCHCUS.OSCHCT, OOLINE.OBCUNO,  ";
@@ -478,7 +457,7 @@ namespace WindowsFormsForecastLactalis
             int returnInt = 0;
 
 
-            string query = @"select PMPRNO,  PMMTNO,  PMCNQT, pmfaci from MPDMAT where pmcono = '1' and pmfaci = 'LAD' and pmbypr = '0' ";
+            string query = @"select PMPRNO,  PMMTNO,  PMCNQT, PMPEUN, pmfaci from MPDMAT where pmcono = '1' and pmfaci = 'LAD' and pmbypr = '0' ";
 
 
             WindowsSQLQuery(query);
@@ -498,8 +477,12 @@ namespace WindowsFormsForecastLactalis
                 {
                     string part_sale = row["PMPRNO"].ToString();
                     string whole_supl = row["PMMTNO"].ToString();
+                    string purchaseEnhet = row["PMPEUN"].ToString();
                     string qty_partOfWhole = row["PMCNQT"].ToString();
-
+                    if(purchaseEnhet.Contains("KRT"))
+                    {
+                        qty_partOfWhole = "1";
+                    }
                     double qty = Convert.ToDouble(qty_partOfWhole);
                     double antalPerStor = 1.0 / qty;
 
@@ -582,7 +565,6 @@ namespace WindowsFormsForecastLactalis
 
         internal string GetBatchFromOrderLine(string orderNumber, string orderLine)
         {
-            string icrepn = "";
             string returnDate = "XX";
             List<string> icrepnListan = new List<string>();
 

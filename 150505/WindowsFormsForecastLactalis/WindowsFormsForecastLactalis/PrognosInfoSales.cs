@@ -260,7 +260,7 @@ namespace WindowsFormsForecastLactalis
 
                         if (tempDaysLock <= 0)
                         {
-                            //Todo get weeks to lock from for supplier
+                            
                             tempDaysLock = Convert.ToInt32(m3Info.GetSalesWeekLockFromSupplier(GetSupplierFromProduct()));
 
                         }
@@ -272,7 +272,6 @@ namespace WindowsFormsForecastLactalis
                         int tempDaysLock = 0;
                         if (tempDaysLock <= 0)
                         {
-                            //Todo get weeks to lock from for supplier
                             tempDaysLock = Convert.ToInt32(m3Info.GetSalesWeekLockFromSupplier(GetSupplierFromProduct()));
 
                         }

@@ -359,7 +359,6 @@ namespace WindowsFormsForecastLactalis
 
         public static void InitiateDate()
         {
-            //Todo ? maybe change dates to first sunday instead of first monday
             // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
             if (StartDateFirst)
             {
@@ -698,7 +697,7 @@ namespace WindowsFormsForecastLactalis
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Error transfoming string to date: " + dateString + "\r\n" + "Send this info to Christofer Hellberg in print screen" + "\r\n" + ex.Message);
+                System.Windows.Forms.MessageBox.Show("Error transforming string to date: " + dateString + "\r\n" + "Send this info to Christofer Hellberg in print screen" + "\r\n" + ex.Message);
             }
             return date;
         }
@@ -716,7 +715,7 @@ namespace WindowsFormsForecastLactalis
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Error transfoming string to date Exact: " + dateString + "\r\n" + " format: " + format + "\r\n" + "Send this info to Christofer Hellberg in print screen" + "\r\n" + ex.Message);
+                System.Windows.Forms.MessageBox.Show("Error transforming string to date Exact: " + dateString + "\r\n" + " format: " + format + "\r\n" + "Send this info to Christofer Hellberg in print screen" + "\r\n" + ex.Message);
             }
             return date;
         }

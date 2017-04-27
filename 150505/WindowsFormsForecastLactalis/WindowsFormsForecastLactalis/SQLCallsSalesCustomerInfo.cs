@@ -894,13 +894,14 @@ namespace WindowsFormsForecastLactalis
                 int quantity = (int)Convert.ToDecimal(mttrqt);
                 int week = StaticVariables.GetWeek2(date);
 
-                bool lastYearInNextYear;
+                bool lastYearInRangeToShow;
                 bool inShowRange;
-                lastYearInNextYear = false;
+                lastYearInRangeToShow = false;
                 inShowRange = true;
                 double dateDiff = (DateTime.Now - date).TotalDays;
 
-                if (year < 2000 && dateDiff > 23 * 7)
+                if ((year < 2000 && dateDiff > 23 * 7) ||
+                    (year > date.Year ))
                 {
                     inShowRange = false;
                 }
@@ -923,13 +924,14 @@ namespace WindowsFormsForecastLactalis
                         CustomerName = row["AssortmentName"].ToString()
                     });
                 }
-                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365 && week<25)
+                int weekNow = StaticVariables.GetWeek2(DateTime.Now);
+                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365)
                 {
-                    lastYearInNextYear = true;
+                    lastYearInRangeToShow = true;
                 }
 
 
-                if (date.Year == year - 1 || lastYearInNextYear)
+                if (date.Year == year - 1 || lastYearInRangeToShow)
                 {
                     lastYearRowsM3.Add(new SalesRow()
                     {

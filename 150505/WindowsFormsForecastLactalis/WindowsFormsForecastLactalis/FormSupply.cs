@@ -1747,7 +1747,7 @@ namespace WindowsFormsForecastLactalis
 
                         System.Threading.ThreadPool.QueueUserWorkItem(delegate
                         {
-                            //Todo write to database
+                            
 
                             NavSQLExecute conn = new NavSQLExecute();
                             conn.InsertKöpsbudgetLine(productNumber.ToString(), kopDate.ToString(format), ammountToKop);
@@ -2169,7 +2169,7 @@ namespace WindowsFormsForecastLactalis
         {
             List<string> returnList = new List<string>();
 
-            // Todo write this query Here
+            
 
             string queryText = @"select ForeCast_Startdato, Nummer,Leverandørnr,Leverandørs_varenr, lactalis_varenr, Beskrivelse, Antal_Forecast_uger, Forecast_fordelingsC_Mandag as FC_man, ";
             queryText = queryText + "Forecast_fordelingsC_Tirsdag as FC_tis, Forecast_fordelingsC_Onsdag as FC_ons, Forecast_fordelingsC_Torsdag as FC_tor, Forecast_fordelingsC_Fredag as FC_fre, ";

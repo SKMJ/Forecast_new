@@ -688,17 +688,18 @@ namespace WindowsFormsForecastLactalis
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
 
                 bool lastYearInNextYear;
-                bool inNowRange;
+                bool inShowRange;
                 lastYearInNextYear = false;
-                inNowRange = true;
+                inShowRange = true;
                 double dateDiff = (DateTime.Now - date).TotalDays;
 
-                if (year < 2000 && dateDiff > 23 * 7)
+                if (year < 2000 && dateDiff > 23 * 7 ||
+                    (year > date.Year))
                 {
-                    inNowRange = false;
+                    inShowRange = false;
                 }
 
-                if (inNowRange)
+                if (inShowRange)
                 {
                     salesRows.Add(new SalesRow()
                     {
@@ -715,7 +716,7 @@ namespace WindowsFormsForecastLactalis
                     });
                 }
 
-                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365 && week < 25)
+                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365)
                 {
                     lastYearInNextYear = true;
                 }

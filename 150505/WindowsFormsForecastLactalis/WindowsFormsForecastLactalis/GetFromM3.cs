@@ -187,40 +187,43 @@ namespace WindowsFormsForecastLactalis
                 Console.WriteLine("Kedja: " + tempCampCuse + " start: " + tempstartDate + " end: " + tempEndDate + " antal: " + tempAntal);
                 //Mooves to next row
                 MvxSock.Access(ref sid, null);
-                try
+                if (Antal != 0 && tempstartDate.Length >2)
                 {
-                    DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-
-                    tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-                    DateTime startDateYear = StaticVariables.FirstSaturdayBeforeWeakOne(year);
-                    //Kampanjer ska ligga veckan innan kampanjstart
-                    tempDate = tempDate.AddDays(-7);
-                    int weekInt = StaticVariables.GetWeek2(tempDate);
-
-                    if (weekInt > 0 && weekInt < 54)
+                    try
                     {
-                        if (nowSelected)
+                        DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                        tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                        DateTime startDateYear = StaticVariables.FirstSaturdayBeforeWeakOne(year);
+                        //Kampanjer ska ligga veckan innan kampanjstart
+                        tempDate = tempDate.AddDays(-7);
+                        int weekInt = StaticVariables.GetWeek2(tempDate);
+
+                        if (weekInt > 0 && weekInt < 54)
                         {
-                            if (tempDate > startDateYear)
+                            if (nowSelected)
                             {
-                                bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempDate);
-                                if (withinLimit) //only witihin 20 weeks count
+                                if (tempDate > startDateYear)
                                 {
-                                    promotions[weekInt] = promotions[weekInt] + Antal;
+                                    bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempDate);
+                                    if (withinLimit) //only witihin 20 weeks count
+                                    {
+                                        promotions[weekInt] = promotions[weekInt] + Antal;
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            promotions[weekInt] = promotions[weekInt] + Antal;
-                        }
+                            else
+                            {
+                                promotions[weekInt] = promotions[weekInt] + Antal;
+                            }
 
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    MessageBox.Show("Kan inte visa kampanj " + promotionID + " på division " + division);
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        MessageBox.Show("Kan inte visa kampanj " + promotionID + " på division " + division);
+                    }
                 }
 
             }
@@ -1016,6 +1019,8 @@ namespace WindowsFormsForecastLactalis
                 bool isReceived = false;
                 if (rcdt.Length > 3 || pldt.Length > 3)
                 {
+                    
+                    //Todo CHHE lägg till konfirmed quantity i en rad och bekräftad i en annan rad.
                     // Hämta Önskad/bekräftad kvantitet och datum
                     if (confirmedQuantity.StartsWith("0.0"))
                     {
@@ -1024,6 +1029,8 @@ namespace WindowsFormsForecastLactalis
                     else
                     {
                         expectedQuantity = confirmedQuantity;
+                        //Todo om konfirmed quantity försök fixa så raden blir röd.
+
                     }
                     plannedDate = pldt;
                     if (!rcdt.Equals("0"))
