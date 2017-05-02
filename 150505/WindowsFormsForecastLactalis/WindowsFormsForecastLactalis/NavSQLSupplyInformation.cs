@@ -804,7 +804,6 @@ namespace WindowsFormsForecastLactalis
                 Item = l.Key.ItemNumber,
                 Sum = l.Sum(x => x.Quantity)
             });
-
             for (int i = 1; i < 54; i++)
             {
                 var sum = from line in linesPerWeek
@@ -812,9 +811,40 @@ namespace WindowsFormsForecastLactalis
                           select line.Sum;
                 expKopsOrderTY[i] += sum.FirstOrDefault();
             }
+
+
+            //Confirmed
+            Dictionary<int, int> expKonfirmed = new Dictionary<int, int>();
+            for (int i = 0; i < 54; i++)
+            {
+                expKonfirmed.Add(i, 0);
+            }
+            
+            var linesConfirmedPerWeek = StaticVariables.ExpectedPurchaseOrderLinesM3.GroupBy(l => new
+            {
+                l.ItemNumber,
+                l.Week
+            }).Select(l => new
+            {
+                Week = l.Key.Week,
+                Item = l.Key.ItemNumber,
+                Sum = l.Sum(x => x.ConfirmedQuantity)
+            });
+            for (int i = 1; i < 54; i++)
+            {
+                var sum = from line in linesConfirmedPerWeek
+                          where line.Week == i && line.Item == itemNumber
+                          select line.Sum;
+                expKonfirmed[i] += sum.FirstOrDefault();
+            }
+
+
+
+
             Dictionary<string, Dictionary<int, int>> kopsOrder = new Dictionary<string, Dictionary<int, int>>();
             kopsOrder["received"] = kopsOrderTY;
             kopsOrder["expected"] = expKopsOrderTY;
+            kopsOrder["confirmed"] = expKonfirmed;
             return kopsOrder;
         }
 

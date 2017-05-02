@@ -15,6 +15,8 @@ namespace WindowsFormsForecastLactalis
         public int Week { get; set; }
         public string Warehouse { get; set; }
         public string Line { get; set; }
+        public int ConfirmedQuantity { get; set; }
+
 
         public override string ToString()
         {

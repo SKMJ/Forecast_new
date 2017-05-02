@@ -30,6 +30,7 @@ namespace WindowsFormsForecastLactalis
         FormSales formSalesInstance;
         GetFromM3 m3Info = new GetFromM3();
         TextBoxForm infoboxSupply = new TextBoxForm();
+        ShowOrderInfoWindow orderInfo;
         public Dictionary<int, List<int>> MotherSupplierWithChilds = new Dictionary<int, List<int>>();
 
         public Dictionary<string, string> OrderCodes = new Dictionary<string, string>();
@@ -736,7 +737,17 @@ namespace WindowsFormsForecastLactalis
                         {
                             k = i;
                         }
-                        tempList.Add(item.KopsorderExpected_ThisYear[k]);
+
+                        if (item.KopsorderConfirmed_ThisYear[k] > 0)
+                        {
+                            tempList.Add(item.KopsorderExpected_ThisYear[k] + "*");
+                        }
+                        else
+                        {
+                            tempList.Add(item.KopsorderExpected_ThisYear[k]);
+                        }
+
+                        
 
                     }
                     AddRowFromList(tempList);
@@ -937,7 +948,15 @@ namespace WindowsFormsForecastLactalis
                     tempList.Add("InkommandeKöpsorder_ThisYear");
                     for (int i = 1; i < 54; i++)
                     {
-                        tempList.Add(item.KopsorderExpected_ThisYear[i]);
+                        if (item.KopsorderConfirmed_ThisYear[i] > 0)
+                        { 
+                            tempList.Add(item.KopsorderExpected_ThisYear[i] + "*");
+                        }
+                        else
+                        {
+                            tempList.Add(item.KopsorderExpected_ThisYear[i]);
+                        }
+                        
                     }
                     AddRowFromList(tempList);
                 }
@@ -1638,11 +1657,12 @@ namespace WindowsFormsForecastLactalis
                                 foreach (var line in lines)
                                 {
                                     string expDate = modM3.GetExpectadDateByPUNO(line.PONumber, line.Line);
-                                    message = message + String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}",
+                                    message = message + String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -20}\t{4,-20}\t{5,-20}\t{6}",
                                     line.Warehouse,
                                     StaticVariables.ReturnDanishFormat(line.Date.ToShortDateString()),
                                     line.PONumber,
                                     line.Quantity,
+                                    line.ConfirmedQuantity,
                                     expDate,
                                     Environment.NewLine);
                                 }
@@ -1651,10 +1671,26 @@ namespace WindowsFormsForecastLactalis
                             }
 
 
-
-                            message = String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}", "Lager", "Dato", "Order", "Antal", BBDHeader,
-                                        Environment.NewLine) + message;
-                            MessageBox.Show(message);
+                            if (received)
+                            {
+                                message = String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -8}\t{4,-20}\t{5}", "Lager", "Dato", "Order", "Antal", BBDHeader,
+                                            Environment.NewLine) + message;
+                                MessageBox.Show(message);
+                            }
+                            else
+                            {
+                                message = String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -20}\t{4,-20}\t{5,-20}\t{6}", "Lager", "Dato", "Order", "OrderAntal", "Confirmed", BBDHeader,
+                                            Environment.NewLine) + message;
+                                if(orderInfo != null)
+                                {
+                                    orderInfo.Close();
+                                }
+                                orderInfo = new ShowOrderInfoWindow();
+                                orderInfo.Text = "OrderInfo Week: " + latestClickedWeek + "  Product: " + latestProductNumber;
+                                orderInfo.SetText(message);
+                                orderInfo.Show();
+                            }
+                            
                         }
                     }
                     catch

@@ -194,5 +194,10 @@ namespace WindowsFormsForecastLactalis
             //    treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("Nollat Alla Kunder: " + allaKundersNollade)));
             //}
         }
+
+        private void SaleInfo_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -23,7 +23,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dkfile02.dk.lactadom.ad\PMO\IS_SKMJ_MALMÖ\PublishedApplications\ForecastApplication\</InstallUrl>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>2.4.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -52,10 +52,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>41234E97D33D7F5B56898D97CC69EF7699FBA517</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>287AF55E81F9BCF93E57B026633B40D4CBD54CDF</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WindowsFormsForecastLactalis_68_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WindowsFormsForecastLactalis_69_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -98,6 +98,12 @@
     </Compile>
     <Compile Include="ScrollToProdNumber.Designer.cs">
       <DependentUpon>ScrollToProdNumber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowOrderInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowOrderInfoWindow.Designer.cs">
+      <DependentUpon>ShowOrderInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="SQL_M3Direct.cs" />
     <Compile Include="SQL_ModdedM3.cs" />
@@ -165,6 +171,9 @@
     <EmbeddedResource Include="ScrollToProdNumber.resx">
       <DependentUpon>ScrollToProdNumber.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ShowOrderInfoWindow.resx">
+      <DependentUpon>ShowOrderInfoWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TextBoxForm.resx">
       <DependentUpon>TextBoxForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -220,6 +229,7 @@
     <None Include="WindowsFormsForecastLactalis_66_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_67_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_68_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_69_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

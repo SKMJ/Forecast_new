@@ -1022,16 +1022,9 @@ namespace WindowsFormsForecastLactalis
                     
                     //Todo CHHE lägg till konfirmed quantity i en rad och bekräftad i en annan rad.
                     // Hämta Önskad/bekräftad kvantitet och datum
-                    if (confirmedQuantity.StartsWith("0.0"))
-                    {
-                        expectedQuantity = orderQuantity;
-                    }
-                    else
-                    {
-                        expectedQuantity = confirmedQuantity;
-                        //Todo om konfirmed quantity försök fixa så raden blir röd.
 
-                    }
+                    expectedQuantity = orderQuantity;
+
                     plannedDate = pldt;
                     if (!rcdt.Equals("0"))
                     {
@@ -1059,6 +1052,9 @@ namespace WindowsFormsForecastLactalis
                         string[] temp = quantity.Split('.');
                         int quantityReceived = Convert.ToInt32(temp[0]) * nbrPerUnit;
 
+                        temp = confirmedQuantity.Split('.');
+                        int quantityConfirmed = Convert.ToInt32(temp[0]) * nbrPerUnit;
+
                         temp = expectedQuantity.Split('.');
                         int quantiyExpected = Convert.ToInt32(temp[0]) * nbrPerUnit;
                         Console.WriteLine("Datum: " + rcdt + " antal: " + quantity);
@@ -1077,7 +1073,8 @@ namespace WindowsFormsForecastLactalis
                                 Week = weekInt,
                                 ItemNumber = itemNumber,
                                 Warehouse = miWarehouse,
-                                Line = purchasePNLI
+                                Line = purchasePNLI,
+                                ConfirmedQuantity = quantityConfirmed
                             };
                             expPoLineList.Add(poExpLine);
 

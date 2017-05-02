@@ -50,6 +50,7 @@ namespace WindowsFormsForecastLactalis
         public Dictionary<int, string> SalgsbudgetReguleret_CommentLY = new Dictionary<int, string>();
         public Dictionary<int, int> Kopsbudget_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> Kopsorder_ThisYear = new Dictionary<int, int>();
+        public Dictionary<int, int> KopsorderConfirmed_ThisYear = new Dictionary<int, int>();
         public Dictionary<int, int> KopsorderExpected_ThisYear = new Dictionary<int, int>();
         public List<ISalesRow> SalesRowsLastYear = new List<ISalesRow>();
         public List<ISalesRow> SalesRowsThisYear = new List<ISalesRow>();
@@ -169,6 +170,7 @@ namespace WindowsFormsForecastLactalis
             Dictionary<string, Dictionary<int, int>> kopsorder = sqlSupplyCalls.GetKopsorder_TY();
             Dictionary<int, int> kopsOrder_TY = kopsorder["received"];
             Dictionary<int, int> kopsOrderExp_TY = kopsorder["expected"];
+            Dictionary<int, int> kopsOrderConfirmed_TY = kopsorder["confirmed"];
 
             Console.WriteLine("Time5B: " + stopwatch2.ElapsedMilliseconds);
 
@@ -188,6 +190,7 @@ namespace WindowsFormsForecastLactalis
                 SalgsbudgetReguleret_ThisYear[i] = salesBudget_REG_TY[i];
                 Kopsbudget_ThisYear[i] = kopesBudgetTY[i];
                 Kopsorder_ThisYear[i] = kopsOrder_TY[i];
+                KopsorderConfirmed_ThisYear[i] = kopsOrderConfirmed_TY[i];
                 KopsorderExpected_ThisYear[i] = kopsOrderExp_TY[i];
                 SalgsbudgetReguleret_Comment[i] = Reguleret_CommentTY[i];
             }

@@ -53,6 +53,7 @@
             this.MinimizeBox = false;
             this.Name = "SaleInfo";
             this.Text = "SaleInfo";
+            this.Load += new System.EventHandler(this.SaleInfo_Load);
             this.ResumeLayout(false);
 
         }
