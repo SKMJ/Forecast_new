@@ -129,7 +129,7 @@ namespace WindowsFormsForecastLactalis
                 if (selectedYear > 2015 || selectedYear < 2000)
                 {
                     GetFromM3 m3 = new GetFromM3();
-                    PromotionLines = m3.GetPromotionForAllCustomerAsListv2(ProductNumber, selectedYear);
+                    PromotionLines = m3.GetPromotionForAllCustomerAsList(ProductNumber, selectedYear);
                     foreach (PromotionInfo item in PromotionLines)
                     {
                         List<string> KadjeNiva = new List<string>();
@@ -151,19 +151,7 @@ namespace WindowsFormsForecastLactalis
                                    select ch).Count();
                         if (num > 0)
                         {
-                            if (selectedYear < 2000)
-                            {
-                                DateTime tempKampagnDay = StaticVariables.GetForecastStartDateOfWeeknumber(item.Year, item.Week);
-                                bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempKampagnDay);
-                                if (withinLimit) //only witihin 20 weeks count
-                                {
-                                    KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
-                                }
-                            }
-                            else
-                            {
-                                KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
-                            }
+                            KampagnTY[item.Week] = KampagnTY[item.Week] + item.Quantity;
                         }
                     }
                 }

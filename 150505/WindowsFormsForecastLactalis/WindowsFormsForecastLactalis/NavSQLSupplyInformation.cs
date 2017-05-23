@@ -49,6 +49,8 @@ namespace WindowsFormsForecastLactalis
 
         Dictionary<int, string> startDateStrings = new Dictionary<int, string>();
         Dictionary<int, string> endDateStrings = new Dictionary<int, string>();
+        Dictionary<string, int> policyDict = new Dictionary<string,int>();
+        Dictionary<string, string> dictPolicyKanal = new Dictionary<string, string>();
         List<ISalesRow> salesRowsLast ;
 
         int[] weekPartPercentage;
@@ -114,7 +116,7 @@ namespace WindowsFormsForecastLactalis
             string endD = GetEndDate(currentSelectedYear);
             conn = new NavSQLExecute();
 
-            string query = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kommentar from " +
+            string query = @"select Type, Antal, Navn_DebBogfGr, Startdato, Kædekode, DebitorBogføringsruppe, Kommentar from " +
                 StaticVariables.TableDebitorBudgetLinjePost + " where Varenr='XXXX' and startdato >= '" + firstD + "' and startdato < '" + endD + "' order by TasteDato";
             query = query.Replace("XXXX", currentProdNumber);
             Console.WriteLine("Load Sales Budget Query: ");
@@ -189,8 +191,19 @@ namespace WindowsFormsForecastLactalis
         //Get info about salesbuget number for specific week
         public string GetSalesBudgetWeekInfo(int week)
         {
+            Dictionary<string, int> policyDict = new Dictionary<string, int>();
+            Dictionary<string, int> policyDictbyName = new Dictionary<string, int>();
+            //if (policyDict.Count < 1)
+            //{
+            //    policyDict = LoadPolicyNumbersForProduct();
+            //}
+
+
+            //dictPolicyKanal = StaticVariables.GetDictKanalCode();
+            
             LoadSalesBudgetTYFromSQL();
             infoDict = new Dictionary<string, int>();
+            
             string returnString = "";
             DataRow[] currentRows = latestQueryTable.Select(null, null, DataViewRowState.CurrentRows);
 
@@ -210,6 +223,7 @@ namespace WindowsFormsForecastLactalis
                     int Antal = Convert.ToInt32(levAntal);
                     string levKedja = row["Navn_DebBogfGr"].ToString();
                     string comment = row["Kommentar"].ToString();
+                    string NavCodeBogfGroup = row["DebitorBogføringsruppe"].ToString().Trim();
 
                     //clear country
                     levKedja = levKedja.Replace("DK  ", "");
@@ -239,9 +253,46 @@ namespace WindowsFormsForecastLactalis
                             //infoDict.Add(temp, infoDict[levKedja]);
                         }
                     }
+
+                //    if(StaticVariables.AssortmentNav.ContainsKey(NavCodeBogfGroup))
+                //    {
+                //        int policyTemp = 0; 
+                //        string tempAssCode = StaticVariables.AssortmentNav[NavCodeBogfGroup];
+                //        if(policyDict.ContainsKey(tempAssCode))
+                //        {
+                //            policyTemp = policyDict[tempAssCode];
+                //            Console.WriteLine("NavCode: " + NavCodeBogfGroup + "  tempAssCode: " + tempAssCode + "  policy: " + policyTemp);
+                //            if(!policyDictbyName.ContainsKey(levKedja))
+                //            {
+                //                policyDictbyName.Add(levKedja, policyTemp);
+                //            }
+                //        }
+                //        else
+                //        {
+                //            Console.WriteLine("NavCode: " + NavCodeBogfGroup + "  tempAssCode: " + tempAssCode + "     NO  policy: " + policyTemp);
+                //            string tempKanalCode = tempAssCode.Substring(0, 2);
+                //            if(dictPolicyKanal.ContainsKey(tempKanalCode))
+                //            {
+                //                string tepPolicy = dictPolicyKanal[tempKanalCode];
+
+                //                if (policyDict.ContainsKey(tepPolicy))
+                //                {
+                //                    int policyNumber = policyDict[tepPolicy];
+                //                    if (!policyDictbyName.ContainsKey(levKedja))
+                //                    {
+                //                        policyDictbyName.Add(levKedja, policyNumber);
+                //                    }
+                //                }
+                //            }
+                            
+                //        }
+
+                //    }
                 }
+                //Console.WriteLine(policyDict.ToString());
+                
                 string infoString = "";
-                string currentLine = String.Format("{0, -20}\t{1, -80}\t{2}", "Value", "Customer", Environment.NewLine);
+                string currentLine = String.Format("{0, -20}\t{1, -45}\t{2}", "Value", "Customer", Environment.NewLine);
                 infoString = infoString + currentLine;
                 var items = from pair in infoDict
                             orderby pair.Key ascending
@@ -254,9 +305,13 @@ namespace WindowsFormsForecastLactalis
                     {
                         temp = temp.Substring(1, temp.Length - 1);
                     }
+                    string tempPolicy = "NA ";
+                    if (policyDictbyName.ContainsKey(kvp.Key))
+                    {
+                        tempPolicy = policyDictbyName[kvp.Key].ToString();
+                    }
 
-
-                    currentLine = String.Format("{0, -20}\t{1, -80}\t{2}", kvp.Value, temp, Environment.NewLine);
+                    currentLine = String.Format("{0, -20}\t{1, -45}\t{2}", kvp.Value, temp.TrimEnd(), Environment.NewLine);
     
                     //infoString = infoString + "\n " + temp + "  " + kvp.Value;
                     infoString = infoString  + currentLine;
@@ -266,6 +321,27 @@ namespace WindowsFormsForecastLactalis
                 returnString = infoString;
             }
             return returnString;
+        }
+
+        private Dictionary<string, int> LoadPolicyNumbersForProduct()
+        {
+            Dictionary<string, int> returnPolicyDictionary = new Dictionary<string, int>();
+            Dictionary<string, string> policyDictionary;
+            try
+            {
+                SQL_M3Direct m3SqlPolicy = new SQL_M3Direct();
+                policyDictionary = m3SqlPolicy.GetPolicyDictForProduct(currentProdNumber);
+                m3SqlPolicy.Close();
+                foreach (KeyValuePair<string, string> item in   policyDictionary)
+                {
+                    returnPolicyDictionary.Add(item.Key, Convert.ToInt32(item.Value));
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Please install Client Access to be able to se totally Policy Numbers");
+            }
+            return returnPolicyDictionary;
         }
 
 
@@ -324,7 +400,7 @@ namespace WindowsFormsForecastLactalis
             if (currentSelectedYear > 2015 || currentSelectedYear < 2000)
             {
                 GetFromM3 m3 = new GetFromM3();
-                Dictionary<int, int> promotions = m3.GetPromotionsOfProducts(currentProdNumber, currentSelectedYear);
+                Dictionary<int, int> promotions = m3.GetPromotionsOfProductsAsDictionary(currentProdNumber, currentSelectedYear);
                 foreach (var promotionItem in promotions)
                 {
                     if (currentSelectedYear < 2000)
@@ -393,9 +469,6 @@ namespace WindowsFormsForecastLactalis
                     DateTime tempDate = StaticVariables.GetDateTimeFromString(row["startdato"].ToString());
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
-
-
-
                     if (weekInt > 0 && weekInt < 54)
                     {
                         kampagn_TY[weekInt] = kampagn_TY[weekInt] + Antal;
@@ -421,7 +494,6 @@ namespace WindowsFormsForecastLactalis
                     int weekInt = StaticVariables.GetForecastWeeknumberForDate(tempDate);
 
                     Beskrivelse = row["Beskrivelse"].ToString();
-
 
                     if (weekInt > 0 && weekInt < 54)
                     {

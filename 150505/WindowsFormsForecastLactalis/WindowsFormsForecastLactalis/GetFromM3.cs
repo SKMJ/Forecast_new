@@ -107,7 +107,7 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
-        public Dictionary<int, int> GetPromotionsOfProducts(string itno, int year)
+        public Dictionary<int, int> GetPromotionsOfProductsAsDictionary(string itno, int year)
         {
             Dictionary<int, int> promotions = new Dictionary<int, int>();
             for (int i = 0; i < 54; i++)
@@ -115,124 +115,101 @@ namespace WindowsFormsForecastLactalis
                 promotions.Add(i, 0);
             }
 
-            int yearExtra = 0;
+            List<PromotionInfo> promotionListNew = new List<PromotionInfo>();
 
-            if (year > 2000)
+            promotionListNew = GetPromotionForAllCustomerAsList(itno, year);
+            foreach (PromotionInfo item in promotionListNew)
             {
-                promotions = GetPromotionsOfProductsByDivision(itno, year, "310", promotions, false);
-                promotions = GetPromotionsOfProductsByDivision(itno, year, "320", promotions, false);
-                promotions = GetPromotionsOfProductsByDivision(itno, year, "710", promotions, false);
-                promotions = GetPromotionsOfProductsByDivision(itno, year, "720", promotions, false);
-            }
-            else if (year < 2000)
-            {
-                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "310", promotions, true);
-                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "320", promotions, true);
-                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "710", promotions, true);
-                promotions = GetPromotionsOfProductsByDivision(itno, DateTime.Now.Year, "720", promotions, true);
-                if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) > 32)
-                {
-                    yearExtra = DateTime.Now.Year + 1;
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "310", promotions, true);
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "320", promotions, true);
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "710", promotions, true);
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "720", promotions, true);
-                }
-                else if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) < 21)
-                {
-                    yearExtra = DateTime.Now.Year - 1;
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "310", promotions, true);
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "320", promotions, true);
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "710", promotions, true);
-                    promotions = GetPromotionsOfProductsByDivision(itno, yearExtra, "720", promotions, true);
-                }
+                int tempWeek = item.Week;
+                int tempQuant = item.Quantity;
+                promotions[tempWeek] = promotions[tempWeek] + tempQuant;
             }
             return promotions;
         }
 
-        public Dictionary<int, int> GetPromotionsOfProductsByDivision(string itno, int year, string division, Dictionary<int, int> promotions, bool nowSelected)
-        {
-            SERVER_ID sid = new SERVER_ID();
+        //public Dictionary<int, int> GetPromotionsOfProductsByDivision(string itno, int year, string division, Dictionary<int, int> promotions, bool nowSelected)
+        //{
+        //    SERVER_ID sid = new SERVER_ID();
 
-            uint rc = 0;
-            rc = ConnectToM3Interface(ref sid, "OIS840MI");
-            if (rc != 0)
-            {
-                return null;
-            }
-            Console.WriteLine("Get Item campaign: " + itno);
-            SetMaxList(sid, 2000);
-            //Set the field without need to know position Start from this customer 00752
-            MvxSock.SetField(ref sid, "YEAR", year.ToString());
-            MvxSock.SetField(ref sid, "CONO", "001");
-            MvxSock.SetField(ref sid, "DIVI", division);
-            MvxSock.SetField(ref sid, "ITNO", itno);
-            rc = MvxSock.Access(ref sid, "LstPromItem");
-            if (rc != 0)
-            {
-                MvxSock.ShowLastError(ref sid, "Error in get products no " + rc + "\n");
-                MvxSock.Close(ref sid);
-                return null;
-            }
+        //    uint rc = 0;
+        //    rc = ConnectToM3Interface(ref sid, "OIS840MI");
+        //    if (rc != 0)
+        //    {
+        //        return null;
+        //    }
+        //    Console.WriteLine("Get Item campaign: " + itno);
+        //    SetMaxList(sid, 2000);
+        //    //Set the field without need to know position Start from this customer 00752
+        //    MvxSock.SetField(ref sid, "YEAR", year.ToString());
+        //    MvxSock.SetField(ref sid, "CONO", "001");
+        //    MvxSock.SetField(ref sid, "DIVI", division);
+        //    MvxSock.SetField(ref sid, "ITNO", itno);
+        //    rc = MvxSock.Access(ref sid, "LstPromItem");
+        //    if (rc != 0)
+        //    {
+        //        MvxSock.ShowLastError(ref sid, "Error in get products no " + rc + "\n");
+        //        MvxSock.Close(ref sid);
+        //        return null;
+        //    }
 
-            while (MvxSock.More(ref sid))
-            {
-                string tempstartDate = MvxSock.GetField(ref sid, "FRD2");
-                string tempEndDate = MvxSock.GetField(ref sid, "TOD2");
-                string tempAntal = MvxSock.GetField(ref sid, "BUQT");
-                string promotionID = MvxSock.GetField(ref sid, "PIDE");
-                string[] temp = tempAntal.Split('.');
-                int Antal = Convert.ToInt32(temp[0]);
-                string tempCampCuse = MvxSock.GetField(ref sid, "CUSE");
-                Console.WriteLine("Kedja: " + tempCampCuse + " start: " + tempstartDate + " end: " + tempEndDate + " antal: " + tempAntal);
-                //Mooves to next row
-                MvxSock.Access(ref sid, null);
-                if (Antal != 0 && tempstartDate.Length >2)
-                {
-                    try
-                    {
-                        DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+        //    while (MvxSock.More(ref sid))
+        //    {
+        //        string tempstartDate = MvxSock.GetField(ref sid, "FRD2");
+        //        string tempEndDate = MvxSock.GetField(ref sid, "TOD2");
+        //        string tempAntal = MvxSock.GetField(ref sid, "BUQT");
+        //        string promotionID = MvxSock.GetField(ref sid, "PIDE");
+        //        string[] temp = tempAntal.Split('.');
+        //        int Antal = Convert.ToInt32(temp[0]);
+        //        string tempCampCuse = MvxSock.GetField(ref sid, "CUSE");
+        //        Console.WriteLine("Kedja: " + tempCampCuse + " start: " + tempstartDate + " end: " + tempEndDate + " antal: " + tempAntal);
+        //        //Mooves to next row
+        //        MvxSock.Access(ref sid, null);
+        //        if (Antal != 0 && tempstartDate.Length > 2)
+        //        {
+        //            try
+        //            {
+        //                DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
 
-                        tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-                        DateTime startDateYear = StaticVariables.FirstSaturdayBeforeWeakOne(year);
-                        //Kampanjer ska ligga veckan innan kampanjstart
-                        tempDate = tempDate.AddDays(-7);
-                        int weekInt = StaticVariables.GetWeek2(tempDate);
+        //                tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+        //                DateTime startDateYear = StaticVariables.FirstSaturdayBeforeWeakOne(year);
+        //                //Kampanjer ska ligga veckan innan kampanjstart
+        //                tempDate = tempDate.AddDays(-7);
+        //                int weekInt = StaticVariables.GetWeek2(tempDate);
 
-                        if (weekInt > 0 && weekInt < 54)
-                        {
-                            if (nowSelected)
-                            {
-                                if (tempDate > startDateYear)
-                                {
-                                    bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempDate);
-                                    if (withinLimit) //only witihin 20 weeks count
-                                    {
-                                        promotions[weekInt] = promotions[weekInt] + Antal;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                promotions[weekInt] = promotions[weekInt] + Antal;
-                            }
+        //                if (weekInt > 0 && weekInt < 54)
+        //                {
+        //                    if (nowSelected)
+        //                    {
+        //                        if (tempDate > startDateYear)
+        //                        {
+        //                            bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempDate);
+        //                            if (withinLimit) //only witihin 20 weeks count
+        //                            {
+        //                                promotions[weekInt] = promotions[weekInt] + Antal;
+        //                            }
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        promotions[weekInt] = promotions[weekInt] + Antal;
+        //                    }
 
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                        MessageBox.Show("Kan inte visa kampanj " + promotionID + " på division " + division);
-                    }
-                }
+        //                }
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                Console.WriteLine(e.Message);
+        //                MessageBox.Show("Kan inte visa kampanj " + promotionID + " på division " + division);
+        //            }
+        //        }
 
-            }
-            MvxSock.Close(ref sid);
+        //    }
+        //    MvxSock.Close(ref sid);
 
-            Console.WriteLine("M3 communication: SUCCESS!!");
-            return promotions;
+        //    Console.WriteLine("M3 communication: SUCCESS!!");
+        //    return promotions;
 
-        }
+        //}
 
         public Dictionary<string, string> GetListOfAssortments()
         {
@@ -807,52 +784,166 @@ namespace WindowsFormsForecastLactalis
             return balanceIdentities;
         }
 
-        internal List<PromotionInfo> GetPromotionForAllCustomerAsListv2(string itno, int year)
+        internal List<PromotionInfo> GetPromotionForAllCustomerAsList(string itno, int year)
         {
-            List<PromotionInfo> promotionList = new List<PromotionInfo>();
-            if (year > 2000)
+
+            Dictionary<int, string> tempDivDict = new Dictionary<int, string>();
+            tempDivDict.Add(0, "310");
+            tempDivDict.Add(1, "320");
+            tempDivDict.Add(2, "710");
+            tempDivDict.Add(3, "720");
+
+            List<PromotionInfo> promotionListCleaned = new List<PromotionInfo>();
+            List<PromotionInfo> promotionListNew = new List<PromotionInfo>();
+
+            if (year > 2000) //Specific year chosen
             {
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "310"));
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "320"));
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "710"));
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, year, "720"));
-            }
-            else if (year < 2000)
-            {
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "310"));
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "320"));
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "710"));
-                promotionList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year, "720"));
-                List<PromotionInfo> tempList = new List<PromotionInfo>();
-                if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) > 32)
+                promotionListNew.AddRange(GetPromotionForAllCustomerByMultipleYearsAndDiv(itno, year, false, tempDivDict));
+                Console.WriteLine(promotionListNew.ToString());
+                foreach (PromotionInfo thisPromItem in promotionListNew)
                 {
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "310"));
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "320"));
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "710"));
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year + 1, "720"));
-                }
-                else if (StaticVariables.GetForecastWeeknumberForDate(DateTime.Now) < 21)
-                {
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "310"));
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "320"));
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "710"));
-                    tempList.AddRange(GetPromotionForAllCustomerByDiv(itno, DateTime.Now.Year - 1, "720"));
-                }
-                foreach(PromotionInfo item in tempList)
-                {
-                    DateTime tempKampagnDay = StaticVariables.GetForecastStartDateOfWeeknumber(item.Year, item.Week);
-                    bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempKampagnDay);
-                    if (withinLimit) //only witihin 20 weeks count
+                    if (thisPromItem.Year == year) //only this kalender year count
                     {
-                        promotionList.Add(item);
+                        promotionListCleaned.Add(thisPromItem);
                     }
                 }
             }
+            else if (year < 2000)//Now chosen
+            {
+                promotionListNew.AddRange(GetPromotionForAllCustomerByMultipleYearsAndDiv(itno, year, true, tempDivDict));
+                Console.WriteLine(promotionListNew.ToString());
 
-            return promotionList;
+                foreach (PromotionInfo thisPromItem in promotionListNew)
+                {
+                    DateTime tempKampagnDay = StaticVariables.GetForecastStartDateOfWeeknumber(thisPromItem.Year, thisPromItem.Week);
+                    bool withinLimit = StaticVariables.DateWithinNowForecastLimit(tempKampagnDay);
+                    if (withinLimit) //only witihin 20 weeks count
+                    {
+                        promotionListCleaned.Add(thisPromItem);
+                    }
+                }
+            }
+            return promotionListCleaned;
         }
 
-        internal List<PromotionInfo> GetPromotionForAllCustomerByDiv(string itno, int year, string division)
+        //internal List<PromotionInfo> GetPromotionForAllCustomerByDiv(string itno, int year, string division)
+        //{
+        //    List<PromotionInfo> answerList = new List<PromotionInfo>();
+        //    SERVER_ID sid = new SERVER_ID();
+
+        //    uint rc = 0;
+        //    rc = ConnectToM3Interface(ref sid, "OIS840MI");
+        //    if (rc != 0)
+        //    {
+        //        return null;
+        //    }
+        //    SetMaxList(sid, 2000);
+        //    Console.WriteLine("Get Item campaign: " + itno);
+        //    //Set the field without need to know position Start from this customer 00752
+        //    MvxSock.SetField(ref sid, "YEAR", year.ToString());
+        //    MvxSock.SetField(ref sid, "CONO", "001");
+        //    MvxSock.SetField(ref sid, "DIVI", division);
+        //    MvxSock.SetField(ref sid, "ITNO", itno);
+        //    rc = MvxSock.Access(ref sid, "LstPromItem");
+        //    if (rc != 0)
+        //    {
+        //        MvxSock.ShowLastError(ref sid, "Error in get products no " + rc + "\n");
+        //        MvxSock.Close(ref sid);
+        //        return null;
+        //    }
+
+        //    while (MvxSock.More(ref sid))
+        //    {
+        //        string promotionId = MvxSock.GetField(ref sid, "PIDE");
+
+        //        string tempstartDate = MvxSock.GetField(ref sid, "FRD2");
+        //        string tempEndDate = MvxSock.GetField(ref sid, "TOD2");
+        //        string quantity = MvxSock.GetField(ref sid, "BUQT");
+        //        string[] temp = quantity.Split('.');
+        //        int Antal = Convert.ToInt32(temp[0]);
+
+        //        Console.WriteLine(" start: " + tempstartDate + " end: " + tempEndDate + " antal: " + quantity);
+        //        MvxSock.Access(ref sid, null);
+
+        //        //Do sanity check of campaign values. Christofer
+        //        if (Antal > 0 && tempstartDate.Length > 3 && tempEndDate.Length > 3)
+        //        {
+
+        //            try
+        //            {
+        //                DateTime tempDate = StaticVariables.ParseExactStringToDate(tempstartDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+        //                int yearForDate1 = tempDate.Year;
+        //                //Kampanjer ska presenteras en vecka innan kampanjstart
+        //                tempDate = tempDate.AddDays(-7);
+        //                int yearForDate2 = tempDate.Year;
+
+        //                int thisKampagnStartYear = yearForDate1;
+
+        //                int yeardiff = yearForDate1 - yearForDate2;
+        //                int weekInt = StaticVariables.GetWeek2(tempDate);
+        //                if (weekInt > 0 && weekInt < 54)
+        //                {
+        //                    answerList.Add(new PromotionInfo()
+        //                    {
+        //                        Week = weekInt,
+        //                        Quantity = Antal,
+        //                        ItemNumber = itno,
+        //                        Id = promotionId,
+        //                        Division = division,
+        //                        Year = thisKampagnStartYear - yeardiff
+        //                    });
+        //                }
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                Console.WriteLine(e.Message);
+        //                MessageBox.Show("Kan inte visa kampanj " + promotionId + " på division " + division);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("strange campaign on product: " + itno);
+        //        }
+        //    }
+        //    MvxSock.Close(ref sid);
+
+        //    foreach (PromotionInfo promotion in answerList)
+        //    {
+        //        rc = ConnectToM3Interface(ref sid, "OIS840MI");
+        //        if (rc != 0)
+        //        {
+        //            return null;
+        //        }
+        //        SetMaxList(sid, 2000);
+
+        //        MvxSock.SetField(ref sid, "CONO", "001");
+        //        MvxSock.SetField(ref sid, "DIVI", division);
+        //        MvxSock.SetField(ref sid, "PIDE", promotion.Id);
+        //        rc = MvxSock.Access(ref sid, "GetPromHead");
+        //        if (rc == 0)
+        //        {
+        //            string customer = MvxSock.GetField(ref sid, "CUNO");
+        //            string chain = MvxSock.GetField(ref sid, "CHAI");
+        //            string description = MvxSock.GetField(ref sid, "TX15");
+        //            if (customer.Trim().Length > 0)
+        //            {
+        //                promotion.Customer = customer;
+        //            }
+        //            else
+        //            {
+        //                promotion.Chain = chain;
+        //            }
+        //            promotion.Description = description;
+        //        }
+        //        MvxSock.Close(ref sid);
+        //    }
+
+        //    Console.WriteLine("M3 communication: SUCCESS!!");
+        //    return answerList;
+        //}
+
+
+        internal List<PromotionInfo> GetPromotionForAllCustomerByMultipleYearsAndDiv(string itno, int yearStart, bool nowChosen, Dictionary<int, string> divisions)
         {
             List<PromotionInfo> answerList = new List<PromotionInfo>();
             SERVER_ID sid = new SERVER_ID();
@@ -866,11 +957,31 @@ namespace WindowsFormsForecastLactalis
             SetMaxList(sid, 2000);
             Console.WriteLine("Get Item campaign: " + itno);
             //Set the field without need to know position Start from this customer 00752
-            MvxSock.SetField(ref sid, "YEAR", year.ToString());
+            string startD = "";
+            string endD = "";
+            if (nowChosen)
+            {
+                DateTime startDAte = DateTime.Now.AddDays(-21 * 7);
+                startD = startDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+                DateTime endDAte = DateTime.Now.AddDays(21 * 7);
+                endD = endDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+            }
+            else
+            {
+                DateTime startDAte = StaticVariables.GetForecastStartDateOfWeeknumber(yearStart, 1);
+                startD = startDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+                DateTime endDAte = StaticVariables.GetForecastStartDateOfWeeknumber(yearStart + 1, 1);
+                endD = endDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+            }
+            MvxSock.SetField(ref sid, "STDT", startD.Replace("-", ""));
+            MvxSock.SetField(ref sid, "ENDT", endD.Replace("-", ""));
             MvxSock.SetField(ref sid, "CONO", "001");
-            MvxSock.SetField(ref sid, "DIVI", division);
+            MvxSock.SetField(ref sid, "DIV4", divisions[0]);
+            MvxSock.SetField(ref sid, "DIV1", divisions[1]);
+            MvxSock.SetField(ref sid, "DIV2", divisions[2]);
+            MvxSock.SetField(ref sid, "DIV3", divisions[3]);
             MvxSock.SetField(ref sid, "ITNO", itno);
-            rc = MvxSock.Access(ref sid, "LstPromItem");
+            rc = MvxSock.Access(ref sid, "LstPromItem2 ");
             if (rc != 0)
             {
                 MvxSock.ShowLastError(ref sid, "Error in get products no " + rc + "\n");
@@ -885,6 +996,7 @@ namespace WindowsFormsForecastLactalis
                 string tempstartDate = MvxSock.GetField(ref sid, "FRD2");
                 string tempEndDate = MvxSock.GetField(ref sid, "TOD2");
                 string quantity = MvxSock.GetField(ref sid, "BUQT");
+                string divTemp = MvxSock.GetField(ref sid, "DIVI");
                 string[] temp = quantity.Split('.');
                 int Antal = Convert.ToInt32(temp[0]);
 
@@ -903,7 +1015,7 @@ namespace WindowsFormsForecastLactalis
                         tempDate = tempDate.AddDays(-7);
                         int yearForDate2 = tempDate.Year;
 
-                        int yeardiff = yearForDate1 - yearForDate2;
+
                         int weekInt = StaticVariables.GetWeek2(tempDate);
                         if (weekInt > 0 && weekInt < 54)
                         {
@@ -913,15 +1025,15 @@ namespace WindowsFormsForecastLactalis
                                 Quantity = Antal,
                                 ItemNumber = itno,
                                 Id = promotionId,
-                                Division = division,
-                                Year = year - yeardiff
+                                Division = divTemp,
+                                Year = yearForDate2
                             });
                         }
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        MessageBox.Show("Kan inte visa kampanj " + promotionId + " på division " + division);
+                        //MessageBox.Show("Kan inte visa kampanj " + promotionId + " på division " + division);
                     }
                 }
                 else
@@ -941,7 +1053,7 @@ namespace WindowsFormsForecastLactalis
                 SetMaxList(sid, 2000);
 
                 MvxSock.SetField(ref sid, "CONO", "001");
-                MvxSock.SetField(ref sid, "DIVI", division);
+                MvxSock.SetField(ref sid, "DIVI", promotion.Division); //division);
                 MvxSock.SetField(ref sid, "PIDE", promotion.Id);
                 rc = MvxSock.Access(ref sid, "GetPromHead");
                 if (rc == 0)
@@ -1019,8 +1131,6 @@ namespace WindowsFormsForecastLactalis
                 bool isReceived = false;
                 if (rcdt.Length > 3 || pldt.Length > 3)
                 {
-                    
-                    //Todo CHHE lägg till konfirmed quantity i en rad och bekräftad i en annan rad.
                     // Hämta Önskad/bekräftad kvantitet och datum
 
                     expectedQuantity = orderQuantity;

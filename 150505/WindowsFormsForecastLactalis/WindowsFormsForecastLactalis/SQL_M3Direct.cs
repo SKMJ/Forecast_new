@@ -169,6 +169,8 @@ namespace WindowsFormsForecastLactalis
         }
 
 
+
+
         public Dictionary<string, int> GetZeroedAllCustomerWholeYearSortedOnCustomer(string dateStart, string dateEnd, string itemNumber)
         {
             //Here is the orders that are totally zeroed, it means nothing delivered.
@@ -657,6 +659,51 @@ namespace WindowsFormsForecastLactalis
                 returnString = day + "-" + month + "-" + year;
             }
             return returnString;
+        }
+
+        internal Dictionary<string, string> GetPolicyDictForProduct(string currentProdNumber)
+        {
+            int returnInt = 0;
+            Dictionary<string, string> returnDictionary = new Dictionary<string, string>();
+
+
+            string query = @" ";
+            query += "Select hcprex, hcobv2,hcobv1, hcrgdt,hcaled, hcobv3,  ";
+            query += "hcobv1  ";
+            query += "from MADMTX  ";
+            query += "Where  ";
+            query += "hccono='001'  ";
+            query += "And hcobv2='ZZZZZ' AND hcobv1 = 'LSK'";
+
+            query = query.Replace("ZZZZZ", currentProdNumber);
+
+            WindowsSQLQuery(query);
+
+            DataTable tempTable = QueryEx();
+
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string tempNamn = row["HCOBV3"].ToString().Trim();
+                    string tempNumber = row["HCALED"].ToString().Trim();
+
+                    if (!returnDictionary.ContainsKey(tempNamn))
+                    {
+                        returnDictionary.Add(tempNamn, tempNumber);
+                    }
+                }
+            }
+
+            Console.WriteLine(returnInt);
+            return returnDictionary;
         }
     }
 }

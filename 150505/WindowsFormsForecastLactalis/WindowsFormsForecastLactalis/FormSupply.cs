@@ -541,7 +541,7 @@ namespace WindowsFormsForecastLactalis
                         }
                         tempList.Add(item.Zeroed_ThisYear[k]);
                     }
-                   
+
                     AddRowFromList(tempList);
 
 
@@ -747,7 +747,7 @@ namespace WindowsFormsForecastLactalis
                             tempList.Add(item.KopsorderExpected_ThisYear[k]);
                         }
 
-                        
+
 
                     }
                     AddRowFromList(tempList);
@@ -834,7 +834,7 @@ namespace WindowsFormsForecastLactalis
                     {
                         tempList.Add(item.Zeroed_ThisYear[i]);
                     }
-                    
+
                     AddRowFromList(tempList);
 
                     tempList = new List<object>();
@@ -949,14 +949,14 @@ namespace WindowsFormsForecastLactalis
                     for (int i = 1; i < 54; i++)
                     {
                         if (item.KopsorderConfirmed_ThisYear[i] > 0)
-                        { 
+                        {
                             tempList.Add(item.KopsorderExpected_ThisYear[i] + "*");
                         }
                         else
                         {
                             tempList.Add(item.KopsorderExpected_ThisYear[i]);
                         }
-                        
+
                     }
                     AddRowFromList(tempList);
                 }
@@ -1412,26 +1412,22 @@ namespace WindowsFormsForecastLactalis
 
                         string infoText = "";
                         GetFromM3 m3Connection = new GetFromM3();
-                        List<PromotionInfo> promotionLines = m3Connection.GetPromotionForAllCustomerAsListv2(tempProdNBR, selectedYear);
+                        List<PromotionInfo> promotionLines = m3Connection.GetPromotionForAllCustomerAsList(tempProdNBR, selectedYear);
 
-                        foreach (PromotionInfo item in promotionLines)
-                        {
-                            if (item.Week == 51)
-                            {
-                                Console.WriteLine(item.Week + "  " + item.Quantity + "  " + item.Year);
-                            }
-                        }
+
 
                         var result = from rows in promotionLines where rows.Week == latestWeek select rows;
                         NavSQLExecute sqlconn = new NavSQLExecute();
                         foreach (PromotionInfo line in result)
                         {
+
                             infoText = String.Format("{0, -30}\t{1, -20}\t{2, -20}\t{3, -20}{4}",
                                 line.Id + ". " + line.Description,
                                 line.ItemNumber,
                                 line.Week,
                                 line.Quantity,
                                 Environment.NewLine) + infoText;
+
                         }
                         if (infoText.Length > 0)
                         {
@@ -1480,8 +1476,8 @@ namespace WindowsFormsForecastLactalis
                 }
                 else if ((GetValueFromGridAsString(rowIndex, 2).Contains("Nollat")) && columnIndex > 2 && columnName.Contains("20"))
                 {
-                    if(GetValueFromGridAsString(rowIndex, columnIndex) != "0")
-                    { 
+                    if (GetValueFromGridAsString(rowIndex, columnIndex) != "0")
+                    {
 
                         string tempProdNBR = GetProductNumberFromRow(rowIndex);
                         //int productNumber = Convert.ToInt32(tempProdNBR);
@@ -1500,19 +1496,19 @@ namespace WindowsFormsForecastLactalis
                             Dictionary<string, string> returnZeroedCustomerName = m3Sql.GetCustomerNameDict();
                             m3Sql.Close();
                             Console.WriteLine(returnZeroedDict.ToString());
-                            
-                            foreach(KeyValuePair<string, int> item in returnZeroedDict)
+
+                            foreach (KeyValuePair<string, int> item in returnZeroedDict)
                             {
                                 string tempName = item.Key;
                                 string tempNAme1 = returnZeroedCustomerName[item.Key];
-                                if(StaticVariables.AssortmentDictionaryM3.ContainsKey(item.Key))
+                                if (StaticVariables.AssortmentDictionaryM3.ContainsKey(item.Key))
                                 {
                                     tempName = StaticVariables.AssortmentDictionaryM3[item.Key];
                                 }
                                 else
                                 {
 
-                                    foreach(KeyValuePair<string, List<string>> listItem in StaticVariables.AssortmentM3_toKedjor)
+                                    foreach (KeyValuePair<string, List<string>> listItem in StaticVariables.AssortmentM3_toKedjor)
                                     {
                                         foreach (string itemInTheList in listItem.Value)
                                         {
@@ -1522,15 +1518,15 @@ namespace WindowsFormsForecastLactalis
                                             }
                                         }
                                     }
-                                    
+
                                 }
 
                                 if (tempName == item.Key)
                                 {
                                     tempName = tempNAme1.Trim();
                                 }
-                                zeroedStrings += "\n\r "+ tempName +" antal: " + item.Value.ToString() ;   
-                                
+                                zeroedStrings += "\n\r " + tempName + " antal: " + item.Value.ToString();
+
                             }
                             MessageBox.Show(zeroedStrings);
                         }
@@ -1540,7 +1536,7 @@ namespace WindowsFormsForecastLactalis
                         }
                     }
 
-                    
+
                 }
                 else if ((GetValueFromGridAsString(rowIndex, 2) == "RealiseretSalg_LastYear") && columnIndex > 2 && columnName.Contains("20"))
                 {
@@ -1619,12 +1615,12 @@ namespace WindowsFormsForecastLactalis
                     string BBDHeader = "BBD";
                     try
                     {
-                        
+
                         bool received = GetValueFromGridAsString(rowIndex, 2) == "Köpsorder_ThisYear";
                         string message = "";
                         //latestClickedWeek = latestClickedWeek;
                         latestProductNumber = GetProductNumberFromRow(rowIndex);
-                        
+
                         if (latestClickedWeek > 0)
                         {
                             if (received)
@@ -1681,7 +1677,7 @@ namespace WindowsFormsForecastLactalis
                             {
                                 message = String.Format("{0, -10}\t{1, -20}\t{2, -20}\t{3, -20}\t{4,-20}\t{5,-20}\t{6}", "Lager", "Dato", "Order", "OrderAntal", "Confirmed", BBDHeader,
                                             Environment.NewLine) + message;
-                                if(orderInfo != null)
+                                if (orderInfo != null)
                                 {
                                     orderInfo.Close();
                                 }
@@ -1690,7 +1686,7 @@ namespace WindowsFormsForecastLactalis
                                 orderInfo.SetText(message);
                                 orderInfo.Show();
                             }
-                            
+
                         }
                     }
                     catch
@@ -1783,7 +1779,7 @@ namespace WindowsFormsForecastLactalis
 
                         System.Threading.ThreadPool.QueueUserWorkItem(delegate
                         {
-                            
+
 
                             NavSQLExecute conn = new NavSQLExecute();
                             conn.InsertKöpsbudgetLine(productNumber.ToString(), kopDate.ToString(format), ammountToKop);
@@ -2205,7 +2201,7 @@ namespace WindowsFormsForecastLactalis
         {
             List<string> returnList = new List<string>();
 
-            
+
 
             string queryText = @"select ForeCast_Startdato, Nummer,Leverandørnr,Leverandørs_varenr, lactalis_varenr, Beskrivelse, Antal_Forecast_uger, Forecast_fordelingsC_Mandag as FC_man, ";
             queryText = queryText + "Forecast_fordelingsC_Tirsdag as FC_tis, Forecast_fordelingsC_Onsdag as FC_ons, Forecast_fordelingsC_Torsdag as FC_tor, Forecast_fordelingsC_Fredag as FC_fre, ";

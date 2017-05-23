@@ -16,6 +16,7 @@ namespace WindowsFormsForecastLactalis
         public static Dictionary<string, string> AssortmentDictionaryNav;
         public static Dictionary<string, string> AssortmentDictionaryM3;
         public static Dictionary<string, int> dictItemStatus;
+        public static Dictionary<string, string> dictPolicyKanal = new Dictionary<string, string>();
 
         // private bool loadingNewProductsOngoing;
         public static Dictionary<string, string> AssortmentNation = new Dictionary<string, string>();
@@ -731,5 +732,18 @@ namespace WindowsFormsForecastLactalis
         }
 
 
+
+        public static Dictionary<string, string> GetDictKanalCode()
+        {
+            if (dictPolicyKanal.Count < 1)
+            {
+
+
+                SQL_ModdedM3 m3Mod = new SQL_ModdedM3();
+                dictPolicyKanal = m3Mod.GetDictKanalCode();
+            }
+            return dictPolicyKanal;
+
+        }
     }
 }

@@ -120,8 +120,6 @@ namespace WindowsFormsForecastLactalis
                                                                                                                                 quantity,
                                                                                                                                 bbd,
                                                                                                                                 wantedBbd));
-
-
                 }
 
                 //Om vi kommit till en ny kund sätt rubrik-raden för den 
@@ -179,20 +177,7 @@ namespace WindowsFormsForecastLactalis
 
             }
             treeNode1.Text = treeNode1.Text + " - " +"Realiserat: " + totalQuantity + " st.  ";
-            //if (!orderedInBoxes && !supplyView)
-            //{
 
-            //    zeroed += completelyZeroed;
-
-            //    treeNode1.Text = treeNode1.Text + "Nollat: " + zeroed + " st ";
-            //}
-            //if (!orderedInBoxes && supplyView)
-            //{
-            //    allaKundersNollade += completelyZeroed;
-            //    treeNode1 = new System.Windows.Forms.TreeNode(String.Format("{0}", "Total Nollat (Alla Kunder) : " + allaKundersNollade));
-            //    treeView1.Nodes.Add(treeNode1);
-            //    treeNode1.Nodes.Add(new System.Windows.Forms.TreeNode(String.Format("Nollat Alla Kunder: " + allaKundersNollade)));
-            //}
         }
 
         private void SaleInfo_Load(object sender, EventArgs e)

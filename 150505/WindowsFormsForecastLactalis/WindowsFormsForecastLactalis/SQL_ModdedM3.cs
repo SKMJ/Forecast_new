@@ -98,6 +98,44 @@ namespace WindowsFormsForecastLactalis
             //Console.WriteLine(returnInt);
             return returnString;
         }
+
+        public Dictionary<string, string> GetDictKanalCode()
+        {
+            
+            Dictionary<string, string> dictReturn = new Dictionary<string, string>();
+
+
+            string query = @"Select ZKKANA, ZKKEDJ from Zcusma where ZKKANA IN ('4','5','6','7','8', '9')  ";
+
+            WindowsSQLQuery(query);
+
+            DataTable tempTable = QueryEx();
+
+            DataRow[] currentRows = tempTable.Select(null, null, DataViewRowState.CurrentRows);
+
+            if (currentRows.Length < 1)
+            {
+                Console.WriteLine("No Current Rows Found");
+            }
+            else
+            {
+                //loop trough all rows and write in tabs
+                foreach (DataRow row in currentRows)
+                {
+                    string tempKanal = row["ZKKANA"].ToString();
+                    string tempKedj = row["ZKKEDJ"].ToString();
+                    if (!dictReturn.ContainsKey(tempKedj))
+                    {
+                        dictReturn.Add(tempKedj, tempKanal);
+                    }
+
+                    
+                }
+            }
+
+            //Console.WriteLine(returnInt);
+            return dictReturn;
+        }
             
     }
 }

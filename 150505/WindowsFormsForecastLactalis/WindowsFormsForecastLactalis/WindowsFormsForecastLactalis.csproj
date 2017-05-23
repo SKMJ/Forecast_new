@@ -52,10 +52,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>287AF55E81F9BCF93E57B026633B40D4CBD54CDF</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>FCB7DA520F4215F33ADC28426B73F4E4CE038273</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WindowsFormsForecastLactalis_69_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WindowsFormsForecastLactalis_71_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -230,6 +230,8 @@
     <None Include="WindowsFormsForecastLactalis_67_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_68_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_69_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_70_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_71_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
