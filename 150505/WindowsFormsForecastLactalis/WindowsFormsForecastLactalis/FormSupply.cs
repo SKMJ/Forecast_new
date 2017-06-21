@@ -123,6 +123,8 @@ namespace WindowsFormsForecastLactalis
             yearList.Add("2015");
             yearList.Add("2016");
             yearList.Add("2017");
+            yearList.Add("2018");
+            yearList.Add("2019");
 
             comboBoxYear.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxYear.DataSource = new BindingSource(yearList, null);

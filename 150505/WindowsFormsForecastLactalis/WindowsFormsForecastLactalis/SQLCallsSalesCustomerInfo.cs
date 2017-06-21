@@ -925,7 +925,7 @@ namespace WindowsFormsForecastLactalis
                     });
                 }
                 int weekNow = StaticVariables.GetWeek2(DateTime.Now);
-                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365)
+                if (year < 2000 &&  dateDiff < 365 + 23 * 7 && dateDiff > 365 - 23 * 7)
                 {
                     lastYearInRangeToShow = true;
                 }

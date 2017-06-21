@@ -23,7 +23,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>\\dkfile02.dk.lactadom.ad\PMO\IS_SKMJ_MALMÖ\PublishedApplications\ForecastApplication\</InstallUrl>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>2.4.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -52,10 +52,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>FCB7DA520F4215F33ADC28426B73F4E4CE038273</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>BCE575B3E8A2A36872DEA1CE8E3BBDC8122CAF05</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>WindowsFormsForecastLactalis_71_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>WindowsFormsForecastLactalis_74_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -232,6 +232,9 @@
     <None Include="WindowsFormsForecastLactalis_69_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_70_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_71_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_72_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_73_TemporaryKey.pfx" />
+    <None Include="WindowsFormsForecastLactalis_74_TemporaryKey.pfx" />
     <None Include="WindowsFormsForecastLactalis_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

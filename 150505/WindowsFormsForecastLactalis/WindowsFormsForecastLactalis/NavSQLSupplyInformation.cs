@@ -759,9 +759,9 @@ namespace WindowsFormsForecastLactalis
                 int wantedbbd = (int)Convert.ToInt32(row["F1A130"].ToString());
                 int bbd = (int)Convert.ToInt32(row["LMEXPI"].ToString());
 
-                bool lastYearInNextYear;
+                bool lastYearInRangetoShow;
                 bool inShowRange;
-                lastYearInNextYear = false;
+                lastYearInRangetoShow = false;
                 inShowRange = true;
                 double dateDiff = (DateTime.Now - date).TotalDays;
 
@@ -788,13 +788,13 @@ namespace WindowsFormsForecastLactalis
                     });
                 }
 
-                if (year < 2000 && dateDiff > 23 * 7 && dateDiff < 365)
+                if (year < 2000 &&  dateDiff < 365 + 23 * 7 && dateDiff > 365 - 23 * 7)
                 {
-                    lastYearInNextYear = true;
+                    lastYearInRangetoShow = true;
                 }
 
 
-                if (date.Year == year - 1 || lastYearInNextYear)
+                if (date.Year == year - 1 || lastYearInRangetoShow)
                 {
 
                     salesRowsLast.Add(new SalesRow()

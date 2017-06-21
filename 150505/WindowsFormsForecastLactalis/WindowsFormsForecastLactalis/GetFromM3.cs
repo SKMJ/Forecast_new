@@ -45,6 +45,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     Console.WriteLine("Test M3 Connection Failed!");
                     MessageBox.Show("Test M3 Connection Failed! \r\n Application Will not work without M3  \r\n Error: " + rc);
+                    MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
                     return false;
                 }
                 //Set the field without need to know position Start from this customer 00752
@@ -962,16 +963,16 @@ namespace WindowsFormsForecastLactalis
             if (nowChosen)
             {
                 DateTime startDAte = DateTime.Now.AddDays(-21 * 7);
-                startD = startDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+                startD = GetStringFromDate(startDAte);
                 DateTime endDAte = DateTime.Now.AddDays(21 * 7);
-                endD = endDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+                endD = GetStringFromDate(endDAte);
             }
             else
             {
                 DateTime startDAte = StaticVariables.GetForecastStartDateOfWeeknumber(yearStart, 1);
-                startD = startDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+                startD = GetStringFromDate(startDAte);
                 DateTime endDAte = StaticVariables.GetForecastStartDateOfWeeknumber(yearStart + 1, 1);
-                endD = endDAte.ToShortDateString().Replace("-", "").Substring(0, 8);
+                endD = GetStringFromDate(endDAte);
             }
             MvxSock.SetField(ref sid, "STDT", startD.Replace("-", ""));
             MvxSock.SetField(ref sid, "ENDT", endD.Replace("-", ""));
@@ -1076,6 +1077,30 @@ namespace WindowsFormsForecastLactalis
 
             Console.WriteLine("M3 communication: SUCCESS!!");
             return answerList;
+        }
+
+
+        private string GetStringFromDate(DateTime inputDate)
+        {
+            string yearString = inputDate.Year.ToString();
+            string monthString = inputDate.Month.ToString();
+            if(monthString.Length < 2)
+            {
+                monthString = "0" + monthString;
+            }
+            string dayString = inputDate.Day.ToString();
+            if (dayString.Length < 2)
+            {
+                dayString = "0" + dayString;
+            }
+            string returnString = yearString + monthString + dayString;
+            Console.WriteLine("ReturnDate for kampaign: " + returnString);
+
+            if(!(returnString.Length == 8 && returnString.StartsWith("20")))
+            {
+                returnString = "20170102";
+            }
+            return returnString;
         }
 
         internal Dictionary<string, List<PurchaseOrderLine>> GetKopsorderFromM3(string Warehouse, string itemNumber, int year, Dictionary<string, int> unitToNBR)
