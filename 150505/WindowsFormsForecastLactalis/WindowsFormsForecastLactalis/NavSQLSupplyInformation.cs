@@ -225,12 +225,24 @@ namespace WindowsFormsForecastLactalis
                     string comment = row["Kommentar"].ToString();
                     string NavCodeBogfGroup = row["DebitorBogføringsruppe"].ToString().Trim();
 
+
+
                     //clear country
                     levKedja = levKedja.Replace("DK  ", "");
                     levKedja = levKedja.Replace("FI  ", "");
                     levKedja = levKedja.Replace("SE  ", "");
                     levKedja = levKedja.Replace("NO  ", "");
                     levKedja = levKedja.Replace("XX  ", "");
+
+                    if (levKedja.Equals("test") && NavCodeBogfGroup.Contains("904"))
+                    {
+                        levKedja = "SKM";
+                    }
+
+                    if(StaticVariables.AssortmentDictionaryM3.ContainsKey(levKedja))
+                    {
+                        levKedja = StaticVariables.AssortmentDictionaryM3[levKedja];
+                    }
 
 
                     
@@ -314,9 +326,7 @@ namespace WindowsFormsForecastLactalis
                     currentLine = String.Format("{0, -20}\t{1, -45}\t{2}", kvp.Value, temp.TrimEnd(), Environment.NewLine);
     
                     //infoString = infoString + "\n " + temp + "  " + kvp.Value;
-                    infoString = infoString  + currentLine;
-                    
-
+                    infoString = infoString  + currentLine;                    
                 }
                 returnString = infoString;
             }
@@ -610,25 +620,6 @@ namespace WindowsFormsForecastLactalis
             return salesRows;
         }
 
-        public void LoadRelSalg_FromQlick()
-        {
-            ClassSQLQlickViewDataLayer conn = new ClassSQLQlickViewDataLayer();
-            string query = "";
-            query = query + @"SELECT ";
-            query = query + @"SKMJDWDataMarts.dbo.FactFörsäljning.Kvantitet, SKMJDWDataMarts.dbo.FactFörsäljning.artikelid, SKMJDWDataMarts.dbo.FactFörsäljning.kundid, SKMJDWDataMarts.dbo.FactFörsäljning.KalenderIDBekräftadLeveransDatum, SKMJDWDataMarts.dbo.FactFörsäljning.FörsäljningID, SKMJDWDataMarts.dbo.DimArtikel.ArtikelNr , SKMJDWDataMarts.dbo.DimArtikel.ArtikelNamn ";
-            query = query + @"FROM SKMJDWDataMarts.dbo.FactFörsäljning ";
-            query = query + @"Inner join SKMJDWDataMarts.dbo.DimArtikel ";
-            query = query + @"on SKMJDWDataMarts.dbo.DimArtikel.ArtikelId = SKMJDWDataMarts.dbo.FactFörsäljning.ArtikelId ";
-            query = query + @"WHERE FörsäljningID > '60000000' ";
-            query = query + @"AND SKMJDWDataMarts.dbo.DimArtikel.ArtikelNR =  'XXXXX' ";
-
-            query = query.Replace("XXXXX", currentProdNumber);
-
-            latestQueryQlickTable = conn.QueryExWithTableReturn(query);
-
-
-            conn.Close();
-        }
 
         private int GetWeek(DateTime date, int year)
         {

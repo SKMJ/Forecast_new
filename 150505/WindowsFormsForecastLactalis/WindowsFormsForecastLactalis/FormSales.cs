@@ -916,29 +916,7 @@ namespace WindowsFormsForecastLactalis
         private void CreateProducts()
         {
             string tempCustNumber = StaticVariables.AssortmentDictionaryNav[comboBoxAssortment.Text];
-            //PrognosInfoSales product1 = new PrognosInfoSales(GetNameFromLoadedProducts("2432"), "2432", tempCustNumber, 20);
-            //PrognosInfoSales product2 = new PrognosInfoSales(GetNameFromLoadedProducts("1442"), "1442", tempCustNumber, 20);
-            //PrognosInfoSales product3 = new PrognosInfoSales(GetNameFromLoadedProducts("1238"), "1238", tempCustNumber, 20);
-            //PrognosInfoSales product4 = new PrognosInfoSales(GetNameFromLoadedProducts("2442"), "2442", tempCustNumber, 20);
-            //PrognosInfoSales product5 = new PrognosInfoSales(GetNameFromLoadedProducts("2735"), "2735", tempCustNumber, 20);
 
-            //latestCustomerLoaded = tempCustNumber;
-            //SetStatus("Products loading 1/5");
-            //product1.FillNumbers(selectedYear);
-            //SetStatus("Products loading 2/5");
-            //product2.FillNumbers(selectedYear);
-            //SetStatus("Products loading 3/5");
-            //product3.FillNumbers(selectedYear);
-            //SetStatus("Products loading 4/5");
-            //product4.FillNumbers(selectedYear);
-            //SetStatus("Products loading 5/5");
-            //product5.FillNumbers(selectedYear);
-
-            //Products.Add(product1);
-            //Products.Add(product2);
-            //Products.Add(product3);
-            //Products.Add(product4);
-            //Products.Add(product5);
             labelStatus.Visible = false;
         }
 
@@ -1001,7 +979,6 @@ namespace WindowsFormsForecastLactalis
             {
                 selectedYear = 1000;
             }
-
 
             labelStatus.Visible = true;
             dataGridForecastInfo.Visible = false;
@@ -1153,7 +1130,6 @@ namespace WindowsFormsForecastLactalis
         private void dataGridForecastInfo_MouseClick(object sender, MouseEventArgs e)
         {
             latestMouseClick = System.Windows.Forms.Cursor.Position;
-
         }
 
 
@@ -1205,30 +1181,17 @@ namespace WindowsFormsForecastLactalis
                                 int ammount = Convert.ToInt32(e.FormattedValue) - item.Salgsbudget_ThisYear[weekTest];
                                 if (ammount != 0)
                                 {
-                                    DateTime budgetDate = DateTime.Now;
+                                    //DateTime budgetDate = DateTime.Now;
                                     string tempCustNumber = StaticVariables.GetCustNavCodeFirst(latestCustomerLoaded); ;
-                                    if (selectedYear > 2000)
-                                    {
 
-                                        DateTime tempDate = StaticVariables.GetDateTimeFromString(StaticVariables.StartDate[selectedYear].ToString());
-                                        tempDate = StaticVariables.GetDateTimeFromString(StaticVariables.StartDate[selectedYear].ToString());
-                                        budgetDate = tempDate.AddDays((week - 1) * 7);
-
-                                        //DateTime budgetDate = StaticVariables.GetForecastStartDateOfWeeknumber(latestClickedYear, latestClickedWeek);
-                                        budgetDate = budgetDate.AddDays(2); //monday
-                                    }
-
-
+                                    string nation = StaticVariables.GetNationForAssortment(latestCustomerLoaded);
+                                     
+                                    
                                     DateTime budgetDate2 = StaticVariables.GetForecastStartDateOfWeeknumber(yearTest, weekTest);
                                     budgetDate2 = budgetDate2.AddDays(2); //monday
 
-                                    if (selectedYear > 2000)
-                                    {
-                                        Console.WriteLine("Budget date old: " + budgetDate.ToString() + "   Budget date new: " + budgetDate2.ToString());
-
-                                    }
                                     string format = "yyyy-MM-dd HH:mm:ss";    // modify the format depending upon input required in the column in database 
-                                    string tempAssortment = comboBoxAssortment.Text;
+                                    string tempAssortment = nation + "  " + StaticVariables.AssortmentDictionaryM3[latestCustomerLoaded]; 
                                     DateTime time = DateTime.Now;              // Use current time
 
                                     Console.WriteLine("TasteDato: " + time.ToString(format));
@@ -1257,7 +1220,6 @@ namespace WindowsFormsForecastLactalis
                                         NavSQLExecute conn = new NavSQLExecute();
                                         conn.InsertBudgetLine(tempCustNumber, tempAssortment, productNumber, budgetDate2.ToString(format), ammount, inputNow, "");
                                     }
-
                                     SetKöpsbudget(weekTest, productNumber, Convert.ToInt32(e.FormattedValue), "", ammount);
                                 }
                             }
@@ -1321,7 +1283,6 @@ namespace WindowsFormsForecastLactalis
                 {
                     if (GetValueFromGridAsString(rowIndex, 2).Contains("Comment"))
                     {
-
                         if (!infoboxSales.Visible)
                         {
                             latestCommentRow = rowIndex;
@@ -1505,7 +1466,6 @@ namespace WindowsFormsForecastLactalis
                             {
                                 MessageBox.Show("Please install Client Access to be able to se  totally Zeroed sales-orders");
                             }
-
 
                             SaleInfo sf = new SaleInfo(" Product: " + productNumber + " Week: " + latestClickedWeek);
                             sf.LoadSaleInfo(prognosInfo.SalesRowsLastYear, latestClickedWeek, nolladeTotalt, false);

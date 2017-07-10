@@ -173,6 +173,9 @@ namespace WindowsFormsForecastLactalis
 
             AssortmentNation.Add("KDVC", "DK");// Netto Danmark tx15: KDVC
 
+            AssortmentNation.Add("LO", "DK");
+            AssortmentNation.Add("9Z", "DK");
+
             AssortmentNation.Add("KGVG", "DK");// Dagrofa Danmark tx15: KGVG
 
             AssortmentNation.Add("KIVM", "DK");// Intervare tx15: KIVM
@@ -342,7 +345,6 @@ namespace WindowsFormsForecastLactalis
             AssortmentDictionaryM3 = new Dictionary<string, string>();
 
             AssortmentDictionaryM3 = inputDict;
-
         }
 
         public static void SetAllProductsNavDict(Dictionary<string, string> dict)
@@ -363,37 +365,39 @@ namespace WindowsFormsForecastLactalis
             // Dictionary<int, DateTime> StartDate = new Dictionary<int, DateTime>();
             if (StartDateFirst)
             {
-                //StartDateFirst = false;
                 string s = "2014-12-29";
-                //string s = "2015-01-03";
 
                 DateTime dt =
                     StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2015, dt);
-                //MessageBox.Show("after");
 
                 s = "2013-12-30";
-                //s = "2013-12-28";
 
                 dt =
                     StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2014, dt);
 
-                //st = "01/04/2016";
-                s = "2016-01-04";
                 s = "2016-01-03";
 
                 dt =
                     StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2016, dt);
 
-                //startDate.Add(2016, StaticVariables.GetDateTimeFromString(st));
-                //st = "01/02/2017";
-                //s = "2017-01-02";
+
                 s = "2016-12-31";
                 dt =
                     StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 StartDate.Add(2017, dt);
+
+                s = "2017-12-30";
+                dt =
+                    StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                StartDate.Add(2018, dt);
+
+                s = "2018-12-29";
+                dt =
+                    StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                StartDate.Add(2019, dt);
             }
         }
 
@@ -465,8 +469,6 @@ namespace WindowsFormsForecastLactalis
                     tempFirst = item;
                     break;
                 }
-
-
                 returnString = tempFirst;
             }
             return returnString;
@@ -497,13 +499,8 @@ namespace WindowsFormsForecastLactalis
             Production = prod;
         }
 
-        public static int GetWeek(DateTime date, int year)
-        {
-            int weekInt = StaticVariables.GetForecastWeeknumberForDate(date);
-            return weekInt;
-        }
 
-        public static int GetWeek2(DateTime date)
+        public static int GetWeekNBR(DateTime date)
         {
             var day = (int)CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(date);
             int week = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(date.AddDays(4 - (day == 0 ? 7 : day)), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -570,11 +567,9 @@ namespace WindowsFormsForecastLactalis
             string year = wantedYear.ToString();
 
             string s = year + "-01-04";
-            //string s = "2015-01-03";
 
             DateTime dt =
                 StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-
 
             int loopError = 0;
             while (dt.DayOfWeek != DayOfWeek.Monday && loopError < 10)
@@ -583,7 +578,6 @@ namespace WindowsFormsForecastLactalis
                 loopError++;
             }
 
-
             if (loopError > 7)
             {
                 //Error: start year with 4th jan
@@ -591,7 +585,6 @@ namespace WindowsFormsForecastLactalis
                 dt =
                 StaticVariables.ParseExactStringToDate(s, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             }
-
             return dt;
         }
 
@@ -624,8 +617,6 @@ namespace WindowsFormsForecastLactalis
 
         internal static DateTime GetForecastStartDateOfWeeknumber(int year, int week)
         {
-
-
             DateTime dtFirst = FirstSaturdayBeforeWeakOne(year);
 
             dtFirst = dtFirst.AddDays(7 * (week - 1));
@@ -654,7 +645,6 @@ namespace WindowsFormsForecastLactalis
                 yearString = yearString.Substring(0, 4);
                 yearNbr = Convert.ToInt32(yearString);
             }
-
             return yearNbr;
         }
 
@@ -737,13 +727,10 @@ namespace WindowsFormsForecastLactalis
         {
             if (dictPolicyKanal.Count < 1)
             {
-
-
                 SQL_ModdedM3 m3Mod = new SQL_ModdedM3();
                 dictPolicyKanal = m3Mod.GetDictKanalCode();
             }
             return dictPolicyKanal;
-
         }
     }
 }

@@ -1017,7 +1017,7 @@ namespace WindowsFormsForecastLactalis
                         int yearForDate2 = tempDate.Year;
 
 
-                        int weekInt = StaticVariables.GetWeek2(tempDate);
+                        int weekInt = StaticVariables.GetWeekNBR(tempDate);
                         if (weekInt > 0 && weekInt < 54)
                         {
                             answerList.Add(new PromotionInfo()
@@ -1196,7 +1196,7 @@ namespace WindowsFormsForecastLactalis
 
                         tempDate = StaticVariables.ParseExactStringToDate(plannedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                         tempDate = tempDate.AddMinutes(10);
-                        int weekInt = StaticVariables.GetWeek2(tempDate);
+                        int weekInt = StaticVariables.GetWeekNBR(tempDate);
 
                         if (weekInt > 0 && weekInt < 54)
                         {
@@ -1217,7 +1217,7 @@ namespace WindowsFormsForecastLactalis
                             {
                                 tempDate = StaticVariables.ParseExactStringToDate(confirmedDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                                 bool nowAndWithLimit = (year < 2000 && StaticVariables.DateWithinNowForecastLimit(tempDate));
-                                weekInt = StaticVariables.GetWeek2(tempDate);
+                                weekInt = StaticVariables.GetWeekNBR(tempDate);
                                 if (confirmedDate.Substring(0, 4).Equals(year.ToString()) || (nowAndWithLimit))
                                 {
                                     var poLine = new PurchaseOrderLine()

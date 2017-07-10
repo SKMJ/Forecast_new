@@ -635,30 +635,7 @@ namespace WindowsFormsForecastLactalis
         }
 
 
-        //public void LoadRelSalg_FromQlick(string prodNumber, int year, string custNumber)
-        //{
-        //    Console.WriteLine("Load Rel SAlg: prodnr" + prodNumber + " year: " + year + " custNumber: " + custNumber);
-        //    ClassSQLQlickViewDataLayer conn = new ClassSQLQlickViewDataLayer();
-        //    string query = "";
-        //    query = query + @"SELECT ";
-        //    query = query + @"SKMJDWDataMarts.dbo.FactFörsäljning.Kvantitet, SKMJDWDataMarts.dbo.FactFörsäljning.artikelid, SKMJDWDataMarts.dbo.FactFörsäljning.kundid, SKMJDWDataMarts.dbo.FactFörsäljning.KalenderIDBekräftadLeveransDatum, SKMJDWDataMarts.dbo.FactFörsäljning.FörsäljningID, SKMJDWDataMarts.dbo.DimArtikel.ArtikelNr , SKMJDWDataMarts.dbo.DimArtikel.ArtikelNamn, SKMJDWDataMarts.dbo.FactFörsäljning.KundID ";
-        //    query = query + @"FROM SKMJDWDataMarts.dbo.FactFörsäljning ";
-        //    query = query + @"Inner join SKMJDWDataMarts.dbo.DimArtikel ";
-        //    query = query + @"on SKMJDWDataMarts.dbo.DimArtikel.ArtikelId = SKMJDWDataMarts.dbo.FactFörsäljning.ArtikelId ";
-        //    query = query + @"Inner join SKMJDWDataMarts.dbo.DimKund ";
-        //    query = query + @"on SKMJDWDataMarts.dbo.DimKund.KundID = SKMJDWDataMarts.dbo.FactFörsäljning.KundID ";
-        //    query = query + @"WHERE FörsäljningID > '60000000' ";
-        //    query = query + @"AND SKMJDWDataMarts.dbo.DimArtikel.ArtikelNR =  'XXXXX' ";
-        //    query = query + @"AND SKMJDWDataMarts.dbo.DimKund.kundNR = 'YYYYY' ";
-
-        //    query = query.Replace("XXXXX", prodNumber);
-        //    query = query.Replace("YYYYY", custNumber);
-        //   // Console.WriteLine("LoadRealiseretKampagnLY Query Qlickview: " + queryString2);
-        //    latestQueryQlickTable = conn.QueryExWithTableReturn(query);
-        //    //dataGridViewQlickviewData.DataSource = latestQueryTable;
-
-        //    conn.Close();
-        //}
+       
 
 
         //private void ComputeNumberPerWeekDict(int year)
@@ -892,7 +869,7 @@ namespace WindowsFormsForecastLactalis
                 string UCORQT = row["UCORQT"].ToString();
                 int quantityOrdered = (int)Convert.ToDecimal(UCORQT);
                 int quantity = (int)Convert.ToDecimal(mttrqt);
-                int week = StaticVariables.GetWeek2(date);
+                int week = StaticVariables.GetWeekNBR(date);
 
                 bool lastYearInRangeToShow;
                 bool inShowRange;
@@ -924,7 +901,7 @@ namespace WindowsFormsForecastLactalis
                         CustomerName = row["AssortmentName"].ToString()
                     });
                 }
-                int weekNow = StaticVariables.GetWeek2(DateTime.Now);
+                int weekNow = StaticVariables.GetWeekNBR(DateTime.Now);
                 if (year < 2000 &&  dateDiff < 365 + 23 * 7 && dateDiff > 365 - 23 * 7)
                 {
                     lastYearInRangeToShow = true;
