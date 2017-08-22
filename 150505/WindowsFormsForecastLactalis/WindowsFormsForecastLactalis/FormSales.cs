@@ -898,7 +898,7 @@ namespace WindowsFormsForecastLactalis
 
         public string GetNameFromLoadedProducts(string prodNBR)
         {
-            string temp = "Name Unknown";
+            string temp = "";
             //First try to see if you find the name in M3 on Warehouse
             //If not try with old Forecastdatabase, if not found Name Unknown
             if (StaticVariables.AllProductsM3Dict.ContainsKey(prodNBR))
@@ -908,6 +908,10 @@ namespace WindowsFormsForecastLactalis
             else if (StaticVariables.AllProductsNavDict.ContainsKey(prodNBR))
             {
                 temp = StaticVariables.AllProductsNavDict[prodNBR];
+            }
+            if(temp.Length <3)
+            {
+                temp = m3Info.GetNameFromM3byProductNBR(prodNBR);
             }
             return temp;
         }
@@ -955,7 +959,6 @@ namespace WindowsFormsForecastLactalis
                 {
                     supplyViewInstance.SetOnlyLook(true);
                 }
-
                 this.Visible = false;
                 supplyViewInstance.SetFormSalesInstanse(this);
                 supplyViewInstance.BringToFront();

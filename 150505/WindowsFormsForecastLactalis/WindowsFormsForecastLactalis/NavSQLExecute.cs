@@ -92,8 +92,6 @@ namespace WindowsFormsForecastLactalis
 
         public void InsertBudgetLine(string custNumber, string custName, string prodNumber, string startdato, int ammount, string nowString, string comment)
         {
-            //bw.WorkerReportsProgress = true;
-            //bw.WorkerSupportsCancellation = true;
 
             if (comment.Length > 49)
             {
@@ -103,11 +101,6 @@ namespace WindowsFormsForecastLactalis
 
             using (SqlCommand command = new SqlCommand())
             {
-                //string cleanComment = System.Text.RegularExpressions.Regex.Replace(comment, "[áàäâãåÁÀÄÂÃÅ]", "a");
-                //cleanComment = System.Text.RegularExpressions.Regex.Replace(cleanComment, "[óòöôõÓÒÖÔÕ]", "o");
-                //string format = "yyyy-MM-dd HH:mm:ss";
-                //string thisDate = DateTime.Now.ToString(format);
-                //cleanComment = thisDate + ": " + cleanComment;
 
                 command.Connection = conn;            // <== lacking
                 command.CommandType = CommandType.Text;

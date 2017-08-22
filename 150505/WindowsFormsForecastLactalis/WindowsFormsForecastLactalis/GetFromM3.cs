@@ -65,6 +65,44 @@ namespace WindowsFormsForecastLactalis
             }
         }
 
+        /// <summary>
+        /// This function is just to test M3 Connection
+        /// </summary>
+        /// <returns></returns>
+        public string GetNameFromM3byProductNBR(string prodNBR)
+        {
+            //List<int> productList = new List<int>();
+
+            string returnString = "";
+            {
+                string  itemNbr = prodNBR;
+                SERVER_ID sid = new SERVER_ID();
+                uint rc;
+                rc = ConnectToM3Interface(ref sid, "MMS200MI");
+                if (rc != 0)
+                {
+                    Console.WriteLine("Test M3 Connection Failed!");
+                    MessageBox.Show("Test M3 Connection Failed! \r\n Application Will not work without M3  \r\n Error: " + rc);
+                    MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
+                    return "";
+                }
+                //Set the field without need to know position Start from this customer 00752
+                MvxSock.SetField(ref sid, "ITNO", itemNbr.ToString());
+                MvxSock.SetField(ref sid, "CONO", "001");
+                rc = MvxSock.Access(ref sid, "GetItmBasic");
+                if (rc != 0)
+                {
+                    //MvxSock.ShowLastError(ref sid, "Error in get Name by productsNbr: " + rc + "\n");
+                    MvxSock.Close(ref sid);
+                    return "";
+                }
+                returnString = MvxSock.GetField(ref sid, "ITDS");
+                Console.WriteLine("Get M3 Name ProductNBR: " + itemNbr + " Name: " + returnString);
+                MvxSock.Close(ref sid);
+                return returnString;
+            }
+        }
+
         public List<string> GetListOfProductsNbrByAssortment(string assortment)
         {
             List<string> productList = new List<string>();

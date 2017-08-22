@@ -66,7 +66,6 @@ namespace WindowsFormsForecastLactalis
             {
                 if (ProdMotherChildRelation.Count < 1)
                 {
-
                     SQL_M3Direct m3Sql = new SQL_M3Direct();
 
                     ProdMotherChildRelation = m3Sql.GetMotherChildren();
@@ -149,12 +148,10 @@ namespace WindowsFormsForecastLactalis
                         tempList.Add(tempList2[i]);
                         AssortmentNav.Add(tempList2[i], item.Key);
                     }
-
                     AssortmentM3_toNav.Add(item.Key, tempList);
                 }
                 FillNationDictionary();
                 Console.WriteLine("Assortment ready" + AssortmentM3_toNav.ToString());
-
             }
         }
 

@@ -325,6 +325,10 @@ namespace WindowsFormsForecastLactalis
 
                     tempName = StaticVariables.AllProductsM3Dict[item];//m3Info.GetItemNameByItemNumber(item.ToString());
                 }
+                if(tempName.Length<3)
+                {
+                    tempName = m3Info.GetNameFromM3byProductNBR(item);
+                }
                 int status = 0;
                 if (StaticVariables.dictItemStatus.ContainsKey(item))
                 {
@@ -1109,7 +1113,7 @@ namespace WindowsFormsForecastLactalis
             string tempNumber = number.ToString();
             if (tempNumber.Length > 1)
             {
-                string prodName = "Unknown Name";
+                string prodName = "";
                 //Clear purchase orders since we fetch new data from M3
                 StaticVariables.PurchaseOrderLinesM3.Clear();
                 StaticVariables.ExpectedPurchaseOrderLinesM3.Clear();
@@ -1125,6 +1129,10 @@ namespace WindowsFormsForecastLactalis
                 if (StaticVariables.dictItemStatus.ContainsKey(tempNumber))
                 {
                     status = StaticVariables.dictItemStatus[tempNumber];
+                }
+                if(prodName.Length <3)
+                {
+                    prodName = m3Info.GetNameFromM3byProductNBR(tempNumber);
                 }
                 PrognosInfoForSupply product1 = new PrognosInfoForSupply(prodName, tempNumber, status);
                 product1.SetWhatToLoad(checkBoxLastYear.Checked, checkBoxKampgn.Checked);
