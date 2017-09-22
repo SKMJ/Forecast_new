@@ -906,7 +906,7 @@ namespace WindowsFormsForecastLactalis
                 {
                     lastYearInRangeToShow = true;
                 }
-
+                Console.WriteLine("DEbug Cuno Sales: " + row["UCCUNO"].ToString());
 
                 if (date.Year == year - 1 || lastYearInRangeToShow)
                 {
