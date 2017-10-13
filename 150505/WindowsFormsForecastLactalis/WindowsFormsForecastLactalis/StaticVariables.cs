@@ -224,6 +224,8 @@ namespace WindowsFormsForecastLactalis
 
             AssortmentNation.Add("NNNN", "NO");// Unil tx15: NNNNNN
 
+            AssortmentNation.Add("62035", "NO");
+
             AssortmentNation.Add("NRNR", "NO");// REMA Norge tx15: NRNRNR
 
             //Others:

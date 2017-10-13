@@ -111,7 +111,7 @@ namespace WindowsFormsForecastLactalis
             //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
             query = query + "AND    OCHCUS.OSCONO = '1' ";
             query = query + "AND    (" + CheckKedjor + ")  ";
-            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99', '79')) AND  ";
+            query = query + " AND OOLINE.OBWHLO In ('LSK', 'LIR')  AND(OOLINE.OBORST In ('99', '79')) AND  ";
             query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
 
             //query = query.Replace("XXXXX", customer);
@@ -191,7 +191,7 @@ namespace WindowsFormsForecastLactalis
             //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
             query = query + "AND    OCHCUS.OSCONO = '1' ";
             //query = query + "AND    (" + CheckKedjor + ")  ";
-            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99', '79')) AND  ";
+            query = query + " AND OOLINE.OBWHLO In ('LSK', 'LIR')  AND (OOLINE.OBORST In ('99', '79')) AND  ";
             query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
 
             //query = query.Replace("XXXXX", customer);
@@ -276,7 +276,7 @@ namespace WindowsFormsForecastLactalis
             query = query + " OCHCUS.OSCUNO = OCUSMA.OKCUNO AND OOLINE.OBITNO = MITMAS.MMITNO ";
             //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
             query = query + "AND    OCHCUS.OSCONO = '1' ";
-            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99', '79')) AND  ";
+            query = query + " AND OOLINE.OBWHLO In ('LSK', 'LIR') AND(OOLINE.OBORST In ('99', '79')) AND  ";
             query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
 
             //query = query.Replace("XXXXX", customer);
@@ -366,7 +366,7 @@ namespace WindowsFormsForecastLactalis
             query = query + " OCHCUS.OSCUNO = OCUSMA.OKCUNO AND OOLINE.OBITNO = MITMAS.MMITNO ";
             //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
             query = query + "AND    (" + CheckKedjor + ")  ";
-            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99')) AND  ";
+            query = query + " AND OOLINE.OBWHLO In ('LSK', 'LIR')  AND(OOLINE.OBORST In ('99')) AND  ";
             query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
 
             //query = query.Replace("XXXXX", customer);
@@ -527,7 +527,7 @@ namespace WindowsFormsForecastLactalis
             query = query + " OCHCUS.OSCUNO = OCUSMA.OKCUNO AND OOLINE.OBITNO = MITMAS.MMITNO ";
             //query = query + "    ( ( (OCHCUS.OSCHL2 = 'XXXXX' OR OCHCUS.OSCHCT = 'XXXXX')   ";
             //query = query + "AND    (" + CheckKedjor + ")  ";
-            query = query + " AND OOLINE.OBWHLO='LSK' AND(OOLINE.OBORST In ('99')) AND  ";
+            query = query + " AND OOLINE.OBWHLO In ('LSK', 'LIR')  AND(OOLINE.OBORST In ('99')) AND  ";
             query = query + "    (OOLINE.OBDSDT Between YYYYY And ZZZZZ) AND MITMAS.MMITNO = 'RRRRR'  ";
 
             //query = query.Replace("XXXXX", customer);
